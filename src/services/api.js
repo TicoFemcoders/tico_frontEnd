@@ -13,7 +13,15 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const authHeader = response.headers["authorization"];
+    if (authHeader) {
+      const token = authHeader.replace(/^Bearer\s+/i, "");
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    return response;
+  },
   (error) => {
     const isLoginRequest = error.config?.url?.includes("/auth/login");
     if (error.response?.status === 401 && !isLoginRequest) {
