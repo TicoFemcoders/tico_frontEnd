@@ -17,7 +17,7 @@ export default function LoginBrand() {
         CoHispania
       </Typography>
 
-      <Typography sx={{ fontSize: 34, fontWeight: 800, lineHeight: 1.2, mb: 2, color: "secondary.contrastText" }}>
+      <Typography sx={{ fontSize: 44, fontWeight: 900, lineHeight: 1.15, mb: 2, color: "secondary.contrastText" }}>
         Sistema de
         <br />
         gestión de tickets

@@ -47,23 +47,12 @@ export default function LoginForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-        <Box
-          sx={{
-            bgcolor: "secondary.dark",
-            borderRadius: 2,
-            px: 2,
-            py: 1,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <Typography sx={{ fontWeight: 900, fontSize: 32, color: "secondary.contrastText", lineHeight: 1, letterSpacing: "-1px" }}>Tic</Typography>
-          <Box sx={{ width: 22, height: 22, borderRadius: "50%", bgcolor: "primary.main", ml: 0.5, mb: "-2px" }} />
-        </Box>
+      <Box sx={{ display: "flex", alignItems: "flex-end", mb: 4 }}>
+        <Typography sx={{ fontWeight: 900, fontSize: 40, color: "secondary.dark", lineHeight: 1, letterSpacing: "-1px" }}>Tic</Typography>
+        <Box sx={{ width: 24, height: 24, borderRadius: "50%", bgcolor: "primary.main", ml: "2px", mb: "4px" }} />
       </Box>
 
-      <Typography variant="h1" sx={{ mb: 0.5 }}>
+      <Typography variant="h1" sx={{ mb: 0.5, color: "secondary.dark", fontWeight: 900, fontSize: "24px" }}>
         Bienvenido/a
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -76,16 +65,18 @@ export default function LoginForm() {
         </Alert>
       )}
 
-      <TextField label="Correo electrónico" name="email" type="email" value={form.email} onChange={handleChange} placeholder="tu.nombre@cohispania.com" fullWidth size="small" sx={{ mb: 2 }} autoComplete="email" autoFocus />
+      <Typography sx={{ fontSize: 13, fontWeight: 500, color: "text.primary", mb: 0.5 }}>Correo electrónico</Typography>
+      <TextField name="email" type="email" value={form.email} onChange={handleChange} placeholder="tu.nombre@cohispania.com" fullWidth size="small" sx={{ mb: 2 }} autoComplete="email" autoFocus />
 
-      <TextField label="Contraseña" name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" fullWidth size="small" sx={{ mb: 2 }} autoComplete="current-password" />
+      <Typography sx={{ fontSize: 13, fontWeight: 500, color: "text.primary", mb: 0.5 }}>Contraseña</Typography>
+      <TextField name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" fullWidth size="small" sx={{ mb: 2 }} autoComplete="current-password" />
 
       <Button type="submit" variant="contained" fullWidth disabled={loading} sx={{ py: 1.2, fontWeight: 600 }}>
         {loading ? <CircularProgress size={20} color="inherit" /> : "Iniciar sesión"}
       </Button>
 
       <Box sx={{ textAlign: "center", mt: 2 }}>
-        <Typography component={Link} to="/reset-password" sx={{ fontSize: 13, color: "primary.main", textDecoration: "none", fontWeight: 500 }}>
+        <Typography component={Link} to="/reset-password" sx={{ fontSize: 13, color: "secondary.dark", textDecoration: "none", fontWeight: 500 }}>
           ¿Has olvidado tu contraseña?
         </Typography>
       </Box>

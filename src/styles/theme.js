@@ -71,4 +71,8 @@ const theme = createTheme({
   },
 });
 
+theme.customShadows = {
+  card: "0 20px 60px rgba(0,0,0,0.35)",
+};
+
 export default theme;
