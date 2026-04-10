@@ -6,7 +6,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
-import Sidebar from "../components/layout/Sidebar";
+import Navbar from "../components/layout/Navbar";
 
 export default function ProtectedLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -18,9 +18,9 @@ export default function ProtectedLayout() {
         elevation={0}
         sx={{
           display: { md: "none" },
-          bgcolor: "sidebar.bg",
+          bgcolor: "navbar.bg",
           borderBottom: "1px solid",
-          borderColor: "sidebar.border",
+          borderColor: "navbar.border",
         }}
       >
         <Toolbar>
@@ -31,7 +31,7 @@ export default function ProtectedLayout() {
         </Toolbar>
       </AppBar>
 
-      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+      <Navbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
       <Box component="main" sx={{ flex: 1, p: 3, overflow: "auto", mt: { xs: 8, md: 0 } }}>
         <Outlet />

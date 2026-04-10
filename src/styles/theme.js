@@ -26,7 +26,7 @@ const theme = createTheme({
       secondary: "#6b7280",
     },
 
-    sidebar: {
+    navbar: {
       bg: "#1c2845",
       border: "rgba(255,255,255,0.07)",
       active: "#f28a2e",
