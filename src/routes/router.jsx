@@ -1,44 +1,62 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import ProtectedLayout from "./ProtectedLayout";
+import RoleRoute from "./RoleRoute";
 import LoginPage from "../pages/LoginPage";
 import ActivationPage from "../pages/ActivationPage";
 import DashboardEmployee from "../pages/DashboardEmployee";
-import TicketPage from "../pages/TicketPage";
 import DashboardAdmin from "../pages/DashboardAdmin";
+import TicketPage from "../pages/TicketPage";
+import ResetPassword from "../pages/ResetPasswordPage";
+
+// import TicketDetailPage from "../pages/TicketDetailPage";
+// import UsersPage from "../pages/UsersPage";
+// import LabelsPage from "../pages/LabelsPage";
+// import ResetPasswordPage from "../pages/ResetPasswordPage";
 
 export const router = createBrowserRouter([
-
-  { path: "/login", 
-    element: <LoginPage /> 
-  },
-  {
-    path: "/activation",
-    element: <ActivationPage />,
-  },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/activation", element: <ActivationPage /> },
+  { path: "/reset-password", element: <ResetPassword /> },
 
   {
-    path: "/",
-    /* LUEGO : <ProtectedRoute>*/
-    element: <MainLayout />, 
+    element: (
+      <ProtectedRoute>
+        <ProtectedLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { index: true, element: <Navigate to="/login" replace /> },
+      { path: "/dashboard-employee", element: <DashboardEmployee /> },
+      { path: "/tickets", element: <TicketPage /> },
+      { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
 
-      { 
-        path: "dashboard-employee", 
-        element: <DashboardEmployee /> 
+      {
+        path: "/dashboard-admin",
+        element: (
+          <RoleRoute role="ADMIN">
+            <DashboardAdmin />
+          </RoleRoute>
+        ),
       },
-
-      { 
-        path: "dashboard-admin", 
-        element: <DashboardAdmin /> 
+      {
+        path: "/users",
+        element: (
+          <RoleRoute role="ADMIN">
+            <div>Gestión usuarios — próxima tarea</div>
+          </RoleRoute>
+        ),
       },
-
-      { 
-        path: "tickets", 
-        element: <TicketPage /> 
+      {
+        path: "/labels",
+        element: (
+          <RoleRoute role="ADMIN">
+            <div>Gestión etiquetas — próxima tarea</div>
+          </RoleRoute>
+        ),
       },
     ],
   },
 
+  { path: "/", element: <Navigate to="/login" replace /> },
   { path: "*", element: <Navigate to="/login" replace /> },
 ]);
