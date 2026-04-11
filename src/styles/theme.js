@@ -24,6 +24,16 @@ const theme = createTheme({
     text: {
       primary: "#111827",
       secondary: "#6b7280",
+      subtle: "#9ca3af",
+    },
+
+    border: {
+      main: "#d1d5db",
+      soft: "#e5e7eb",
+    },
+
+    blueAccent: {
+      main: "#43598f",
     },
 
     navbar: {
