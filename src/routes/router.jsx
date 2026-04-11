@@ -7,17 +7,15 @@ import ActivationPage from "../pages/ActivationPage";
 import DashboardEmployee from "../pages/DashboardEmployee";
 import DashboardAdmin from "../pages/DashboardAdmin";
 import TicketPage from "../pages/TicketPage";
-import ResetPassword from "../pages/ResetPasswordPage";
-
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 // import TicketDetailPage from "../pages/TicketDetailPage";
 // import UsersPage from "../pages/UsersPage";
 // import LabelsPage from "../pages/LabelsPage";
-// import ResetPasswordPage from "../pages/ResetPasswordPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/activation", element: <ActivationPage /> },
-  { path: "/reset-password", element: <ResetPassword /> },
+  { path: "/forgot-password", element: <ResetPasswordPage /> },
 
   {
     element: (
