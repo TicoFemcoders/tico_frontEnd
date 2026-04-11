@@ -1,4 +1,6 @@
+import AuthCodeForm from "../components/auth/AuthCodeForm";
+import { activateAccount, resendActivationCode } from "../services/authService";
 
-const ActivationPage = () => <h1>Activa tu cuenta</h1>;
-
-export default ActivationPage;
+export default function ActivationPage() {
+  return <AuthCodeForm title="Activa tu cuenta" buttonLabel="Activar cuenta" submitFn={activateAccount} resendFn={resendActivationCode} successPath="/login?activated=1" />;
+}
