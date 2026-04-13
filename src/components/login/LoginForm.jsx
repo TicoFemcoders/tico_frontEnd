@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -8,6 +8,8 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "../../context/useAuth";
 import * as authService from "../../services/authService";
+import ForgotPasswordModal from "../login/ForgotPasswordModal";
+import TicoLogo from "../common/TicoLogo";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function LoginForm() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -47,9 +50,8 @@ export default function LoginForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-      <Box sx={{ display: "flex", alignItems: "flex-end", mb: 4 }}>
-        <Typography sx={{ fontWeight: 900, fontSize: 40, color: "secondary.dark", lineHeight: 1, letterSpacing: "-1px" }}>Tic</Typography>
-        <Box sx={{ width: 24, height: 24, borderRadius: "50%", bgcolor: "primary.main", ml: "2px", mb: "4px" }} />
+      <Box sx={{ mb: 4 }}>
+        <TicoLogo variant="dark" size={40} />
       </Box>
 
       <Typography variant="h1" sx={{ mb: 0.5, color: "secondary.dark", fontWeight: 900, fontSize: "24px" }}>
@@ -76,9 +78,10 @@ export default function LoginForm() {
       </Button>
 
       <Box sx={{ textAlign: "center", mt: 2 }}>
-        <Typography component={Link} to="/reset-password" sx={{ fontSize: 13, color: "secondary.dark", textDecoration: "none", fontWeight: 500 }}>
+        <Typography onClick={() => setModalOpen(true)} sx={{ cursor: "pointer", fontSize: 13, color: "blueAccent.main" }}>
           ¿Has olvidado tu contraseña?
         </Typography>
+        <ForgotPasswordModal open={modalOpen} onClose={() => setModalOpen(false)} />
       </Box>
 
       <Box sx={{ mt: 2.5, pt: 2, borderTop: "1px solid", borderColor: "divider", textAlign: "center" }}>
