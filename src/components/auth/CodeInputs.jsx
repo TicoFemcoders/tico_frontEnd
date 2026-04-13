@@ -37,7 +37,7 @@ export default function CodeInputs({ value, onChange }) {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: "8px", justifyContent: "center", my: "20px" }} onPaste={handlePaste}>
+    <Box role="group" aria-label="Código de verificación" sx={{ display: "flex", gap: "8px", justifyContent: "center", my: "20px" }} onPaste={handlePaste}>
       {value.map((val, i) => (
         <input
           key={i}
@@ -45,6 +45,7 @@ export default function CodeInputs({ value, onChange }) {
           type="text"
           maxLength={1}
           value={val}
+          aria-label={`Dígito ${i + 1} de 6`}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           style={{

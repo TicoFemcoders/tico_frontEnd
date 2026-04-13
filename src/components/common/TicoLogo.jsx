@@ -6,8 +6,10 @@ export default function TicoLogo({ variant = "dark", size = 40 }) {
   const dotSize = size * 0.6;
 
   return (
-    <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+    <Box role="img" aria-label="Tico" sx={{ display: "flex", alignItems: "flex-end" }}>
       <Typography
+        component="span"
+        aria-hidden="true"
         sx={{
           fontWeight: 900,
           fontSize: size,
@@ -19,6 +21,7 @@ export default function TicoLogo({ variant = "dark", size = 40 }) {
         Tic
       </Typography>
       <Box
+        aria-hidden="true"
         sx={{
           width: dotSize,
           height: dotSize,

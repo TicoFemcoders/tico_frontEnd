@@ -49,13 +49,15 @@ export default function ForgotPasswordModal({ open, onClose }) {
           </Alert>
         ) : (
           <Box>
-            <Box sx={{ fontSize: "13px", color: "text.secondary", mb: "16px", lineHeight: 1.5 }}>Introduce tu email corporativo y te enviaremos las instrucciones.</Box>
+            <Box component="p" sx={{ fontSize: "13px", color: "text.secondary", mb: "16px", lineHeight: 1.5 }}>
+              Introduce tu email corporativo y te enviaremos las instrucciones.
+            </Box>
             {error && (
               <Alert severity="error" sx={{ mb: 2, fontSize: "13px" }}>
                 {error}
               </Alert>
             )}
-            <TextField fullWidth type="email" placeholder="tu.nombre@cohispania.com" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus onKeyDown={(e) => e.key === "Enter" && handleSubmit()} />
+            <TextField id="forgot-email" fullWidth type="email" placeholder="tu.nombre@cohispania.com" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus onKeyDown={(e) => e.key === "Enter" && handleSubmit()} inputProps={{ "aria-label": "Correo electrónico" }} />
           </Box>
         )}
       </DialogContent>
