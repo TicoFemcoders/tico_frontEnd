@@ -24,10 +24,12 @@ export default function ProtectedLayout() {
         }}
       >
         <Toolbar>
-          <IconButton color="inherit" onClick={() => setMobileOpen(true)} sx={{ mr: 1 }}>
+          <IconButton aria-label="Abrir menú" color="inherit" onClick={() => setMobileOpen(true)} sx={{ mr: 1 }}>
             <MenuIcon />
           </IconButton>
-          <Typography sx={{ fontWeight: 700, letterSpacing: "-0.3px" }}>TICO</Typography>
+          <Typography component="span" sx={{ fontWeight: 700, letterSpacing: "-0.3px" }}>
+            TICO
+          </Typography>
         </Toolbar>
       </AppBar>
 
