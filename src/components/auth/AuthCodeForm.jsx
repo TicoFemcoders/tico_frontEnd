@@ -64,16 +64,6 @@ export default function AuthCodeForm({ title, buttonLabel, submitFn, resendFn, s
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "background.default",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        p: "40px",
-      }}
-    >
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -164,6 +154,5 @@ export default function AuthCodeForm({ title, buttonLabel, submitFn, resendFn, s
           </Box>
         </Box>
       </Box>
-    </Box>
   );
 }
