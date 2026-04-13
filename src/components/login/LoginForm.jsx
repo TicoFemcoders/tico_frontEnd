@@ -9,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "../../context/useAuth";
 import * as authService from "../../services/authService";
 import ForgotPasswordModal from "../login/ForgotPasswordModal";
+import TicoLogo from "../common/TicoLogo";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -49,9 +50,8 @@ export default function LoginForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-      <Box sx={{ display: "flex", alignItems: "flex-end", mb: 4 }}>
-        <Typography sx={{ fontWeight: 900, fontSize: 40, color: "secondary.dark", lineHeight: 1, letterSpacing: "-1px" }}>Tic</Typography>
-        <Box sx={{ width: 24, height: 24, borderRadius: "50%", bgcolor: "primary.main", ml: "2px", mb: "4px" }} />
+      <Box sx={{ mb: 4 }}>
+        <TicoLogo variant="dark" size={40} />
       </Box>
 
       <Typography variant="h1" sx={{ mb: 0.5, color: "secondary.dark", fontWeight: 900, fontSize: "24px" }}>
