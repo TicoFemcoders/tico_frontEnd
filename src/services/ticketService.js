@@ -3,8 +3,10 @@ import { api } from "./api";
 export const createTicket = (ticketData, userId) =>
   api.post(`/api/tickets?userId=${userId}`, ticketData);
 
-export const getMyTickets = (userId) =>
-  api.get(`/api/tickets/my-tickets?userId=${userId}`);
+export const getMyTickets = async (userId) => {
+  const response = await api.get(`/api/tickets/my-tickets?userId=${userId}`);
+  return response.data;
+};
 
 export const getAllTickets = () =>
   api.get("/api/tickets");
@@ -23,3 +25,21 @@ export const assignLabel = (ticketId, labelId) =>
 
 export const removeLabel = (ticketId, labelId) =>
   api.delete(`/api/tickets/${ticketId}/labels/${labelId}`);
+
+export const getAllLabels = async () => {
+  const response = await api.get("/api/labels");
+  return response.data;
+};
+
+/** Objeto agrupado para compatibilidad con imports { ticketService } */
+export const ticketService = {
+  createTicket,
+  getMyTickets,
+  getAllTickets,
+  closeTicket,
+  changePriority,
+  assignAdmin,
+  assignLabel,
+  removeLabel,
+  getAllLabels,
+};

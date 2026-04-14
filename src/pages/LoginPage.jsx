@@ -11,6 +11,7 @@ export default function LoginPage() {
 
   return (
     <Box
+      component="main"
       sx={{
         minHeight: "100vh",
         bgcolor: "secondary.dark",
@@ -33,6 +34,7 @@ export default function LoginPage() {
         <LoginBrand />
 
         <Box
+          component="section"
           sx={{
             bgcolor: "background.paper",
             borderRadius: 2,

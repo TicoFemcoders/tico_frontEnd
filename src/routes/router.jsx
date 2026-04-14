@@ -4,10 +4,10 @@ import ProtectedLayout from "./ProtectedLayout";
 import RoleRoute from "./RoleRoute";
 import LoginPage from "../pages/LoginPage";
 import ActivationPage from "../pages/ActivationPage";
-import DashboardEmployee from "../pages/DashboardEmployee";
 import DashboardAdmin from "../pages/DashboardAdmin";
 import TicketPage from "../pages/TicketPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import MyTickets from "../pages/MyTickets";
 // import TicketDetailPage from "../pages/TicketDetailPage";
 // import UsersPage from "../pages/UsersPage";
 // import LabelsPage from "../pages/LabelsPage";
@@ -15,7 +15,7 @@ import ResetPasswordPage from "../pages/ResetPasswordPage";
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/activation", element: <ActivationPage /> },
-  { path: "/forgot-password", element: <ResetPasswordPage /> },
+  { path: "/reset-password", element: <ResetPasswordPage /> },
 
   {
     element: (
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/dashboard-employee", element: <DashboardEmployee /> },
+      { path: "/dashboard-employee", element: <MyTickets /> },
       { path: "/tickets", element: <TicketPage /> },
       { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
 

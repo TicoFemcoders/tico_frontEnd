@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -27,8 +27,15 @@ export default function CreateTicketForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [form, setForm]       = useState({ title: "", description: "", priority: "" });
+  const [form, setForm]       = useState({ title: "", description: "", priority: "", labelId: "" });
+  const [labels, setLabels]   = useState([]);
   const [errors, setErrors]   = useState({});
+
+  useEffect(() => {
+    ticketService.getAllLabels()
+      .then(setLabels)
+      .catch(() => setLabels([]));
+  }, []);
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +50,8 @@ export default function CreateTicketForm() {
       e.description = "La descripción debe tener entre 10 y 500 caracteres.";
     if (!form.priority)
       e.priority = "Se requiere seleccionar prioridad.";
+    if (!form.labelId)
+      e.labelId = "Se requiere seleccionar una etiqueta.";
     return e;
   };
 
@@ -54,7 +63,10 @@ export default function CreateTicketForm() {
     setErrors({});
     setLoading(true);
     try {
-      await ticketService.createTicket(form, user.id);
+      const ticket = await ticketService.createTicket(form, user.id);
+      if (form.labelId) {
+        await ticketService.assignLabel(ticket.data.id, form.labelId);
+      }
       navigate("/dashboard-employee");
     } catch (err) {
       setApiError(err.response?.data?.mensaje || "Error al enviar el ticket. Inténtalo de nuevo.");
@@ -141,9 +153,30 @@ export default function CreateTicketForm() {
           <Box component="label" sx={{ ...labelText, display: "block", mb: "6px" }}>
             Etiqueta / Categoría <Box component="span" sx={{ color: "primary.main" }}>*</Box>
           </Box>
-          <Select fullWidth size="small" displayEmpty defaultValue="">
+          <Select
+            name="labelId"
+            value={form.labelId}
+            onChange={handleChange}
+            fullWidth
+            size="small"
+            displayEmpty
+            error={!!errors.labelId}
+          >
             <MenuItem value="" disabled>Selecciona una etiqueta...</MenuItem>
+            {labels.map((label) => (
+              <MenuItem key={label.id} value={label.id}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: label.color }} />
+                  {label.name}
+                </Box>
+              </MenuItem>
+            ))}
           </Select>
+          {errors.labelId && (
+            <Box sx={{ fontSize: "11px", color: "error.main", mt: "4px" }}>
+              {errors.labelId}
+            </Box>
+          )}
         </Box>
 
         {/* Prioridad */}

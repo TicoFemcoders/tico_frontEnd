@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,11 +28,11 @@ function NavContent({ onNavigate }) {
 
       {/* Logo */}
       <Box sx={{ px: 2.5, py: 2.5 }}>
-        <Typography sx={{ fontWeight: 800, fontSize: 18, color: "navbar.text", letterSpacing: "-0.3px" }}>
+        <Typography sx={{ fontWeight: 800, fontSize: 18, color: "#ffffff", letterSpacing: "-0.3px" }}>
           TICO
         </Typography>
-        <Typography sx={{ fontSize: 11, color: "navbar.textSecondary" }}>
-          Tickets Cohispania
+        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+          Tickets CoHispania
         </Typography>
       </Box>
 
@@ -50,12 +49,19 @@ function NavContent({ onNavigate }) {
             sx={{
               borderRadius: 1.5,
               mb: 0.5,
-              color: "navbar.text",
-              "&.Mui-selected": { bgcolor: "navbar.activeItem", color: "navbar.text" },
+              color: "rgba(255,255,255,0.75)",
+              "&.Mui-selected": {
+                bgcolor: "rgba(255,255,255,0.1)",
+                color: "#ffffff",
+              },
+              "&:hover": {
+                bgcolor: "#f28a2e",
+                color: "#ffffff",
+              },
             }}
           >
-            <ConfirmationNumberOutlinedIcon sx={{ fontSize: 18, mr: 1.5 }} />
-            <ListItemText primary="Mis tickets" slotProps={{ primary: { fontSize: 14 } }} />
+            <ConfirmationNumberOutlinedIcon sx={{ fontSize: 18, mr: 1.5, color: "inherit" }} />
+            <Typography sx={{ fontSize: 14, color: "inherit" }}>Mis tickets</Typography>
           </ListItemButton>
 
           {/* Nuevo ticket */}
@@ -91,10 +97,10 @@ function NavContent({ onNavigate }) {
           {user?.name?.charAt(0).toUpperCase()}
         </Avatar>
         <Box>
-          <Typography sx={{ fontSize: 13, fontWeight: 500, color: "navbar.text" }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 500, color: "#ffffff" }}>
             {user?.name}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: "navbar.textSecondary" }}>
+          <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
             Empleada
           </Typography>
         </Box>
