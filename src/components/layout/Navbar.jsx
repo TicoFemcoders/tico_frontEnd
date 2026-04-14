@@ -7,103 +7,143 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
+import Badge from "@mui/material/Badge";
 import AddIcon from "@mui/icons-material/Add";
-import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../context/useAuth";
+import TicoLogo from "../common/TicoLogo";
 
 const DRAWER_WIDTH = 240;
 
+const NAV_ITEM = {
+  borderRadius: 1.5,
+  mb: 0.5,
+  color: "rgba(255,255,255,0.75)",
+  gap: 1.5,
+  px: 1.5,
+  py: 1,
+  "&.Mui-selected": {
+    bgcolor: "primary.main",
+    color: "#ffffff",
+    "&:hover": { bgcolor: "primary.dark" },
+  },
+  "&:hover": {
+    bgcolor: "rgba(255,255,255,0.07)",
+    color: "#ffffff",
+  },
+};
+
+function SectionLabel({ children }) {
+  return (
+    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
+      {children}
+    </Typography>
+  );
+}
+
+function NavItem({ icon, label, badge, onClick, selected }) {
+  return (
+    <ListItemButton selected={selected} onClick={onClick} sx={NAV_ITEM}>
+      <Typography sx={{ fontSize: 16, lineHeight: 1 }}>{icon}</Typography>
+      <Typography sx={{ fontSize: 13, fontWeight: selected ? 600 : 400, color: "inherit", flex: 1 }}>
+        {label}
+      </Typography>
+      {badge > 0 && (
+        <Box sx={{ bgcolor: "primary.main", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: "10px", px: 0.8, py: 0.2, minWidth: 18, textAlign: "center" }}>
+          {badge}
+        </Box>
+      )}
+    </ListItemButton>
+  );
+}
+
 function NavContent({ onNavigate }) {
-  const { user, logout } = useAuth();
+  const { user, logout, hasRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdmin = hasRole("ADMIN");
 
   const handleNavigate = (path) => {
     navigate(path);
     onNavigate?.();
   };
 
+  const isSelected = (path) => location.pathname === path;
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
 
       {/* Logo */}
       <Box sx={{ px: 2.5, py: 2.5 }}>
-        <Typography sx={{ fontWeight: 800, fontSize: 18, color: "#ffffff", letterSpacing: "-0.3px" }}>
-          TICO
-        </Typography>
-        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-          Tickets CoHispania
-        </Typography>
+        <TicoLogo variant="light" size={28} />
+        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.4)", mt: 0.5 }}>Tickets Cohispania</Typography>
       </Box>
 
-      <Divider sx={{ borderColor: "navbar.border" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.07)" }} />
 
       {/* Navegación */}
-      <Box sx={{ px: 1.5, pt: 2, flex: 1 }}>
+      <Box sx={{ px: 1, pt: 1.5, flex: 1, overflowY: "auto" }}>
         <List disablePadding>
 
-          {/* Mis tickets */}
-          <ListItemButton
-            selected={location.pathname === "/dashboard-employee"}
-            onClick={() => handleNavigate("/dashboard-employee")}
-            sx={{
-              borderRadius: 1.5,
-              mb: 0.5,
-              color: "rgba(255,255,255,0.75)",
-              "&.Mui-selected": {
-                bgcolor: "rgba(255,255,255,0.1)",
-                color: "#ffffff",
-              },
-              "&:hover": {
-                bgcolor: "#f28a2e",
-                color: "#ffffff",
-              },
-            }}
-          >
-            <ConfirmationNumberOutlinedIcon sx={{ fontSize: 18, mr: 1.5, color: "inherit" }} />
-            <Typography sx={{ fontSize: 14, color: "inherit" }}>Mis tickets</Typography>
-          </ListItemButton>
+          {isAdmin ? (
+            <>
+              <SectionLabel>TICKETS</SectionLabel>
+              <NavItem icon="🎫" label="Todos los tickets" path="/dashboard-admin" selected={isSelected("/dashboard-admin")} onClick={() => handleNavigate("/dashboard-admin")} />
+              <NavItem icon="📌" label="Mis tickets asignados" path="/assigned" selected={isSelected("/assigned")} onClick={() => handleNavigate("/assigned")} badge={9999999.9} />
+              <NavItem icon="🎫" label="Mis tickets creados" path="/dashboard-employee" selected={isSelected("/dashboard-employee")} onClick={() => handleNavigate("/dashboard-employee")} />
 
-          {/* Nuevo ticket */}
-          <Button
-            startIcon={<AddIcon />}
-            variant="contained"
-            fullWidth
-            onClick={() => handleNavigate("/tickets")}
-            sx={{
-              mt: 0.5,
-              justifyContent: "flex-start",
-              textTransform: "none",
-              fontWeight: 600,
-              fontSize: 14,
-              py: 1,
-              px: 1.5,
-              borderRadius: 1.5,
-            }}
-          >
-            Nuevo ticket
-          </Button>
+              <SectionLabel>GESTIÓN</SectionLabel>
+              <NavItem icon="👥" label="Usuarios" path="/users" selected={isSelected("/users")} onClick={() => handleNavigate("/users")} />
+              <NavItem icon="🏷️" label="Etiquetas" path="/labels" selected={isSelected("/labels")} onClick={() => handleNavigate("/labels")} />
+            </>
+          ) : (
+            <>
+              <NavItem icon="🎫" label="Mis tickets" path="/dashboard-employee" selected={isSelected("/dashboard-employee")} onClick={() => handleNavigate("/dashboard-employee")} />
+
+              <Button
+                startIcon={<AddIcon />}
+                variant="text"
+                fullWidth
+                onClick={() => handleNavigate("/tickets")}
+                sx={{
+                  mt: 0.5,
+                  justifyContent: "flex-start",
+                  textTransform: "none",
+                  fontWeight: 400,
+                  fontSize: 13,
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1.5,
+                  color: "rgba(255,255,255,0.75)",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.07)", color: "#ffffff" },
+                }}
+              >
+                Nuevo ticket
+              </Button>
+            </>
+          )}
 
         </List>
       </Box>
 
       {/* Usuario */}
-      <Divider sx={{ borderColor: "navbar.border" }} />
-      <Box
-        sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5, cursor: "pointer" }}
-        onClick={logout}
-      >
-        <Avatar sx={{ width: 30, height: 30, fontSize: 13, bgcolor: "primary.main" }}>
-          {user?.name?.charAt(0).toUpperCase()}
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.07)" }} />
+      <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Avatar sx={{ width: 32, height: 32, fontSize: 13, fontWeight: 700, bgcolor: "primary.main" }}>
+          {user?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
         </Avatar>
-        <Box>
-          <Typography sx={{ fontSize: 13, fontWeight: 500, color: "#ffffff" }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {user?.name}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-            Empleada
+          <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+            {isAdmin ? "Administrador" : "Empleada"}
           </Typography>
         </Box>
+        <LogoutIcon
+          onClick={logout}
+          sx={{ fontSize: 16, color: "rgba(255,255,255,0.4)", cursor: "pointer", "&:hover": { color: "#ffffff" } }}
+        />
       </Box>
 
     </Box>
@@ -113,30 +153,12 @@ function NavContent({ onNavigate }) {
 export default function Navbar({ mobileOpen, onMobileClose }) {
   return (
     <>
-      {/* Desktop */}
-      <Box
-        component="nav"
-        sx={{
-          width: { md: DRAWER_WIDTH },
-          flexShrink: { md: 0 },
-          display: { xs: "none", md: "block" },
-        }}
-      >
-        <Box
-          sx={{
-            width: DRAWER_WIDTH,
-            height: "100vh",
-            position: "fixed",
-            bgcolor: "navbar.bg",
-            borderRight: "1px solid",
-            borderColor: "navbar.border",
-          }}
-        >
+      <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 }, display: { xs: "none", md: "block" } }}>
+        <Box sx={{ width: DRAWER_WIDTH, height: "100vh", position: "fixed", bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "rgba(255,255,255,0.07)" }}>
           <NavContent />
         </Box>
       </Box>
 
-      {/* Mobile */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -144,12 +166,7 @@ export default function Navbar({ mobileOpen, onMobileClose }) {
         ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": {
-            width: DRAWER_WIDTH,
-            bgcolor: "navbar.bg",
-            borderRight: "1px solid",
-            borderColor: "navbar.border",
-          },
+          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "rgba(255,255,255,0.07)" },
         }}
       >
         <NavContent onNavigate={onMobileClose} />
