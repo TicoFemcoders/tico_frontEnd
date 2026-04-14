@@ -42,26 +42,25 @@ const theme = createTheme({
       border: "rgba(255,255,255,0.07)",
       active: "#f28a2e",
       text: "rgba(255,255,255,0.4)",
-      textActive: "#ffffff",
+      textSecondary: "rgba(255,255,255,0.4)",
+      hoverBg: "rgba(255,255,255,0.07)",
     },
 
 
 
-//actualizar en dev!
+    //actualizar en dev!
 
-status: {
-  open: { bg: "#dbeafe", text: "#1e40af" },
-  inProg: { bg: "#fef3c7", text: "#92400e" },
-  closed: { bg: "#d1fae5", text: "#065f46" },
-},
-priority: {
-  urgent: { bg: "#fee2e2", text: "#991b1b" },
-  high: { bg: "#ffedd5", text: "#9a3412" },
-  medium: { bg: "#fef9c3", text: "#854d0e" },
-  low: { bg: "#f0fdf4", text: "#166534" },
-},
-
-
+    status: {
+      open: { bg: "#dbeafe", text: "#1e40af" },
+      inProg: { bg: "#fef3c7", text: "#92400e" },
+      closed: { bg: "#d1fae5", text: "#065f46" },
+    },
+    priority: {
+      urgent: { bg: "#fee2e2", text: "#991b1b" },
+      high: { bg: "#ffedd5", text: "#9a3412" },
+      medium: { bg: "#fef9c3", text: "#854d0e" },
+      low: { bg: "#f0fdf4", text: "#166534" },
+    },
 
 
 
@@ -72,11 +71,13 @@ priority: {
 
 
 
-dateStatus: {
-  created: "#1976D2",   
-  updated: "#ED6C02",   
-  closed: "#2E7D32",    
-},
+
+
+    dateStatus: {
+      created: "#1976D2",
+      updated: "#ED6C02",
+      closed: "#2E7D32",
+    },
   },
   typography: {
     fontFamily: "'Inter', -apple-system, sans-serif",

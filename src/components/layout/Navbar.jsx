@@ -18,24 +18,24 @@ const DRAWER_WIDTH = 240;
 const NAV_ITEM = {
   borderRadius: 1.5,
   mb: 0.5,
-  color: "rgba(255,255,255,0.75)",
+  color: "navbar.text",
   gap: 1.5,
   px: 1.5,
   py: 1,
   "&.Mui-selected": {
     bgcolor: "primary.main",
-    color: "#ffffff",
+    color: "primary.contrastText",
     "&:hover": { bgcolor: "primary.dark" },
   },
   "&:hover": {
-    bgcolor: "rgba(255,255,255,0.07)",
-    color: "#ffffff",
+    bgcolor: "navbar.hoverBg",
+    color: "navbar.text",
   },
 };
 
 function SectionLabel({ children }) {
   return (
-    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
+    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "navbar.textSecondary", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
       {children}
     </Typography>
   );
@@ -49,7 +49,7 @@ function NavItem({ icon, label, badge, onClick, selected }) {
         {label}
       </Typography>
       {badge > 0 && (
-        <Box sx={{ bgcolor: "primary.main", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: "10px", px: 0.8, py: 0.2, minWidth: 18, textAlign: "center" }}>
+        <Box sx={{ bgcolor: "primary.main", color: "primary.contrastText", fontSize: 10, fontWeight: 700, borderRadius: "10px", px: 0.8, py: 0.2, minWidth: 18, textAlign: "center" }}>
           {badge}
         </Box>
       )}
@@ -73,15 +73,13 @@ function NavContent({ onNavigate }) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
 
-      {/* Logo */}
       <Box sx={{ px: 2.5, py: 2.5 }}>
         <TicoLogo variant="light" size={28} />
-        <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.4)", mt: 0.5 }}>Tickets Cohispania</Typography>
+        <Typography sx={{ fontSize: 11, color: "navbar.textSecondary", mt: 0.5 }}>Tickets Cohispania</Typography>
       </Box>
 
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.07)" }} />
+      <Divider sx={{ borderColor: "navbar.border" }} />
 
-      {/* Navegación */}
       <Box sx={{ px: 1, pt: 1.5, flex: 1, overflowY: "auto" }}>
         <List disablePadding>
 
@@ -114,8 +112,8 @@ function NavContent({ onNavigate }) {
                   py: 1,
                   px: 1.5,
                   borderRadius: 1.5,
-                  color: "rgba(255,255,255,0.75)",
-                  "&:hover": { bgcolor: "rgba(255,255,255,0.07)", color: "#ffffff" },
+                  color: "navbar.text",
+                  "&:hover": { bgcolor: "navbar.hoverBg", color: "primary.contrastText"},
                 }}
               >
                 Nuevo ticket
@@ -126,23 +124,22 @@ function NavContent({ onNavigate }) {
         </List>
       </Box>
 
-      {/* Usuario */}
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.07)" }} />
+      <Divider sx={{ borderColor: "navbar.border" }} />
       <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
         <Avatar sx={{ width: 32, height: 32, fontSize: 13, fontWeight: 700, bgcolor: "primary.main" }}>
           {user?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {user?.name}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+          <Typography sx={{ fontSize: 11, color: "navbar.textSecondary" }}>
             {isAdmin ? "Administrador" : "Empleada"}
           </Typography>
         </Box>
         <LogoutIcon
           onClick={logout}
-          sx={{ fontSize: 16, color: "rgba(255,255,255,0.4)", cursor: "pointer", "&:hover": { color: "#ffffff" } }}
+          sx={{ fontSize: 16, color: "navbar.textSecondary", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }}
         />
       </Box>
 
@@ -154,7 +151,7 @@ export default function Navbar({ mobileOpen, onMobileClose }) {
   return (
     <>
       <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 }, display: { xs: "none", md: "block" } }}>
-        <Box sx={{ width: DRAWER_WIDTH, height: "100vh", position: "fixed", bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "rgba(255,255,255,0.07)" }}>
+        <Box sx={{ width: DRAWER_WIDTH, height: "100vh", position: "fixed", bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "navbar.border" }}>
           <NavContent />
         </Box>
       </Box>
@@ -166,7 +163,7 @@ export default function Navbar({ mobileOpen, onMobileClose }) {
         ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "rgba(255,255,255,0.07)" },
+          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, bgcolor: "navbar.bg", borderRight: "1px solid", borderColor: "navbar.border" },
         }}
       >
         <NavContent onNavigate={onMobileClose} />
