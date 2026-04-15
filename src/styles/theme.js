@@ -23,6 +23,7 @@ const theme = createTheme({
     },
     text: {
       primary: "#111827",
+      mid: "#374151",
       secondary: "#6b7280",
       subtle: "#9ca3af",
     },
@@ -43,6 +44,39 @@ const theme = createTheme({
       text: "rgba(255,255,255,0.4)",
       textActive: "#ffffff",
     },
+
+
+
+//actualizar en dev!
+
+status: {
+  open: { bg: "#dbeafe", text: "#1e40af" },
+  inProg: { bg: "#fef3c7", text: "#92400e" },
+  closed: { bg: "#d1fae5", text: "#065f46" },
+},
+priority: {
+  urgent: { bg: "#fee2e2", text: "#991b1b" },
+  high: { bg: "#ffedd5", text: "#9a3412" },
+  medium: { bg: "#fef9c3", text: "#854d0e" },
+  low: { bg: "#f0fdf4", text: "#166534" },
+},
+
+
+
+
+
+
+
+
+
+
+
+
+dateStatus: {
+  created: "#1976D2",   
+  updated: "#ED6C02",   
+  closed: "#2E7D32",    
+},
   },
   typography: {
     fontFamily: "'Inter', -apple-system, sans-serif",

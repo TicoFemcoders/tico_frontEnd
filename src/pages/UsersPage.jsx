@@ -1,29 +1,70 @@
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Chip from "@mui/material/Chip";
+
+
+const mockUsers = [
+    { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true },
+    { id: 2, name: "Luis Martínez", email: "luis@cohispania.com", role: "EMPLOYEE", isActive: true },
+    { id: 3, name: "María López", email: "maria@cohispania.com", role: "EMPLOYEE", isActive: false },
+];
+
 const UsersPage = () => {
     return (
-        <div>
-            <h1>Gestión de Usuarios</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Usuario de prueba</td>
-                        <td>usuario@email.com</td>
-                        <td>ADMIN</td>
-                        <td>Activo</td>
-                        <td>Editar | Eliminar</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
-};
+        <Box sx={{ p: 3 }}>
+            <Typography variant="h1" sx={{ mb: 3 }}>
+                Gestion de Usuarios
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "none", border: "1px solid #e5e7eb" }}>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Nombre</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>Rol</TableCell>
+                        <TableCell>Estado</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {mockUsers.map((user) => (
+                    <TableRow key={user.id} hover>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                            <Chip
+                                label={user.role}
+                                size="small"
+                                sx={{
+                                    bgcolor: user.role === "ADMIN" ? "#dbeafe" : "#f3f4f6",
+                                    color: user.role === "ADMIN" ? "#1e40af" : "#374151",
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <Chip
+                                label={user.isActive ? "Activo" : "Inactivo"}
+                                size="small"
+                                sx={{
+                                    bgcolor: user.isActive ? "#d1fae5" : "#fee2e2",
+                                    color: user.isActive ? "#065f46" : "#991b1b",
+                                }}
+                            />
+                        </TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+                    </Box >
+                );
+            };
 
 export default UsersPage;
