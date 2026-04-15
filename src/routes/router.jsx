@@ -16,8 +16,8 @@ export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/activation", element: <ActivationPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
-
   {
+    
     element: (
       <ProtectedRoute>
         <ProtectedLayout />
@@ -27,6 +27,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard-employee", element: <MyTickets /> },
       { path: "/tickets", element: <TicketPage /> },
       { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
+      { path: "/assigned", element: <RoleRoute role="ADMIN"><div>Mis tickets asignados — próxima tarea</div></RoleRoute> },
 
       {
         path: "/dashboard-admin",
