@@ -42,8 +42,6 @@ const theme = createTheme({
       border: "rgba(255,255,255,0.07)",
       active: "#f28a2e",
       text: "rgba(255,255,255,0.4)",
-      textSecondary: "rgba(255,255,255,0.4)",
-      hoverBg: "rgba(255,255,255,0.07)",
     },
 
 
