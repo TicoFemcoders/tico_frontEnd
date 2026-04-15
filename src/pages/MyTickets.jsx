@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import MTHeader from "../components/myTickets/MTHeader";
 import StatCards from "../components/myTickets/StatCards";
-import TicketTable from "../components/myTickets/ticketTable";
+import TicketTable from "../components/myTickets/TicketTable";
 import { useState, useEffect, useContext } from "react";
 import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
