@@ -44,6 +44,7 @@ const UsersPage = () => {
                             <TableCell>Rol</TableCell>
                             <TableCell>Tickets abiertos</TableCell>
                             <TableCell>Estado</TableCell>
+                            <TableCell>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -60,8 +61,10 @@ const UsersPage = () => {
                                             bgcolor: user.role === "ADMIN" ? "#dbeafe" : "#f3f4f6",
                                             color: user.role === "ADMIN" ? "#1e40af" : "#374151",
                                         }}
+
                                     />
                                 </TableCell>
+
                                 <TableCell>{user.openTickets} abiertos</TableCell>
                                 <TableCell>
                                     <Chip
@@ -72,6 +75,15 @@ const UsersPage = () => {
                                             color: user.isActive ? "#065f46" : "#991b1b",
                                         }}
                                     />
+                                </TableCell>
+
+                                <TableCell>
+                                    <Button size="small" sx={{ color: "#f28a2e", mr: 1 }}>
+                                        Editar
+                                    </Button>
+                                    <Button size="small" sx={{ color: "#ef4444" }}>
+                                        Eliminar
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
