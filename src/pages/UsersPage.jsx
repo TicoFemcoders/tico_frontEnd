@@ -9,12 +9,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
 
 
 const mockUsers = [
-    { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true },
-    { id: 2, name: "Luis Martínez", email: "luis@cohispania.com", role: "EMPLOYEE", isActive: true },
-    { id: 3, name: "María López", email: "maria@cohispania.com", role: "EMPLOYEE", isActive: false },
+    { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true, openTickets: 0 },
+    { id: 2, name: "Luis Martínez", email: "luis@cohispania.com", role: "EMPLOYEE", isActive: true, openTickets: 3 },
+    { id: 3, name: "María López", email: "maria@cohispania.com", role: "EMPLOYEE", isActive: false, openTickets: 1 },
 ];
 
 const UsersPage = () => {
@@ -41,6 +42,7 @@ const UsersPage = () => {
                             <TableCell>Nombre</TableCell>
                             <TableCell>Email</TableCell>
                             <TableCell>Rol</TableCell>
+                            <TableCell>Tickets abiertos</TableCell>
                             <TableCell>Estado</TableCell>
                         </TableRow>
                     </TableHead>
@@ -50,8 +52,9 @@ const UsersPage = () => {
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
+
                                     <Chip
-                                        label={user.role}
+                                        label={user.role === "EMPLOYEE" ? "Empleado" : "Admin"}
                                         size="small"
                                         sx={{
                                             bgcolor: user.role === "ADMIN" ? "#dbeafe" : "#f3f4f6",
@@ -59,6 +62,7 @@ const UsersPage = () => {
                                         }}
                                     />
                                 </TableCell>
+                                <TableCell>{user.openTickets} abiertos</TableCell>
                                 <TableCell>
                                     <Chip
                                         label={user.isActive ? "Activo" : "Inactivo"}
@@ -74,7 +78,7 @@ const UsersPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Box >
+        </Box>
     );
 };
 
