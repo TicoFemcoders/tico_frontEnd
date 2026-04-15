@@ -4,11 +4,11 @@ import { StatusChip, PriorityChip } from "../common/TicketChips";
 
 const getLatestDateInfo = (ticket) => {
     const dates = [
-        { label: 'Creado',     value: new Date(ticket.createdAt), color: "#10b981", icon: <AddIcon fontSize="inherit" /> },
-        { label: 'Modificado', value: new Date(ticket.updatedAt), color: "#f59e0b", icon: <UpdateIcon fontSize="inherit" /> },
+        { label: 'Creado', value: new Date(ticket.createdAt), color: "dateStatus.created", icon: <AddIcon fontSize="inherit" /> },
+        { label: 'Modificado', value: new Date(ticket.updatedAt), color: "dateStatus.updated", icon: <UpdateIcon fontSize="inherit" /> },
     ];
     if (ticket.closedAt) {
-        dates.push({ label: 'Cerrado', value: new Date(ticket.closedAt), color: "#6b7280", icon: <CheckIcon fontSize="inherit" /> });
+        dates.push({ label: 'Cerrado', value: new Date(ticket.closedAt), color: "dateStatus.closed", icon: <CheckIcon fontSize="inherit" /> });
     }
     const latest = dates.sort((a, b) => b.value - a.value)[0];
     return { ...latest, value: latest.value.toLocaleDateString() };
@@ -60,14 +60,14 @@ const TicketTable = ({ title, tickets, showFilter = false }) => {
             {/* Vista escritorio */}
             <TableContainer sx={{ display: { xs: 'none', sm: 'block' }, overflowX: 'auto' }}>
                 <Table sx={{ minWidth: 800 }}>
-                    <TableHead sx={{ bgcolor: '#FAFAFA' }}>
+                    <TableHead>
                         <TableRow>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>ID</TableCell>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>TÍTULO</TableCell>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>ETIQUETAS</TableCell>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>PRIORIDAD</TableCell>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>ESTADO</TableCell>
-                            <TableCell sx={{ color: '#374151', fontWeight: 700 }}>ÚLTIMA ACTIVIDAD</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>ID</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>TÍTULO</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>ETIQUETAS</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>PRIORIDAD</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>ESTADO</TableCell>
+                            <TableCell sx={{ color: 'text.mid', fontWeight: 700 }}>ÚLTIMA ACTIVIDAD</TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>

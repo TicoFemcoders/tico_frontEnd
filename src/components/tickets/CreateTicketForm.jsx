@@ -12,10 +12,10 @@ import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
 
 const PRIORITIES = [
-  { value: "LOW",      label: "Baja" },
-  { value: "MEDIUM",   label: "Media" },
-  { value: "HIGH",     label: "Alta" },
-  { value: "CRITICAL", label: "Crítica" },
+  { value: "LOW",      label: "🟢 Baja" },
+  { value: "MEDIUM",   label: "🟡 Media" },
+  { value: "HIGH",     label: "🟠 Alta" },
+  { value: "CRITICAL", label: "🔴 Crítica" },
 ];
 
 const now = new Date().toLocaleString("es-ES", {
@@ -102,7 +102,6 @@ export default function CreateTicketForm() {
         </Alert>
       )}
 
-      {/* Título */}
       <Box sx={{ mb: 3 }}>
         <Box sx={labelStyles}>
           <Box component="label" sx={labelText}>
@@ -123,7 +122,6 @@ export default function CreateTicketForm() {
         />
       </Box>
 
-      {/* Descripción */}
       <Box sx={{ mb: 3 }}>
         <Box sx={labelStyles}>
           <Box component="label" sx={labelText}>
@@ -145,10 +143,8 @@ export default function CreateTicketForm() {
         />
       </Box>
 
-      {/* Etiqueta y Prioridad */}
       <Box sx={{ display: "flex", gap: 2, mb: 3, flexDirection: { xs: "column", sm: "row" } }}>
 
-        {/* Etiqueta */}
         <Box sx={{ flex: 1 }}>
           <Box component="label" sx={{ ...labelText, display: "block", mb: "6px" }}>
             Etiqueta / Categoría <Box component="span" sx={{ color: "primary.main" }}>*</Box>
@@ -179,7 +175,6 @@ export default function CreateTicketForm() {
           )}
         </Box>
 
-        {/* Prioridad */}
         <Box sx={{ flex: 1 }}>
           <Box component="label" sx={{ ...labelText, display: "block", mb: "6px" }}>
             Prioridad
@@ -207,7 +202,6 @@ export default function CreateTicketForm() {
 
       </Box>
 
-      {/* Aviso email */}
       <Box
         sx={{
           display: "flex",
@@ -230,7 +224,6 @@ export default function CreateTicketForm() {
         </Box>
       </Box>
 
-      {/* Botones */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button
           variant="outlined"
