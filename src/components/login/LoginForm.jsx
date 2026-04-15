@@ -37,9 +37,9 @@ export default function LoginForm() {
       login(response);
 
       if (response.data.roles?.includes("ROLE_ADMIN")) {
-        navigate("/dashboard-admin", { replace: true });
+        navigate("/all-tickets", { replace: true });
       } else {
-        navigate("/dashboard-employee", { replace: true });
+        navigate("/my-tickets", { replace: true });
       }
     } catch (err) {
       setError(err.response?.status === 401 ? "Credenciales incorrectas. Comprueba tu email y contraseña." : "Error del servidor. Inténtalo de nuevo.");

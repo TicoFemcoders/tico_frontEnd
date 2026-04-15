@@ -3,13 +3,14 @@ import { api } from "./api";
 export const createTicket = (ticketData, userId) =>
   api.post(`/api/tickets?userId=${userId}`, ticketData);
 
-export const getMyTickets = async (userId) => {
-  const response = await api.get(`/api/tickets/my-tickets?userId=${userId}`);
-  return response.data;
-};
+export const getMyTickets = () => 
+  api.get(`/api/tickets/my-tickets`).then(res => res.data);
+
+export const getAssignedTickets = () =>
+    api.get(`/api/tickets/asigned`).then(res => res.data);
 
 export const getAllTickets = () =>
-  api.get("/api/tickets");
+  api.get("/api/tickets").then(res => res.data);
 
 export const closeTicket = (ticketId) =>
   api.put(`/api/tickets/${ticketId}/close`);
