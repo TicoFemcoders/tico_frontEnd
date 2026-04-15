@@ -45,7 +45,7 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
     }, [tickets, sortOption, searchQuery]);
 
     return (
-        <Paper sx={{ borderRadius: 2, boxShadow: 1, mb: 4, overflow: "hidden", width: '100%', bgcolor: 'background.paper' }}>
+        <Paper component="section" aria-label={`Tabla de ${title}`} sx={{ borderRadius: 2, boxShadow: 1, mb: 4, overflow: "hidden", width: '100%', bgcolor: 'background.paper' }}>
 
             <Box sx={{ px: 3, py: 2, display: "flex", flexDirection: { xs: 'column', sm: 'row' }, justifyContent: "space-between", alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, borderBottom: "1px solid", borderColor: "border.soft" }}>
                 <Typography variant="h2" sx={{ fontSize: '1.1rem', color: 'text.primary', fontWeight: 700 }}>{title}</Typography>
@@ -89,7 +89,7 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
                 {processedTickets.map((ticket, index) => {
                     const latestDate = getLatestDateInfo(ticket);
                     return (
-                        <Box key={ticket.id} sx={{ mb: index !== tickets.length - 1 ? 3 : 0, p: 2, borderRadius: 2, border: '1px solid', borderColor: 'border.soft' }}>
+                        <Box key={ticket.id} component="article" sx={{ mb: index !== tickets.length - 1 ? 3 : 0, p: 2, borderRadius: 2, border: '1px solid', borderColor: 'border.soft' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                 <Typography sx={{ fontWeight: 700, color: 'primary.main' }}>TIC-{ticket.id}</Typography>
                                 <StatusChip status={ticket.status} />

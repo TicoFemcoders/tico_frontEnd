@@ -27,21 +27,13 @@ export const router = createBrowserRouter([
       { path: "/my-tickets", element: <MyTickets viewType="default" /> },
       { path: "/tickets", element: <TicketPage /> },
       { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
-      { path: "/assigned", element: <RoleRoute role="ADMIN"><div>Mis tickets asignados — próxima tarea</div></RoleRoute> },
+      { path: "/assigned", element: <RoleRoute role="ADMIN"><MyTickets viewType="assigned" /></RoleRoute> },
 
       {
         path: "/all-tickets",
         element: (
           <RoleRoute role="ADMIN">
             <MyTickets viewType="all" />
-          </RoleRoute>
-        )
-      },
-      {
-        path: "/assigned-tickets",
-        element: (
-          <RoleRoute role="ADMIN">
-            <MyTickets viewType="assigned" />
           </RoleRoute>
         )
       },

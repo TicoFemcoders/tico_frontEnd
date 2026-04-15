@@ -43,9 +43,16 @@ const MyTickets = ({ viewType = "default" }) => {
   const stats = [
     { label: "Abiertos", value: tickets.filter(t => t.status === "OPEN").length, color: "primary.main" },
     { label: "En curso", value: tickets.filter(t => t.status === "IN_PROGRESS").length, color: "secondary.main" },
-    { label: "Cerrados", value: closedTickets.length, color: "text.subtle" },
-    // {if (user.role== "ADMIN"){label: "Sin asignar", value: closedTickets.length, color: "text.subtle" }}
+    { label: "Cerrados", value: closedTickets.length, color: "text.subtle" }
   ];
+
+  if (["assigned", "all"].includes(viewType)) {
+    stats.push({ 
+      label: "Sin asignar", 
+      value: tickets.filter(t => !t.assignedToId).length, 
+      color: "success.main" 
+    });
+  }
 
   const pageTitles = {
     assigned: "Tickets Asignados",
@@ -67,7 +74,7 @@ const MyTickets = ({ viewType = "default" }) => {
         <>
           <PageHeader 
             title={currentTitle} 
-            subtitle={`${activeTickets.length} tickets activos · ${closedTickets.length} cerrados`}
+            subtitle={(viewType=== "all"?"Panel de administración · gestión global de incidencias":`${activeTickets.length} tickets activos · ${closedTickets.length} cerrados`)}
             actionText={buttonText}
             onActionClick={() => navigate("/tickets")}
           />
