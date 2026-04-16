@@ -1,9 +1,9 @@
 import { Card, Typography, Box } from "@mui/material";
 const StatCards = ({ stats }) => {
     return (
-        <Box sx={{ display: 'flex', gap: 3, width: '100%', mb: 4, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Box component="section" aria-label="Estadísticas de tickets"sx={{ display: 'flex', gap: 3, width: '100%', mb: 4, flexDirection: { xs: 'column', sm: 'row' } }}>
             {stats.map((stat, index) => (
-                <Card key={index} sx={{
+                <Card component="article" key={index} sx={{
                     p: 2, borderLeft: `6px solid`, borderColor: stat.color, borderRadius: 2, boxShadow: 1, width: '100%', display: 'flex',
                     flexDirection: 'column', boxSizing: 'border-box'
                 }}>

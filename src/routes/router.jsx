@@ -24,18 +24,18 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/dashboard-employee", element: <MyTickets /> },
+      { path: "/my-tickets", element: <MyTickets viewType="default" /> },
       { path: "/tickets", element: <TicketPage /> },
       { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
-      { path: "/assigned", element: <RoleRoute role="ADMIN"><div>Mis tickets asignados — próxima tarea</div></RoleRoute> },
+      { path: "/assigned", element: <RoleRoute role="ADMIN"><MyTickets viewType="assigned" /></RoleRoute> },
 
       {
-        path: "/dashboard-admin",
+        path: "/all-tickets",
         element: (
           <RoleRoute role="ADMIN">
-            <DashboardAdmin />
+            <MyTickets viewType="all" />
           </RoleRoute>
-        ),
+        )
       },
       {
         path: "/users",
