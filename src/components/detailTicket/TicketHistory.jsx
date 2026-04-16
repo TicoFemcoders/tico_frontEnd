@@ -2,7 +2,15 @@ import { Paper, Typography, Box, Stack, Divider } from "@mui/material";
 
 const TicketHistory = ({ history = [] }) => {
   return (
-    <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
+    <Paper sx={{ 
+  p: 3, 
+  width: '100%', // Esto es clave
+  boxSizing: 'border-box', 
+  borderRadius: 2, 
+  boxShadow: '0 1px 3px rgba(0,0,0,0.1)', // Sombra sutil
+  border: '1px solid',
+  borderColor: 'border.soft'
+}}>
 
       <Typography variant="subtitle2" sx={{ mb: 2 }}>
         Historial
