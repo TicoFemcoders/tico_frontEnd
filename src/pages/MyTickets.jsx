@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material"; 
 import { useNavigate } from "react-router-dom";
 import StatCards from "../components/myTickets/StatCards";
-import TicketTable from "../components/myTickets/ticketTable";
+import TicketTable from "../components/myTickets/TicketTable";
 import { useState, useEffect, useContext } from "react";
 import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
