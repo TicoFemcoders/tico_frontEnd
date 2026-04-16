@@ -11,6 +11,19 @@ import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 
+const getInitials = (name) => {
+    return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+};
+
+const getAvatarColor = (role) => {
+    return role === "ADMIN" ? "#1e40af" : "#059669";
+};
+
 
 const mockUsers = [
     { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true, openTickets: 0 },
@@ -50,7 +63,24 @@ const UsersPage = () => {
                     <TableBody>
                         {mockUsers.map((user) => (
                             <TableRow key={user.id} hover>
-                                <TableCell>{user.name}</TableCell>
+
+                                <TableCell>
+                                    <Box sx={{ display: "flex", alignItems: "center",gap: 1.5}}>
+                                        <Avatar
+                                        sx={{
+                                            bgcolor: getAvatarColor(user.role),
+                                            width: 36,
+                                            height: 36,
+                                            fontSize: "0.85rem",
+                                            fontWeight: 600,
+                                        }}
+                                        >
+                                            {getInitials(user.name)}
+                                        </Avatar>
+                                        {user.name}
+                                        </Box>
+                                </TableCell>
+                    
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
 
