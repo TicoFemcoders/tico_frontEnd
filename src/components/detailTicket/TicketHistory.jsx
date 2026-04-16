@@ -4,10 +4,10 @@ const TicketHistory = ({ history = [] }) => {
   return (
     <Paper sx={{ 
   p: 3, 
-  width: '100%', // Esto es clave
+  width: '100%', 
   boxSizing: 'border-box', 
   borderRadius: 2, 
-  boxShadow: '0 1px 3px rgba(0,0,0,0.1)', // Sombra sutil
+  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   border: '1px solid',
   borderColor: 'border.soft'
 }}>

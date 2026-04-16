@@ -21,12 +21,12 @@ import PageHeader from "../components/common/PageHeader";
 
 const DetailTicketPage = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // Asumo que user.role trae "ADMIN" o "EMPLOYEE"
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
 
   const currentTitle = ticket
     ? `Ticket / TIC-${ticket.id}`
@@ -68,54 +68,73 @@ const DetailTicketPage = () => {
         width: "100%",
       }}
     >
-      <Box sx={{ 
-      flexGrow: 1, 
-      p: { xs: 2, md: 5 },
-      display: "flex", 
-      flexDirection: "column",
-      width: "100%",
-      boxSizing: "border-box"
-    }}>
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: "center" }}>
-          <Typography
-            variant="caption"
-            sx={{ fontWeight: 700, color: "text.secondary", mr: 1 }}
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 5 },
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
+      >
+        <Box sx={{ mb: 3 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mb: 1, alignItems: "center" }}
           >
-            {`TIC-${ticket.id}`}
-          </Typography>
-          <StatusChip status={ticket.status} />
-          <PriorityChip priority={ticket.priority} />
-          {ticket.category && (
-            <Chip
-              label={ticket.category}
-              size="small"
-              icon={<span>💻</span>}
-              sx={{ bgcolor: "#DR-PLANT-THEME", fontWeight: 600 }}
-            />
-          )}
-        </Stack>
-
-        <PageHeader
-          title={ticket.title}
-          subtitle={`Creado el ${new Date(ticket.createdAt).toLocaleDateString()} · Asignado a: ${ticket.assignedTo || "Sin asignar"}`}
-        />
-      </Box>
-
-      <Grid container spacing={3} sx={{ mt: 1, width: "100%" }}>
-        <Grid item xs={12} md={9}>
-          <Stack spacing={3}>
-            <TicketDescription ticket={ticket} />
-            <TicketHistory history={ticket.history} />
-            <TicketResponseBox ticketId={ticket.id} />
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: 700, color: "text.secondary", mr: 1 }}
+            >
+              {`TIC-${ticket.id}`}
+            </Typography>
+            <StatusChip status={ticket.status} />
+            <PriorityChip priority={ticket.priority} />
+            {ticket.category && (
+              <Chip
+                label={ticket.category}
+                size="small"
+                sx={{ fontWeight: 600, fontSize: "11px" }}
+              />
+            )}
           </Stack>
-        </Grid>
 
-        <Grid item xs={12} md={3}>
-          <TicketSidebar ticket={ticket} isAdmin={isAdmin} />
-        </Grid>
-      </Grid>
-    </Box>
+          <PageHeader
+            title={ticket.title}
+            subtitle={`Creado el ${new Date(ticket.createdAt).toLocaleDateString()} · Asignado a: ${ticket.assignedTo || "Sin asignar"}`}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 4,
+            width: "100%",
+          }}
+        >
+
+          <Box sx={{ flex: { md: "0 0 75%" }, minWidth: 0 }}>
+            <Stack spacing={2}>
+              <TicketDescription 
+              description={ticket.description} 
+              createdAt={ticket.createdAt}
+              />
+              <TicketHistory history={ticket.history} />
+
+              {/* Quizás solo el Admin o el dueño del ticket pueden responder */}
+              <TicketResponseBox ticketId={ticket.id} />
+            </Stack>
+          </Box>
+
+          {/* COLUMNA DERECHA (SIDEBAR) */}
+          <Box sx={{ flex: { md: "0 0 25%" }, minWidth: 0 }}>
+            <TicketSidebar ticket={ticket} isAdmin={isAdmin} />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };
