@@ -9,7 +9,7 @@ import TicketPage from "../pages/TicketPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import MyTickets from "../pages/MyTickets";
 import DetailTicketPage from "../pages/DetailTicketPage";
-// import UsersPage from "../pages/UsersPage";
+import UsersPage from "../pages/UsersPage";
 // import LabelsPage from "../pages/LabelsPage";
 
 export const router = createBrowserRouter([
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
         path: "/users",
         element: (
           <RoleRoute role="ADMIN">
-            <div>Gestión usuarios — próxima tarea</div>
+            <UsersPage />
           </RoleRoute>
         ),
       },

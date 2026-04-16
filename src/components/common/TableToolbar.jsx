@@ -39,11 +39,8 @@ const TableToolbar = ({
                         </Select>
                     )}
                 </Box>
-            ) : (
-                <Link href="#" variant="body2" sx={{ textDecoration: "none", fontWeight: 600 }}>
-                    Ver todos ({totalItems})
-                </Link>
-            )}
+            ) : (null)
+            }
         </Box>
     );
 };

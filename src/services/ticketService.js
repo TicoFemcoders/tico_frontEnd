@@ -43,6 +43,7 @@ export const ticketService = {
   createTicket,
   getMyTickets,
   getAllTickets,
+  getAssignedTickets,
   closeTicket,
   changePriority,
   assignAdmin,
