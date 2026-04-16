@@ -86,9 +86,9 @@ function NavContent({ onNavigate }) {
           {isAdmin ? (
             <>
               <SectionLabel>TICKETS</SectionLabel>
-              <NavItem icon="🎫" label="Todos los tickets" path="/dashboard-admin" selected={isSelected("/dashboard-admin")} onClick={() => handleNavigate("/dashboard-admin")} />
+              <NavItem icon="🎫" label="Todos los tickets" path="/all-tickets" selected={isSelected("/all-tickets")} onClick={() => handleNavigate("/all-tickets")} />
               <NavItem icon="📌" label="Mis tickets asignados" path="/assigned" selected={isSelected("/assigned")} onClick={() => handleNavigate("/assigned")} badge={9999999.9} />
-              <NavItem icon="🎫" label="Mis tickets creados" path="/dashboard-employee" selected={isSelected("/dashboard-employee")} onClick={() => handleNavigate("/dashboard-employee")} />
+              <NavItem icon="🎫" label="Mis tickets creados" path="/my-tickets" selected={isSelected("/my-tickets")} onClick={() => handleNavigate("/my-tickets")} />
 
               <SectionLabel>GESTIÓN</SectionLabel>
               <NavItem icon="👥" label="Usuarios" path="/users" selected={isSelected("/users")} onClick={() => handleNavigate("/users")} />
