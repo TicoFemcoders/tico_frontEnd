@@ -2,6 +2,7 @@ import { Paper, Box, Typography, Table, TableBody, TableCell, TableContainer, Ta
 import { ArrowForward as ArrowIcon, Update as UpdateIcon, CheckCircle as CheckIcon, AddCircle as AddIcon,  Search as SearchIcon } from "@mui/icons-material";
 import { StatusChip, PriorityChip } from "../common/TicketChips";
 import { useState, useMemo } from "react";
+import TableToolbar from "../common/TableToolbar";
 
 const getLatestDateInfo = (ticket) => {
     const dates = [
@@ -46,43 +47,22 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
 
     return (
         <Paper component="section" aria-label={`Tabla de ${title}`} sx={{ borderRadius: 2, boxShadow: 1, mb: 4, overflow: "hidden", width: '100%', bgcolor: 'background.paper' }}>
-
-            <Box sx={{ px: 3, py: 2, display: "flex", flexDirection: { xs: 'column', sm: 'row' }, justifyContent: "space-between", alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, borderBottom: "1px solid", borderColor: "border.soft" }}>
-                <Typography variant="h2" sx={{ fontSize: '1.1rem', color: 'text.primary', fontWeight: 700 }}>{title}</Typography>
-                {showFilter ? (
-                    <Box sx={{ display: 'flex', gap: 2, width: { xs: '100%', sm: 'auto' }, flexDirection: { xs: 'column', sm: 'row' } }}>
-                        <TextField
-                            size="small"
-                            placeholder="Buscar ID o título..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon sx={{ fontSize: 18, color: 'text.mid' }} />
-                                        </InputAdornment>
-                                    ),
-                                }
-                            }}
-                            sx={{ minWidth: 200 }}
-                        />
-                        <Select 
-                            size="small" 
-                            value={sortOption} 
-                            onChange={(e) => setSortOption(e.target.value)}
-                            sx={{ fontSize: "12px", minWidth: 150 }}
-                        >
-                            <MenuItem value="recent">Más recientes</MenuItem>
-                            <MenuItem value="oldest">Más antiguos</MenuItem>
-                            <MenuItem value="priority">Mayor prioridad</MenuItem>
-                            <MenuItem value="status">Estado</MenuItem>
-                        </Select>
-                    </Box>
-                ) : (
-                    <Link href="#" variant="body2" sx={{ textDecoration: "none", fontWeight: 600 }}>Ver todos ({tickets.length})</Link>
-                )}
-            </Box>
+            <TableToolbar 
+                title={title}
+                showFilter={showFilter}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery} 
+                searchPlaceholder="Buscar ID o título..."
+                sortOption={sortOption}
+                onSortChange={setSortOption}
+                sortOptions={[
+                    { value: "recent", label: "Más recientes" },
+                    { value: "oldest", label: "Más antiguos" },
+                    { value: "priority", label: "Mayor prioridad" },
+                    { value: "status", label: "Estado" }
+                ]}
+                totalItems={tickets.length}
+            />
 
             {/* Vista móvil */}
             <Box sx={{ display: { xs: 'block', sm: 'none' }, p: 2 }}>
