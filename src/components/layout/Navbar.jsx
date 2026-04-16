@@ -28,14 +28,14 @@ const NAV_ITEM = {
     "&:hover": { bgcolor: "primary.dark" },
   },
   "&:hover": {
-    bgcolor: "navbar.hoverBg",
+    bgcolor: "navbar.active",
     color: "navbar.text",
   },
 };
 
 function SectionLabel({ children }) {
   return (
-    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "navbar.textSecondary", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
+    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "navbar.text", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
       {children}
     </Typography>
   );
@@ -75,7 +75,7 @@ function NavContent({ onNavigate }) {
 
       <Box sx={{ px: 2.5, py: 2.5 }}>
         <TicoLogo variant="light" size={28} />
-        <Typography sx={{ fontSize: 11, color: "navbar.textSecondary", mt: 0.5 }}>Tickets Cohispania</Typography>
+        <Typography sx={{ fontSize: 11, color: "navbar.text", mt: 0.5 }}>Tickets Cohispania</Typography>
       </Box>
 
       <Divider sx={{ borderColor: "navbar.border" }} />
@@ -113,7 +113,7 @@ function NavContent({ onNavigate }) {
                   px: 1.5,
                   borderRadius: 1.5,
                   color: "navbar.text",
-                  "&:hover": { bgcolor: "navbar.hoverBg", color: "primary.contrastText"},
+                  "&:hover": { bgcolor: "navbar.active", color: "primary.contrastText"},
                 }}
               >
                 Nuevo ticket
@@ -133,13 +133,13 @@ function NavContent({ onNavigate }) {
           <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {user?.name}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: "navbar.textSecondary" }}>
+          <Typography sx={{ fontSize: 11, color: "navbar.text" }}>
             {isAdmin ? "Administrador" : "Empleada"}
           </Typography>
         </Box>
         <LogoutIcon
           onClick={logout}
-          sx={{ fontSize: 16, color: "navbar.textSecondary", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }}
+          sx={{ fontSize: 16, color: "navbar.text", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }}
         />
       </Box>
 
