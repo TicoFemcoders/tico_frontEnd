@@ -10,7 +10,7 @@ import ResetPasswordPage from "../pages/ResetPasswordPage";
 import MyTickets from "../pages/MyTickets";
 // import TicketDetailPage from "../pages/TicketDetailPage";
 import UsersPage from "../pages/UsersPage";
-// import LabelsPage from "../pages/LabelsPage";
+import LabelsPage from "../pages/LabelsPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
         path: "/labels",
         element: (
           <RoleRoute role="ADMIN">
-            <div>Gestión etiquetas — próxima tarea</div>
+            <LabelsPage />
           </RoleRoute>
         ),
       },
