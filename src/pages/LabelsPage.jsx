@@ -14,19 +14,16 @@ const LabelsPage = () => {
             try {
 
                 const data = await labelService.getAllLabels();
-
-                console.log("Datos recibidos del servidor:", data);
                 setLabels(data);
             } catch (error) {
-                console.error("Error al cargar etiquetas:", error);
+
             } finally {
                 setLoading(false);
             }
         };
         fetchLabels();
     }, []);
-    console.log("Etiquetas en estado:", labels);
-    console.log("Filtro Activas:", labels.filter(l => l.active));
+
     const activeLabels = labels.filter(l => l.active === true);
     const inactiveLabels = labels.filter(l => l.active === false);
 

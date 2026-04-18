@@ -24,6 +24,7 @@ const LabelTable = ({ title, labels, showFilter = false, isInactiveVariant = fal
         },
         {
             header: "COLOR",
+            align: "center",
             renderCell: (l) => (
                 <Chip
                     label={l.color.toUpperCase()}
@@ -36,26 +37,27 @@ const LabelTable = ({ title, labels, showFilter = false, isInactiveVariant = fal
 
         !isInactiveVariant && {
             header: "TICKETS ACTIVOS",
+            align: "center",
             renderCell: (l) => <Typography sx={{ fontSize: "13px" }}>{l.activeTickets}</Typography>
         },
         {
             header: "TICKETS CERRADOS",
+            align: "center",
             renderCell: (l) => <Typography sx={{ fontSize: "13px" }}>{l.closedTickets}</Typography>
         },
-
+        
         {
             header: "ACCIONES",
-            align: "right",
+            align: "center",
             renderCell: (l) => (
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, width:'100%'}}>
                     <Link href="#" sx={{ textDecoration: 'none', fontWeight: 700, color: 'primary.main', fontSize: '12px' }}>
                         EDITAR
                     </Link>
-
-
-                    {!l.isActive ? (
+                
+                    {!l.active ? (
                         <Link href="#" sx={{ textDecoration: 'none', fontWeight: 700, color: 'success.main', fontSize: '12px' }}>
-                            ACTIVAR
+                        ACTIVAR
                         </Link>
                     ) : (
                         <Link
@@ -63,21 +65,22 @@ const LabelTable = ({ title, labels, showFilter = false, isInactiveVariant = fal
                             sx={{
                                 textDecoration: 'none',
                                 fontWeight: 700,
-                                color: l.activeTicketsCount > 0 ? 'text.disabled' : 'error.main',
+                                color: l.activeTickets > 0 ? 'text.disabled' : 'error.main',
                                 fontSize: '12px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 0.5
                             }}
                         >
-                            {l.activeTicketsCount > 0 && <LockIcon sx={{ fontSize: 14 }} />} DESACTIVAR
+                            {l.activeTickets > 0 && <LockIcon sx={{ fontSize: 14 }} />} DESACTIVAR
                         </Link>
                     )}
+                    
                 </Box>
             )
         }
     ].filter(Boolean);
-
+    console.log("Filtro Activas:", labels.filter(l => l.active));
     return (
         <Paper sx={{ borderRadius: 2, mb: 4, overflow: "hidden" }}>
             <TableToolbar
