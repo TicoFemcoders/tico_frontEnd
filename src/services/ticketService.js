@@ -7,7 +7,7 @@ export const getMyTickets = () =>
   api.get(`/api/tickets/my-tickets`).then(res => res.data);
 
 export const getAssignedTickets = () =>
-    api.get(`/api/tickets/asigned`).then(res => res.data);
+    api.get(`/api/tickets/assigned`).then(res => res.data);
 
 export const getAllTickets = () =>
   api.get("/api/tickets").then(res => res.data);
