@@ -15,6 +15,8 @@ export const updateLabel = (id, labelData) =>
 export const deactivateLabel = (id) =>
   api.patch(`/api/labels/${id}/deactivate`);
 
+export const activateLabel = (id) =>
+  api.patch(`/api/labels/${id}/activate`).then(res => res.data);
 
 export const searchLabels = (name) =>
   api.get(`/api/labels/filter?name=${name}`).then(res => res.data);
@@ -24,5 +26,6 @@ export const labelService = {
   createLabel,
   updateLabel,
   deactivateLabel,
-  searchLabels
+  searchLabels,
+  activateLabel
 };
