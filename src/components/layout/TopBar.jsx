@@ -1,86 +1,85 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, IconButton, Badge, Menu, MenuItem, Breadcrumbs, Link as MuiLink, CircularProgress } from "@mui/material";
+import { Box, Typography, IconButton, Badge, Menu, MenuItem, Breadcrumbs, CircularProgress, Alert } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom"; 
+import { notificationService } from "../../services/notificationService";
+import { formatTime } from "../../utils/formatTime";
+import BreadcrumbItem from "../common/BreadcrumbItem";
 
 const TopBar = ({ breadcrumbs = [] }) => {
-  // Estado para controlar que se abra y cierre el menú de la campana
   const [anchorEl, setAnchorEl] = useState(null);
-  const navigate = useNavigate();
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-  const handleReadAndGo = async (notificacion) => {
-    handleClose();
-    setUnreadCount(prev => prev > 0 ? prev - 1 : 0); 
-    // Aquí iría el fetch a SpringBoot para tacharla por ID en la BD
-    // Rebotamos al usuario al ticket asociado (usando de ejemplo el ID de la notificación)
-    navigate(`/tickets/${notificacion.id}`);
-  };
-
+  const [error, setError] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [page, setPage] = useState(0); 
   const [loading, setLoading] = useState(false); 
   const [hasMore, setHasMore] = useState(true);
+
+  const navigate = useNavigate();
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleReadAndGo = async (notificacion) => {
+    handleClose();
+    setUnreadCount(prev => prev > 0 ? prev - 1 : 0); 
+    setNotifications(prev => prev.filter(n => n.id !== notificacion.id));
+    notificationService.markAsRead(notificacion.id).catch(() => {
+      setError("No se pudo marcar la notificación como leída.");
+      setUnreadCount(prev => prev + 1);
+      });
+    navigate(`/tickets/${notificacion.ticketId}`);
+  };
+
   const fetchNotificationsPagination = async (currentPage) => {
     if (loading || !hasMore) return; 
     setLoading(true);
     try {
-      // -- Así se vería tu llamada real --
-      // const response = await fetch(`/api/notifications?page=${currentPage}&size=10`);
-      // const data = await response.json();
-      // setUnreadCount(data.totalUnread);
-      // setNotifications((prev) => [...prev, ...data.content]); // Se añaden sin borrar las previas
-      // setHasMore(data.content.length === 10); // Si te devuelve menos de 10, es que se acabaron
-      // -- DATOS DE PRUEBA SIMULADOS --
-      setUnreadCount(142);
-      await new Promise(r => setTimeout(r, 800));
-      const newBatch = [
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" },
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" },
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" },
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" },
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" },
-         { id: currentPage * 10 + 1, title: `Límite Base de datos pt.${currentPage}`, time: "Hace un momento" },
-         { id: currentPage * 10 + 2, title: `El ticket TIC-0043 fue asig...`, time: "Hace un rato" },
-         { id: currentPage * 10 + 3, title: `Nuevo mensaje de soporte`, time: "Hace un rato" }
-      ];
-      // Juntamos las que ya existían con las nuevas
-      setNotifications((prev) => [...prev, ...newBatch]);
-      
-      // Simulamos que al llegar a la validación 3 se acaban (para que veas que el scroll para)
-      setHasMore(currentPage < 3);
+      const data = await notificationService.getPaginatedNotifications(currentPage, 10);
+      setUnreadCount(data?.totalUnread ?? 0);
+      const items = data?.content ?? [];
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map(n => n.id));
+        const unique = items.filter(n => !existingIds.has(n.id));
+        return [...prev, ...unique];
+      });
+      setHasMore(items.length === 10);
     } catch (error) {
-      console.error("Error al simular scroll", error);
+     setError("Error al cargar notificaciones");
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchNotificationsPagination(page);
-  }, [page]);
-  // 4. El detector de Scroll matemático
+
   const handleScroll = (event) => {
     const listboxNode = event.currentTarget;
-    // Comprobamos si (posición scroll + parte visible) es casi igual a (altura total del contenido)
     if (listboxNode.scrollTop + listboxNode.clientHeight >= listboxNode.scrollHeight - 10) {
       if (!loading && hasMore) {
-        setPage((prevPage) => prevPage + 1); // Pedimos la página siguiente
+        setPage((prevPage) => prevPage + 1); 
       }
     }
   };
 
+  const handleMarkAllAsRead = async () => {
+    setError(""); 
+    const prevCount = unreadCount; 
+    const prevNotifications = notifications;
+    setUnreadCount(0); 
+    setNotifications([]);
+
+    try {
+      await notificationService.markAllAsRead();
+    } catch(error) {
+      setUnreadCount(prevCount);
+      setNotifications(prevNotifications);
+      setError("Error del servidor. No se han podido marcar.");
+      }
+  };
+
+  useEffect(() => {
+    fetchNotificationsPagination(page);
+  }, [page]);
 
   return (
     <Box 
@@ -91,23 +90,9 @@ const TopBar = ({ breadcrumbs = [] }) => {
         px: 4, bgcolor: "background.paper", borderBottom: "1px solid", borderColor: "border.soft"}}
     >
       <Breadcrumbs aria-label="breadcrumb">
-        {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
-          return isLast ? (
-            <Typography key={index} sx={{ color: "text.primary", fontWeight: 700, fontSize: "14px" }}>
-              {crumb.label}
-            </Typography>
-          ) : (
-             <MuiLink 
-               component={Link} 
-               to={crumb.href || "#"} 
-               key={index} 
-               sx={{ color: "text.subtle", textDecoration: "none", fontSize: "14px", '&:hover': { textDecoration: 'underline' } }}
-             >
-               {crumb.label}
-             </MuiLink>
-          );
-        })}
+        {breadcrumbs.map((crumb, index) => (
+          <BreadcrumbItem key={index} crumb={crumb} isLast={index === breadcrumbs.length - 1} />
+        ))}
       </Breadcrumbs>
       <Box>
         <IconButton 
@@ -125,37 +110,42 @@ const TopBar = ({ breadcrumbs = [] }) => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          PaperProps={{
+          slotProps={{
+            paper: {
             elevation: 3, onScroll: handleScroll,
-            sx: { mt: 1.5, minWidth: 280, maxWidth: 320, maxHeight: 400, overflowY: "auto", borderRadius: 2 }
-          }}
+            sx: { mt: 1.5, minWidth: 300, maxWidth: 450, maxHeight: 400, overflowY: "auto", borderRadius: 2 }
+          }}}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'border.soft', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-             <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Notificaciones</Typography>
+          <Box sx={{ px: 2, py: 2, borderBottom: '1px solid', borderColor: 'border.soft', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+             <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '14px', color: 'text.primary' }}>Notificaciones</Typography>
              {unreadCount > 0 && (
                <Typography 
                  variant="caption" 
-                 onClick={() => {
-                   setUnreadCount(0); // Borra todo de golpe visualmente
-                   // Aquí iría el fetch a SpringBoot "mark-all-read"
-                 }} 
-                 sx={{ px:2, color: 'primary.main', cursor: 'pointer', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}
+                 onClick= {handleMarkAllAsRead}
+                 sx={{ px:2, color: 'primary.main', cursor: 'pointer', fontWeight: 600, fontSize: '11px', '&:hover': { textDecoration: 'underline' } }}
                >
                  Marcar todo como leído
                </Typography>
              )}
           </Box>
+          {error && (
+            <Box sx={{ px: 2, pt: 2 }}>
+               <Alert severity="error" sx={{ fontSize: 13 }}>
+                 {error}
+               </Alert>
+            </Box>
+          )}
           {notifications.length > 0 ? (
             notifications.map((notif) => (
               <MenuItem key={notif.id}  onClick={() => handleReadAndGo(notif)} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'border.soft'}}>
                 <Box>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                    {notif.title}
+                    {notif.content}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.subtle' }}>
-                    {notif.time}
+                    {formatTime(notif.createdAt)}
                   </Typography>
                 </Box>
               </MenuItem>

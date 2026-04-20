@@ -11,13 +11,13 @@ import TopBar from "../components/layout/TopBar";
 
 
 const BREADCRUMBS_MAP = {
-  "/my-tickets": [{ label: "Mis tickets" }],
-  "/assigned": [{ label: "Tickets asignados" }], 
-  "/all-tickets": [{ label: "Todos los tickets" }],
+  "/my-tickets": [{ label: "Tickets" }, { label: "Mis tickets" }],
+  "/assigned": [{ label: "Tickets" },{ label: "Tickets asignados" }], 
+  "/all-tickets": [{ label: "Tickets" }, { label: "Todos los tickets" }],
   "/users": [{ label: "Gestión" }, { label: "Usuarios" }],
   "/labels": [{ label: "Gestión" }, { label: "Etiquetas" }],
   "/tickets": [
-     { label: "Tickets", href: "/dashboard-employee" }, 
+     { label: "Tickets", href: "/my-tickets" }, 
      { label: "Nuevo Ticket" }
   ]
 };
@@ -29,9 +29,11 @@ export default function ProtectedLayout() {
   let currentBreadcrumbs = BREADCRUMBS_MAP[location.pathname] || [];
 
   if (location.pathname.startsWith('/tickets/') && location.pathname !== '/tickets') {
+    const ticketId = location.pathname.split('/').pop();
+    const LastPage = location.state?.fromPath || "/my-tickets";
     currentBreadcrumbs = [
-       { label: "Tickets", href: "/all-tickets" }, 
-       { label: "Detalle del ticket" }
+       { label: "Volver a la lista", href: LastPage }, 
+       { label: `TIC-${ticketId}` }
     ];
   }
   return (
