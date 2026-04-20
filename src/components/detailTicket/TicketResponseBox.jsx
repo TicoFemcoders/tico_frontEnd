@@ -1,45 +1,74 @@
-import { Paper, TextField, Button, Box } from "@mui/material";
+import { Paper, TextField, Button, Box, Alert, Snackbar } from "@mui/material";
 import { useState } from "react";
+import { ticketMessageService } from "../../services/ticketMessageService"; // Asegúrate de la ruta
+import useAuth from "../../context/useAuth";
 
-// const TicketResponseBox = () => {
-//   return (
-//     <Paper sx={{ p: 2 }}>
-//       <TextField
-//         fullWidth
-//         multiline
-//         rows={3}
-//         placeholder="Escribe una respuesta..."
-//       />
-
-//       <Button variant="contained" sx={{ mt: 2 }}>
-//         Enviar
-//       </Button>
-//     </Paper>
-//   );
-// };
-
-const TicketResponseBox = () => {
+const TicketResponseBox = ({ ticketId, onMessageSent }) => {
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
+
+  const handleSend = async () => {
+    if (!text.trim()) return;
+
+    setLoading(true);
+    setError(null);
+
+    const messageRequestDTO = {
+      content: text,
+      isInternal: false,
+      authorId: user.id
+    };
+
+    try {
+      await ticketMessageService.createMessage(ticketId, messageRequestDTO);
+      setText(""); 
+      
+      if (onMessageSent) {
+        onMessageSent();
+      }
+    } catch (err) {
+      setError("No se pudo enviar la respuesta. Inténtalo de nuevo.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Paper sx={{ 
-  p: 3, 
-  width: '100%', // Esto es clave
-  boxSizing: 'border-box', 
-  borderRadius: 2, 
-  boxShadow: '0 1px 3px rgba(0,0,0,0.1)', // Sombra sutil
-  border: '1px solid',
-  borderColor: 'border.soft'
-}}>
+      p: 3, 
+      width: '100%',
+      boxSizing: 'border-box', 
+      borderRadius: 2, 
+      border: '1px solid',
+      borderColor: 'divider',
+      bgcolor: 'background.paper'
+    }}>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      
       <TextField
         fullWidth
         multiline
         rows={4}
-        placeholder="Escribe una respuesta para el empleado..."
+        placeholder="Escribe una respuesta..."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        disabled={loading}
+        variant="outlined"
       />
+      
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-        <Button variant="contained" color="primary">Enviar respuesta</Button>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleSend}
+          disabled={loading || !text.trim()}
+          sx={{ fontWeight: 700, textTransform: 'none', px: 4 }}
+        >
+          {loading ? "Enviando..." : "Enviar respuesta"}
+        </Button>
       </Box>
     </Paper>
   );

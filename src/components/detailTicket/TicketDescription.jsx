@@ -29,7 +29,6 @@ const TicketDescription = ({ description, createdAt }) => {
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        bgcolor: 'rgba(0,0,0,0.02)' 
       }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "text.primary" }}>
           Descripción del empleado
@@ -39,9 +38,7 @@ const TicketDescription = ({ description, createdAt }) => {
           {formatDateTime(createdAt)}
         </Typography>
       </Box>
-
       <Divider /> 
-
       <Box sx={{ p: 2 }}>
         <Typography variant="body1" sx={{ whiteSpace: 'pre-line', color: 'text.mid' }}>
           {description}
