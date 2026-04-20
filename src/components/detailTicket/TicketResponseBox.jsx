@@ -8,19 +8,29 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuth();
+  console.log("Datos del usuario logueado:", user);
 
   const handleSend = async () => {
+    console.log("Enviando este DTO:", {
+    authorId: user.id,
+    ticketId: ticketId,
+    content: text,
+    isInternal: false
+  });
     if (!text.trim()) return;
 
     setLoading(true);
     setError(null);
 
+    const numericTicketId = parseInt(ticketId, 10);
+    const numericAuthorId = parseInt(user.id, 10);
     const messageRequestDTO = {
+      authorId: user.id, 
+      ticketId: ticketId, 
       content: text,
-      isInternal: false,
-      authorId: user.id
+      isInternal: false
     };
-
+    console.log("Enviando DTO Validado:", messageRequestDTO);
     try {
       await ticketMessageService.createMessage(ticketId, messageRequestDTO);
       setText(""); 
@@ -29,6 +39,7 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
         onMessageSent();
       }
     } catch (err) {
+      console.error("Error detallado:", err.response?.data);
       setError("No se pudo enviar la respuesta. Inténtalo de nuevo.");
       console.error(err);
     } finally {
@@ -65,7 +76,7 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
           color="primary" 
           onClick={handleSend}
           disabled={loading || !text.trim()}
-          sx={{ fontWeight: 700, textTransform: 'none', px: 4 }}
+          sx={{ fontWeight: 'bold' }}
         >
           {loading ? "Enviando..." : "Enviar respuesta"}
         </Button>

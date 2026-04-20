@@ -83,11 +83,9 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
       <Stack spacing={3}>
         {messages.map((item) => (
           <Box key={item.id}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2" fontWeight={700} color="primary">
-                {/* {item.authorId === user.id ? user.name : 
-                 item.authorId === ticket.ownerId ? ticket.ownerName : 
-                  `Usuario ${item.authorId}`} */}
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+              <Typography variant="body2" fontWeight={700} color="text.primary" sx={{ fontWeight: 'bold' }}>
+                {item.authorName || `Usuario #${item.authorId}`}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 {new Date(item.createdAt).toLocaleString()}
