@@ -5,7 +5,7 @@ export default function RoleRoute({ children, role }) {
   const { hasRole } = useAuth();
 
   if (!hasRole(role)) {
-    return <Navigate to="/dashboard-employee" replace />;
+    return <Navigate to="/my-tickets" replace />;
   }
 
   return children;
