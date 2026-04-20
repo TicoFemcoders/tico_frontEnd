@@ -8,40 +8,24 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  console.log("Datos del usuario logueado:", user);
 
   const handleSend = async () => {
-    console.log("Enviando este DTO:", {
-    authorId: user.id,
-    ticketId: ticketId,
-    content: text,
-    isInternal: false
-  });
     if (!text.trim()) return;
-
     setLoading(true);
     setError(null);
-
-    const numericTicketId = parseInt(ticketId, 10);
-    const numericAuthorId = parseInt(user.id, 10);
     const messageRequestDTO = {
-      authorId: user.id, 
-      ticketId: ticketId, 
-      content: text,
-      isInternal: false
+      ticketId: Number(ticketId), 
+      content: text,  
+      recipientId: null
     };
-    console.log("Enviando DTO Validado:", messageRequestDTO);
     try {
       await ticketMessageService.createMessage(ticketId, messageRequestDTO);
       setText(""); 
-      
       if (onMessageSent) {
         onMessageSent();
       }
     } catch (err) {
-      console.error("Error detallado:", err.response?.data);
       setError("No se pudo enviar la respuesta. Inténtalo de nuevo.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -52,10 +36,10 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
       p: 3, 
       width: '100%',
       boxSizing: 'border-box', 
-      borderRadius: 2, 
+      boxShadow: 'var(--shadow)',
       border: '1px solid',
-      borderColor: 'divider',
-      bgcolor: 'background.paper'
+      borderColor: 'var(--border)',
+      bgcolor: 'background.paper',
     }}>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       
@@ -68,6 +52,13 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
         onChange={(e) => setText(e.target.value)}
         disabled={loading}
         variant="outlined"
+        sx={{
+        "& .MuiOutlinedInput-root": {
+          color: "var(--text)",
+          "& fieldset": { borderColor: "var(--border)" },
+          "&:hover fieldset": { borderColor: "primary.main" },
+          }
+        }}
       />
       
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
@@ -76,7 +67,7 @@ const TicketResponseBox = ({ ticketId, onMessageSent }) => {
           color="primary" 
           onClick={handleSend}
           disabled={loading || !text.trim()}
-          sx={{ fontWeight: 'bold' }}
+          sx={{ fontWeight: 'bold', '&:hover': { bgcolor: 'primary.dark',} }}
         >
           {loading ? "Enviando..." : "Enviar respuesta"}
         </Button>
