@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Alert } from "@mui/material";
+import { Box, CircularProgress, Alert, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Lock as LockIcon } from "@mui/icons-material";
 import PageHeader from "../components/common/PageHeader";
@@ -7,7 +7,7 @@ import LabelForm from "../components/labels/LabelForm";
 import { labelService } from "../services/labelService";
 
 const LabelsPage = () => {
-    const [labels, setLabels]   = useState([]);
+    const [labels, setLabels] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchLabels = async () => {
@@ -24,7 +24,7 @@ const LabelsPage = () => {
 
     useEffect(() => { fetchLabels(); }, []);
 
-    const activeLabels   = labels.filter(l => l.active === true);
+    const activeLabels = labels.filter(l => l.active === true);
     const inactiveLabels = labels.filter(l => l.active === false);
 
     const handleCreateLabel = async (newLabelData) => {
@@ -40,10 +40,10 @@ const LabelsPage = () => {
     const handleToggleActive = async (label) => {
         try {
             if (label.active) {
-               
+
                 await labelService.deactivateLabel(label.id);
             } else {
-              
+
                 await labelService.activateLabel(label.id);
             }
             await fetchLabels();
@@ -55,7 +55,7 @@ const LabelsPage = () => {
 
     const handleEditName = async (label, newName) => {
         try {
-          
+
             await labelService.updateLabel(label.id, { name: newName, color: label.color });
             await fetchLabels();
         } catch (error) {
@@ -72,17 +72,27 @@ const LabelsPage = () => {
                 </Box>
             ) : (
                 <>
-                    <PageHeader
-                        title="Gestión de Etiquetas"
-                        subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
-                    />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
+                        <PageHeader
+                            title="Gestión de Etiquetas"
+                            subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            // startIcon={<AddIcon />}
+                            // onClick={() => setModalOpen(true)}
+                        >
+                           + Nueva Etiqueta
+                        </Button>
+                    </Box>
 
                     <LabelTable
                         title="Etiquetas activas"
                         labels={activeLabels}
                         showFilter={true}
                         onToggle={handleToggleActive}
-                        onEdit={handleEditName} 
+                        onEdit={handleEditName}
                     />
 
                     <Alert
@@ -98,9 +108,9 @@ const LabelsPage = () => {
                         title="Etiquetas inactivas"
                         labels={inactiveLabels}
                         showFilter={true}
-                        isInactiveVariant           
+                        isInactiveVariant
                         onToggle={handleToggleActive}
-                        
+
                     />
                     <LabelForm onAdd={handleCreateLabel} existingLabels={labels} />
                 </>
