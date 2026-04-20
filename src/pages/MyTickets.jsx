@@ -1,13 +1,12 @@
-import { Box, Button } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material"; 
+import { Box, Button } from "@mui/material";; 
 import { useNavigate } from "react-router-dom";
-import StatCards from "../components/myTickets/StatCards";
-import TicketTable from "../components/myTickets/ticketTable";
+import StatCards from "../components/myTickets/StatCards";;
 import { useState, useEffect, useContext } from "react";
 import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
 import { AuthContext } from "../context/authContext";
 import PageHeader from "../components/common/PageHeader";
+import TicketTable from "../components/myTickets/ticketTable";
 
 
 const MyTickets = ({ viewType = "default" }) => {
