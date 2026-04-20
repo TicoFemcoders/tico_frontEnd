@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet,  useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,10 +7,33 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import Navbar from "../components/layout/Navbar";
+import TopBar from "../components/layout/TopBar";
+
+
+const BREADCRUMBS_MAP = {
+  "/my-tickets": [{ label: "Mis tickets" }],
+  "/assigned": [{ label: "Tickets asignados" }], 
+  "/all-tickets": [{ label: "Todos los tickets" }],
+  "/users": [{ label: "Gestión" }, { label: "Usuarios" }],
+  "/labels": [{ label: "Gestión" }, { label: "Etiquetas" }],
+  "/tickets": [
+     { label: "Tickets", href: "/dashboard-employee" }, 
+     { label: "Nuevo Ticket" }
+  ]
+};
 
 export default function ProtectedLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const location = useLocation(); 
+  let currentBreadcrumbs = BREADCRUMBS_MAP[location.pathname] || [];
+
+  if (location.pathname.startsWith('/tickets/') && location.pathname !== '/tickets') {
+    currentBreadcrumbs = [
+       { label: "Tickets", href: "/all-tickets" }, 
+       { label: "Detalle del ticket" }
+    ];
+  }
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
       <AppBar
@@ -35,8 +58,12 @@ export default function ProtectedLayout() {
 
       <Navbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
-      <Box component="main" sx={{ flex: 1, p: 3, overflow: "auto", mt: { xs: 8, md: 0 } }}>
-        <Outlet />
+      <Box component="main" sx={{ flex: 1, display: "flex", flexDirection: "column", mt: { xs: 8, md: 0 } }}>
+        <TopBar breadcrumbs={currentBreadcrumbs} />
+      
+        <Box sx={{ flex: 1, p: 3, overflow: "auto", mt: { xs: 8, md: 0 } }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );
