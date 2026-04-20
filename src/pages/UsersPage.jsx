@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
@@ -10,45 +11,53 @@ import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
+import DeleteUserModal from "../components/modals/DeleteUserModal";
+import { getAllUsers } from "../services/userService";
 
-const getInitials = (name) => {
-    return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-};
-
-const getAvatarColor = (role) => {
-    return role === "ADMIN" ? "#1e40af" : "#059669";
-};
-
-
-const mockUsers = [
-    { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true, openTickets: 0 },
-    { id: 2, name: "Luis Martínez", email: "luis@cohispania.com", role: "EMPLOYEE", isActive: true, openTickets: 3 },
-    { id: 3, name: "María López", email: "maria@cohispania.com", role: "EMPLOYEE", isActive: false, openTickets: 1 },
-];
+const getInitials = (name) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
 const UsersPage = () => {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+
+    const fetchUsers = async () => {
+        try {
+            const data = await getAllUsers();
+            setUsers(data);
+        } catch (error) {
+            console.error("Error al cargar usuarios:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchUsers(); }, []);
+
+    const isAdmin = (roles) => roles?.includes("ROLE_ADMIN");
+
+    if (loading) return (
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+            <CircularProgress />
+        </Box>
+    );
+
     return (
         <Box sx={{ p: 3 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                 <Box>
-                    <Typography variant="h1">
-                        Gestión de Usuarios
-                    </Typography>
+                    <Typography variant="h1">Gestión de Usuarios</Typography>
                     <Typography variant="body1" sx={{ color: "text.secondary", mt: 0.5 }}>
                         Administra los empleados y sus permisos
                     </Typography>
                 </Box>
-                <Button variant="contained" color="primary">
-                    + Crear Usuario
-                </Button>
+                <Button variant="contained" color="primary">+ Crear Usuario</Button>
             </Box>
 
-            <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "none", border: "1px solid #e5e7eb" }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "none", border: "1px solid", borderColor: "border.soft" }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -61,57 +70,51 @@ const UsersPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockUsers.map((user) => (
+                        {users.map((user) => (
                             <TableRow key={user.id} hover>
-
                                 <TableCell>
-                                    <Box sx={{ display: "flex", alignItems: "center",gap: 1.5}}>
-                                        <Avatar
-                                        sx={{
-                                            bgcolor: getAvatarColor(user.role),
-                                            width: 36,
-                                            height: 36,
-                                            fontSize: "0.85rem",
-                                            fontWeight: 600,
-                                        }}
-                                        >
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                        <Avatar sx={{
+                                            bgcolor: isAdmin(user.roles) ? "blueAccent.main" : "success.main",
+                                            width: 36, height: 36, fontSize: "0.85rem", fontWeight: 600
+                                        }}>
                                             {getInitials(user.name)}
                                         </Avatar>
                                         {user.name}
-                                        </Box>
+                                    </Box>
                                 </TableCell>
-                    
                                 <TableCell>{user.email}</TableCell>
-                                <TableCell>
 
+                                <TableCell>
                                     <Chip
-                                        label={user.role === "EMPLOYEE" ? "Empleado" : "Admin"}
+                                        label={isAdmin(user.roles) ? "Admin" : "Empleado"}
                                         size="small"
                                         sx={{
-                                            bgcolor: user.role === "ADMIN" ? "#dbeafe" : "#f3f4f6",
-                                            color: user.role === "ADMIN" ? "#1e40af" : "#374151",
+                                            bgcolor: isAdmin(user.roles) ? "status.open.bg" : "background.default",
+                                            color: isAdmin(user.roles) ? "blueAccent.main" : "text.mid",
                                         }}
-
                                     />
                                 </TableCell>
-
                                 <TableCell>{user.openTickets} abiertos</TableCell>
                                 <TableCell>
                                     <Chip
                                         label={user.isActive ? "Activo" : "Inactivo"}
                                         size="small"
                                         sx={{
-                                            bgcolor: user.isActive ? "#d1fae5" : "#fee2e2",
-                                            color: user.isActive ? "#065f46" : "#991b1b",
+                                            bgcolor: user.isActive ? "status.closed.bg" : "status.open.bg",
+                                            color: user.isActive ? "status.closed.text" : "error.main",
                                         }}
                                     />
                                 </TableCell>
-
                                 <TableCell>
-                                    <Button size="small" sx={{ color: "#f28a2e", mr: 1 }}>
+                                    <Button size="small" sx={{ color: "primary.main", mr: 1 }}>
                                         Editar
                                     </Button>
-                                    <Button size="small" sx={{ color: "#ef4444" }}>
+                                    <Button
+                                        size="small"
+                                        sx={{ color: "error.main" }}
+                                        onClick={() => { setSelectedUser(user); setDeleteModal(true); }}
+                                    >
                                         Eliminar
                                     </Button>
                                 </TableCell>
@@ -120,6 +123,13 @@ const UsersPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <DeleteUserModal
+                open={deleteModal}
+                onClose={() => setDeleteModal(false)}
+                user={selectedUser}
+                onSuccess={() => { setDeleteModal(false); fetchUsers(); }}
+            />
         </Box>
     );
 };

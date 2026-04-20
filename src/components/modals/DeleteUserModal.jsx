@@ -12,27 +12,22 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { getUserActiveTickets, deleteUser } from "../../services/userService";
+import { deleteUser } from "../../services/userService";
 
 export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
-    const [activeTickets, setActiveTickets] = useState([]);
     const [reassignEmail, setReassignEmail] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [loadingTickets, setLoadingTickets] = useState(false);
-    const [error, setError] = useState("");
+    const [loading, setLoading]             = useState(false);
+    const [error, setError]                 = useState("");
 
     useEffect(() => {
-        if (!open || !user) return;
+        if (!open) return;
         setReassignEmail("");
         setError("");
-        setLoadingTickets(true);
-        getUserActiveTickets(user.id)
-            .then(tickets => setActiveTickets(tickets.filter(t => t.status !== "CLOSED")))
-            .catch(() => setActiveTickets([]))
-            .finally(() => setLoadingTickets(false));
-    }, [open, user]);
+    }, [open]);
 
-    const hasActiveTickets = activeTickets.length > 0;
+    if (!user) return null;
+
+    const hasActiveTickets = user.openTickets > 0;
 
     const handleConfirm = async () => {
         if (hasActiveTickets && !reassignEmail.trim()) {
@@ -51,8 +46,6 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
             setLoading(false);
         }
     };
-
-    if (!user) return null;
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -74,12 +67,7 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
             </DialogTitle>
 
             <DialogContent sx={{ pt: 2 }}>
-
-                {loadingTickets ? (
-                    <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-                        <CircularProgress size={20} />
-                    </Box>
-                ) : hasActiveTickets ? (
+                {hasActiveTickets ? (
                     <>
                         <Alert
                             severity="warning"
@@ -87,7 +75,7 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
                             sx={{ mb: 2, fontSize: 13 }}
                         >
                             Este empleado tiene{" "}
-                            <strong>{activeTickets.length} tickets abiertos</strong>. Debes
+                            <strong>{user.openTickets} tickets abiertos</strong>. Debes
                             reasignarlos a otro empleado antes de continuar.
                         </Alert>
 
@@ -115,7 +103,6 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
                         {error}
                     </Alert>
                 )}
-
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
