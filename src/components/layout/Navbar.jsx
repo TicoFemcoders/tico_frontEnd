@@ -34,25 +34,15 @@ const NAV_ITEM = {
 };
 
 function SectionLabel({ children }) {
-  return (
-    <Typography sx={{ fontSize: 10, fontWeight: 700, color: "navbar.text", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>
-      {children}
-    </Typography>
-  );
+  return <Typography sx={{ fontSize: 10, fontWeight: 700, color: "navbar.text", letterSpacing: 1, px: 1.5, mt: 2, mb: 0.5 }}>{children}</Typography>;
 }
 
 function NavItem({ icon, label, badge, onClick, selected }) {
   return (
     <ListItemButton selected={selected} onClick={onClick} sx={NAV_ITEM}>
       <Typography sx={{ fontSize: 16, lineHeight: 1 }}>{icon}</Typography>
-      <Typography sx={{ fontSize: 13, fontWeight: selected ? 600 : 400, color: "inherit", flex: 1 }}>
-        {label}
-      </Typography>
-      {badge > 0 && (
-        <Box sx={{ bgcolor: "primary.main", color: "primary.contrastText", fontSize: 10, fontWeight: 700, borderRadius: "10px", px: 0.8, py: 0.2, minWidth: 18, textAlign: "center" }}>
-          {badge}
-        </Box>
-      )}
+      <Typography sx={{ fontSize: 13, fontWeight: selected ? 600 : 400, color: "inherit", flex: 1 }}>{label}</Typography>
+      {badge > 0 && <Box sx={{ bgcolor: "primary.main", color: "primary.contrastText", fontSize: 10, fontWeight: 700, borderRadius: "10px", px: 0.8, py: 0.2, minWidth: 18, textAlign: "center" }}>{badge}</Box>}
     </ListItemButton>
   );
 }
@@ -72,7 +62,6 @@ function NavContent({ onNavigate }) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-
       <Box sx={{ px: 2.5, py: 2.5 }}>
         <TicoLogo variant="light" size={28} />
         <Typography sx={{ fontSize: 11, color: "navbar.text", mt: 0.5 }}>Tickets Cohispania</Typography>
@@ -82,13 +71,12 @@ function NavContent({ onNavigate }) {
 
       <Box sx={{ px: 1, pt: 1.5, flex: 1, overflowY: "auto" }}>
         <List disablePadding>
-
           {isAdmin ? (
             <>
               <SectionLabel>TICKETS</SectionLabel>
-              <NavItem icon="🎫" label="Todos los tickets" path="/dashboard-admin" selected={isSelected("/dashboard-admin")} onClick={() => handleNavigate("/dashboard-admin")} />
+              <NavItem icon="🎫" label="Todos los tickets" path="/all-tickets" selected={isSelected("/all-tickets")} onClick={() => handleNavigate("/all-tickets")} />
               <NavItem icon="📌" label="Mis tickets asignados" path="/assigned" selected={isSelected("/assigned")} onClick={() => handleNavigate("/assigned")} badge={9999999.9} />
-              <NavItem icon="🎫" label="Mis tickets creados" path="/dashboard-employee" selected={isSelected("/dashboard-employee")} onClick={() => handleNavigate("/dashboard-employee")} />
+              <NavItem icon="🎫" label="Mis tickets creados" path="/my-tickets" selected={isSelected("/my-tickets")} onClick={() => handleNavigate("/my-tickets")} />
 
               <SectionLabel>GESTIÓN</SectionLabel>
               <NavItem icon="👥" label="Usuarios" path="/users" selected={isSelected("/users")} onClick={() => handleNavigate("/users")} />
@@ -96,7 +84,7 @@ function NavContent({ onNavigate }) {
             </>
           ) : (
             <>
-              <NavItem icon="🎫" label="Mis tickets" path="/dashboard-employee" selected={isSelected("/dashboard-employee")} onClick={() => handleNavigate("/dashboard-employee")} />
+              <NavItem icon="🎫" label="Mis tickets" path="/my-tickets" selected={isSelected("/my-tickets")} onClick={() => handleNavigate("/my-tickets")} />
 
               <Button
                 startIcon={<AddIcon />}
@@ -113,36 +101,32 @@ function NavContent({ onNavigate }) {
                   px: 1.5,
                   borderRadius: 1.5,
                   color: "navbar.text",
-                  "&:hover": { bgcolor: "navbar.active", color: "primary.contrastText"},
+                  "&:hover": { bgcolor: "navbar.active", color: "primary.contrastText" },
                 }}
               >
                 Nuevo ticket
               </Button>
             </>
           )}
-
         </List>
       </Box>
 
       <Divider sx={{ borderColor: "navbar.border" }} />
       <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
         <Avatar sx={{ width: 32, height: 32, fontSize: 13, fontWeight: 700, bgcolor: "primary.main" }}>
-          {user?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+          {user?.name
+            ?.split(" ")
+            .map((n) => n[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase()}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {user?.name}
-          </Typography>
-          <Typography sx={{ fontSize: 11, color: "navbar.text" }}>
-            {isAdmin ? "Administrador" : "Empleada"}
-          </Typography>
+          <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</Typography>
+          <Typography sx={{ fontSize: 11, color: "navbar.text" }}>{isAdmin ? "Administrador" : "Empleada"}</Typography>
         </Box>
-        <LogoutIcon
-          onClick={logout}
-          sx={{ fontSize: 16, color: "navbar.text", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }}
-        />
+        <LogoutIcon onClick={logout} sx={{ fontSize: 16, color: "navbar.text", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }} />
       </Box>
-
     </Box>
   );
 }

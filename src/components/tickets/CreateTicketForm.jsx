@@ -67,7 +67,7 @@ export default function CreateTicketForm() {
       if (form.labelId) {
         await ticketService.assignLabel(ticket.data.id, form.labelId);
       }
-      navigate("/dashboard-employee");
+      navigate("/my-tickets");
     } catch (err) {
       setApiError(err.response?.data?.mensaje || "Error al enviar el ticket. Inténtalo de nuevo.");
     } finally {
@@ -227,7 +227,7 @@ export default function CreateTicketForm() {
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button
           variant="outlined"
-          onClick={() => navigate("/dashboard-employee")}
+          onClick={() => navigate("/my-tickets")}
           disabled={loading}
           sx={{ fontSize: "13px", fontWeight: 600 }}
         >
