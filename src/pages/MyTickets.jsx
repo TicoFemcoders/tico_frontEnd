@@ -6,7 +6,7 @@ import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
 import { AuthContext } from "../context/authContext";
 import PageHeader from "../components/common/PageHeader";
-import TicketTable from "../components/myTickets/ticketTable";
+import TicketTable from "../components/myTickets/TicketTable";
 
 
 const MyTickets = ({ viewType = "default" }) => {
