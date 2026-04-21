@@ -3,17 +3,19 @@ import { api } from "./api";
 export const createTicket = (ticketData, userId) =>
   api.post(`/api/tickets?userId=${userId}`, ticketData);
 
-export const getMyTickets = () => 
+export const getMyTickets = () =>
   api.get(`/api/tickets/my-tickets`).then(res => res.data);
 
 export const getAssignedTickets = () =>
-    api.get(`/api/tickets/assigned`).then(res => res.data);
+  api.get(`/api/tickets/assigned`).then(res => res.data);
 
 export const getAllTickets = () =>
   api.get("/api/tickets").then(res => res.data);
 
-export const closeTicket = (ticketId) =>
-  api.put(`/api/tickets/${ticketId}/close`);
+export const closeTicket = (ticketId, closingMessage = null) => {
+  const params = closingMessage ? `?closingMessage=${encodeURIComponent(closingMessage)}` : '';
+  return api.put(`/api/tickets/${ticketId}/close${params}`);
+};
 
 export const changePriority = (ticketId, priority) =>
   api.put(`/api/tickets/${ticketId}/priority?priority=${priority}`);
