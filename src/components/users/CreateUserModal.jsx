@@ -13,7 +13,7 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        role: "EMPLOYEE",
+        role: ["EMPLOYEE"],
     });
 
     const handleChange = (e) => {
@@ -23,7 +23,7 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
     const handleSubmit = () => {
         // TODO: validaciones
         onConfirm(formData);
-        setFormData({ name: "", email: "", role: "EMPLOYEE" });
+        setFormData({ name: "", email: "", role: ["EMPLOYEE"] });
     };
 
     return (

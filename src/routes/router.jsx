@@ -9,8 +9,8 @@ import TicketPage from "../pages/TicketPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import MyTickets from "../pages/MyTickets";
 // import TicketDetailPage from "../pages/TicketDetailPage";
-import UsersPage from "../pages/UsersPage";
 import LabelsPage from "../pages/LabelsPage";
+import UsersPage from "../pages/UsersPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
