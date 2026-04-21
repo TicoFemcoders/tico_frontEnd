@@ -68,7 +68,7 @@ const LabelsPage = () => {
                 title="Etiquetas inactivas"
                 labels={inactiveLabels}
                 showFilter
-                isInactiveVariant
+                isInactiveVariantgit 
                 onToggle={toggleLabel}
             />
         </Box>
