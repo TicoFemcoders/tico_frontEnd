@@ -89,7 +89,7 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
         {
             align: "right",
             renderCell: (t) => (
-                <Link component={RouterLink} to={`/tickets/${t.id}`} state={{ fromPath: location.pathname }} sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", textDecoration: "none", fontWeight: 600, fontSize: "12px", color: "primary.main" }}>
+                <Link component={RouterLink} to={`/detail-ticket/${t.id}`} state={{ fromPath: location.pathname }} sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", textDecoration: "none", fontWeight: 600, fontSize: "12px", color: "primary.main" }}>
                     {["assigned", "all"].includes(variant) ? "Gestionar" : "Ver"} <ArrowIcon sx={{ fontSize: 16, ml: 0.5 }} />
                 </Link>
             )
@@ -150,7 +150,7 @@ return (
                                 <Typography variant="caption" sx={{ color: latestDate.color, display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
                                     {latestDate.icon} {latestDate.label}: {latestDate.value}
                                 </Typography>
-                                <Link component={RouterLink} to={`/tickets/${ticket.id}`} state={{ fromPath: location.pathname }} sx={{ fontWeight: 700, fontSize: "11px" }}>
+                                <Link component={RouterLink} to={`/detail-ticket/${ticket.id}`} state={{ fromPath: location.pathname }} sx={{ fontWeight: 700, fontSize: "11px" }}>
                                      {["assigned", "all"].includes(variant) ? "GESTIONAR" : "VER"}
                                 </Link>
                             </Box>
