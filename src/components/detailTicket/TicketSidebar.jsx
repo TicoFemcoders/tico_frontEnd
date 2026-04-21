@@ -24,7 +24,7 @@
 //   const [isUpdating, setIsUpdating] = useState(false);
 //   const [assignedAdmin, setAssignedAdmin] = useState(ticket?.assignedTo?.id || "");
 
-//   // ✅ estado controlado de prioridad
+//   //  estado controlado de prioridad
 //   const [selectedPriority, setSelectedPriority] = useState(ticket?.priority || "MEDIUM");
 
 //   useEffect(() => {
@@ -33,7 +33,7 @@
 //     }
 //   }, [ticket]);
 
-//   // ✅ cargar labels activos
+//   //  cargar labels activos
 //   useEffect(() => {
 //     const loadLabels = async () => {
 //       try {
@@ -269,10 +269,227 @@
 
 // export default TicketSidebar;
 
+// import {
+//   Box, Paper, Typography, Stack, TextField, Button, 
+//   FormControlLabel, Radio, Chip, MenuItem, CircularProgress, 
+//   Alert, Dialog, DialogTitle, DialogContent, DialogActions, RadioGroup
+// } from "@mui/material";
+// import { useEffect, useState } from "react";
+// import { StatusChip, PriorityChip } from "../common/TicketChips";
+// import { labelService } from "../../services/labelService";
+// import { ticketService } from "../../services/ticketService";
+
+// const InfoRow = ({ label, value }) => (
+//   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+//     <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
+//       {label}
+//     </Typography>
+//     <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>
+//       {value}
+//     </Typography>
+//   </Box>
+// );
+
+// const TicketSidebar = ({ ticket, isAdmin, onRefresh }) => {
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [openConfirm, setOpenConfirm] = useState(false);
+//   const [isUpdating, setIsUpdating] = useState(false);
+//   const [availableLabels, setAvailableLabels] = useState([]);
+
+//   // Estado del formulario: aquí vive la "verdad" de lo que el usuario está editando
+//   const [formData, setFormData] = useState({
+//     priority: ticket?.priority || "MEDIUM",
+//     assignedToId: ticket?.assignedTo?.id || "",
+//     labels: ticket?.labels || [] // Lista de nombres de etiquetas
+//   });
+
+//   useEffect(() => {
+//     if (ticket) {
+//       setFormData({
+//         priority: ticket.priority || "MEDIUM",
+//         assignedToId: ticket.assignedTo?.id || "",
+//         labels: ticket.labels || []
+//       });
+//     }
+//   }, [ticket]);
+
+//   useEffect(() => {
+//     labelService.getAllLabels()
+//       .then(data => setAvailableLabels(data.filter(l => l.active)))
+//       .catch(err => console.error("Error al cargar etiquetas maestras:", err));
+//   }, []);
+
+//   // --- LÓGICA DE ETIQUETAS (SOLO LOCAL) ---
+  
+//   const handleAddLabelLocal = (labelName) => {
+//     if (!labelName) return;
+//     // Si la etiqueta no está ya en la lista, la añadimos
+//     if (!formData.labels.includes(labelName)) {
+//       setFormData(prev => ({
+//         ...prev,
+//         labels: [...prev.labels, labelName]
+//       }));
+//     }
+//   };
+
+//   const handleRemoveLabelLocal = (labelName) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       labels: prev.labels.filter(l => l !== labelName)
+//     }));
+//   };
+
+//   // --- GUARDADO FINAL ---
+
+//   const confirmUpdate = async () => {
+//     setOpenConfirm(false);
+//     setIsUpdating(true);
+//     try {
+//       const promises = [];
+
+//       // 1. Prioridad
+//       if (formData.priority !== ticket.priority) {
+//         promises.push(ticketService.changePriority(ticket.id, formData.priority));
+//       }
+
+//       // 2. Administrador
+//       if (formData.assignedToId !== (ticket.assignedTo?.id || "")) {
+//         promises.push(ticketService.assignAdmin(ticket.id, formData.assignedToId));
+//       }
+
+//       // 3. Etiquetas (Sincronización)
+//       // Etiquetas que hay que añadir
+//       const toAdd = formData.labels.filter(l => !ticket.labels.includes(l));
+//       // Etiquetas que hay que quitar
+//       const toRemove = ticket.labels.filter(l => !formData.labels.includes(l));
+
+//       toAdd.forEach(name => {
+//         const id = availableLabels.find(al => al.name === name)?.id;
+//         if (id) promises.push(ticketService.assignLabel(ticket.id, id));
+//       });
+
+//       toRemove.forEach(name => {
+//         const id = availableLabels.find(al => al.name === name)?.id;
+//         if (id) promises.push(ticketService.removeLabel(ticket.id, id));
+//       });
+
+//       await Promise.all(promises);
+//       setIsEditing(false);
+//       if (onRefresh) onRefresh();
+//       else {
+//       window.location.reload(); 
+//     }
+//     } catch (error) {
+//       console.error("Error al guardar:", error);
+//     } finally {
+//       setIsUpdating(false);
+//     }
+//   };
+
+//   return (
+//     <Stack spacing={2}>
+//       {/* VISTA LECTURA */}
+//       <Paper sx={{ p: 2, borderRadius: 2, border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
+//         <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mb: 2, display: "block" }}>
+//           INFORMACIÓN DEL TICKET
+//         </Typography>
+        
+//         <InfoRow label="Estado" value={<StatusChip status={ticket.status} />} />
+//         <InfoRow label="Prioridad" value={<PriorityChip priority={ticket.priority} />} />
+//         <InfoRow label="Admin" value={ticket.assignedTo?.name || "Sin asignar"} />
+        
+//         <Box sx={{ mt: 1 }}>
+//           <Typography variant="caption" color="text.secondary">Etiquetas</Typography>
+//           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
+//             {ticket.labels?.map((l, i) => <Chip key={i} label={l} size="small" />)}
+//           </Box>
+//         </Box>
+
+//         {isAdmin && !isEditing && (
+//           <Button fullWidth variant="outlined" size="small" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
+//             Editar Atributos
+//           </Button>
+//         )}
+//       </Paper>
+
+//       {/* MODO EDICIÓN */}
+//       {isAdmin && isEditing && (
+//         <Paper sx={{ p: 2, borderRadius: 2, bgcolor: "var(--accent-bg)", border: "1px solid var(--accent-border)" }}>
+//           <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700 }}>MODO EDICIÓN</Typography>
+
+//           <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>ASIGNAR ADMIN</Typography>
+//           <TextField select fullWidth size="small" value={formData.assignedToId} 
+//             onChange={(e) => setFormData({...formData, assignedToId: e.target.value})} sx={{ mb: 2, mt: 0.5, bgcolor: 'background.paper' }}>
+//             <MenuItem value=""><em>Sin asignar</em></MenuItem>
+//             <MenuItem value={4}>Admin2 (Tú)</MenuItem>
+//             <MenuItem value={1}>Carlos Martínez</MenuItem>
+//             <MenuItem value={2}>Ana García</MenuItem>
+//           </TextField>
+
+//           <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>PRIORIDAD</Typography>
+//           <RadioGroup value={formData.priority} onChange={(e) => setFormData({...formData, priority: e.target.value})} sx={{ mb: 2 }}>
+//             {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map(p => (
+//               <FormControlLabel key={p} value={p} control={<Radio size="small"/>} label={<PriorityChip priority={p} />} />
+//             ))}
+//           </RadioGroup>
+
+//           <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>ETIQUETAS ACTUALES (Click para borrar)</Typography>
+//           <Box sx={{ mb: 2, mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5, p: 1, border: '1px dashed var(--border)', borderRadius: 1 }}>
+//             {formData.labels.length > 0 ? formData.labels.map((label) => (
+//               <Chip 
+//                 key={label} 
+//                 label={label} 
+//                 size="small" 
+//                 onDelete={() => handleRemoveLabelLocal(label)}
+//               />
+//             )) : <Typography variant="caption">No hay etiquetas</Typography>}
+//           </Box>
+
+//           <TextField 
+//             select 
+//             fullWidth 
+//             size="small" 
+//             label="Añadir nueva..." 
+//             value="" 
+//             onChange={(e) => handleAddLabelLocal(e.target.value)} 
+//             sx={{ mb: 2, bgcolor: 'background.paper' }}
+//           >
+//             {availableLabels.map(l => (
+//               <MenuItem key={l.id} value={l.name}>{l.name}</MenuItem>
+//             ))}
+//           </TextField>
+
+//           <Stack direction="row" spacing={1}>
+//             <Button fullWidth variant="contained" color="success" onClick={() => setOpenConfirm(true)}>Guardar</Button>
+//             <Button fullWidth variant="outlined" onClick={() => setIsEditing(false)}>Cancelar</Button>
+//           </Stack>
+//         </Paper>
+//       )}
+
+//       {isAdmin && ticket.status !== 'CLOSED' && (
+//         <Button variant="contained" fullWidth onClick={() => ticketService.closeTicket(ticket.id).then(() => onRefresh())}
+//           sx={{ bgcolor: "#F44336", fontWeight: 700 }}>
+//           Cerrar Ticket
+//         </Button>
+//       )}
+
+//       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+//         <DialogTitle>¿Confirmar cambios?</DialogTitle>
+//         <DialogActions>
+//           <Button onClick={() => setOpenConfirm(false)}>No</Button>
+//           <Button onClick={confirmUpdate} variant="contained">Sí, guardar</Button>
+//         </DialogActions>
+//       </Dialog>
+//     </Stack>
+//   );
+// };
+
+// export default TicketSidebar;
+
 import {
   Box, Paper, Typography, Stack, TextField, Button, 
   FormControlLabel, Radio, Chip, MenuItem, CircularProgress, 
-  Alert, Dialog, DialogTitle, DialogContent, DialogActions, RadioGroup
+  Alert, Dialog, DialogTitle, DialogContent, DialogActions, RadioGroup, FormControl
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { StatusChip, PriorityChip } from "../common/TicketChips";
@@ -281,26 +498,22 @@ import { ticketService } from "../../services/ticketService";
 
 const InfoRow = ({ label, value }) => (
   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
-      {label}
-    </Typography>
-    <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>
-      {value}
-    </Typography>
+    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>{label}</Typography>
+    <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>{value}</Typography>
   </Box>
 );
 
-const TicketSidebar = ({ ticket, isAdmin, onRefresh }) => {
+const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false); // Modal de "No asignado"
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
 
-  // Estado del formulario: aquí vive la "verdad" de lo que el usuario está editando
   const [formData, setFormData] = useState({
     priority: ticket?.priority || "MEDIUM",
     assignedToId: ticket?.assignedTo?.id || "",
-    labels: ticket?.labels || [] // Lista de nombres de etiquetas
+    labels: ticket?.labels || []
   });
 
   useEffect(() => {
@@ -316,51 +529,43 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh }) => {
   useEffect(() => {
     labelService.getAllLabels()
       .then(data => setAvailableLabels(data.filter(l => l.active)))
-      .catch(err => console.error("Error al cargar etiquetas maestras:", err));
+      .catch(err => console.error("Error labels:", err));
   }, []);
 
-  // --- LÓGICA DE ETIQUETAS (SOLO LOCAL) ---
-  
+  // Validación de permiso para editar
+  const handleEditClick = () => {
+    const isAssigned = ticket.assignedTo?.id === currentUserId;
+    if (isAssigned) {
+      setIsEditing(true);
+    } else {
+      setOpenErrorModal(true);
+    }
+  };
+
   const handleAddLabelLocal = (labelName) => {
-    if (!labelName) return;
-    // Si la etiqueta no está ya en la lista, la añadimos
     if (!formData.labels.includes(labelName)) {
-      setFormData(prev => ({
-        ...prev,
-        labels: [...prev.labels, labelName]
-      }));
+      setFormData(prev => ({ ...prev, labels: [...prev.labels, labelName] }));
     }
   };
 
   const handleRemoveLabelLocal = (labelName) => {
-    setFormData(prev => ({
-      ...prev,
-      labels: prev.labels.filter(l => l !== labelName)
-    }));
+    setFormData(prev => ({ ...prev, labels: prev.labels.filter(l => l !== labelName) }));
   };
 
-  // --- GUARDADO FINAL ---
+  const getLabelColor = (name) => {
+    const found = availableLabels.find((l) => l.name === name);
+    return found?.color || "#ccc";
+  };
 
   const confirmUpdate = async () => {
     setOpenConfirm(false);
     setIsUpdating(true);
     try {
       const promises = [];
-
-      // 1. Prioridad
-      if (formData.priority !== ticket.priority) {
-        promises.push(ticketService.changePriority(ticket.id, formData.priority));
-      }
-
-      // 2. Administrador
-      if (formData.assignedToId !== (ticket.assignedTo?.id || "")) {
-        promises.push(ticketService.assignAdmin(ticket.id, formData.assignedToId));
-      }
-
-      // 3. Etiquetas (Sincronización)
-      // Etiquetas que hay que añadir
+      if (formData.priority !== ticket.priority) promises.push(ticketService.changePriority(ticket.id, formData.priority));
+      if (formData.assignedToId !== (ticket.assignedTo?.id || "")) promises.push(ticketService.assignAdmin(ticket.id, formData.assignedToId));
+      
       const toAdd = formData.labels.filter(l => !ticket.labels.includes(l));
-      // Etiquetas que hay que quitar
       const toRemove = ticket.labels.filter(l => !formData.labels.includes(l));
 
       toAdd.forEach(name => {
@@ -376,11 +581,8 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh }) => {
       await Promise.all(promises);
       setIsEditing(false);
       if (onRefresh) onRefresh();
-      else {
-      window.location.reload(); 
-    }
     } catch (error) {
-      console.error("Error al guardar:", error);
+      console.error(error);
     } finally {
       setIsUpdating(false);
     }
@@ -388,96 +590,128 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh }) => {
 
   return (
     <Stack spacing={2}>
-      {/* VISTA LECTURA */}
-      <Paper sx={{ p: 2, borderRadius: 2, border: "1px solid var(--border)", boxShadow: "var(--shadow)" }}>
-        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mb: 2, display: "block" }}>
-          INFORMACIÓN DEL TICKET
-        </Typography>
-        
-        <InfoRow label="Estado" value={<StatusChip status={ticket.status} />} />
-        <InfoRow label="Prioridad" value={<PriorityChip priority={ticket.priority} />} />
-        <InfoRow label="Admin" value={ticket.assignedTo?.name || "Sin asignar"} />
-        
-        <Box sx={{ mt: 1 }}>
-          <Typography variant="caption" color="text.secondary">Etiquetas</Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
-            {ticket.labels?.map((l, i) => <Chip key={i} label={l} size="small" />)}
-          </Box>
-        </Box>
-
-        {isAdmin && !isEditing && (
-          <Button fullWidth variant="outlined" size="small" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
-            Editar Atributos
-          </Button>
-        )}
-      </Paper>
-
-      {/* MODO EDICIÓN */}
-      {isAdmin && isEditing && (
-        <Paper sx={{ p: 2, borderRadius: 2, bgcolor: "var(--accent-bg)", border: "1px solid var(--accent-border)" }}>
-          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700 }}>MODO EDICIÓN</Typography>
-
-          <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>ASIGNAR ADMIN</Typography>
-          <TextField select fullWidth size="small" value={formData.assignedToId} 
-            onChange={(e) => setFormData({...formData, assignedToId: e.target.value})} sx={{ mb: 2, mt: 0.5, bgcolor: 'background.paper' }}>
+      {/* 1. ASIGNAR ADMINISTRADOR (Cualquier Admin puede) */}
+      {isAdmin && (
+        <Paper sx={{ p: 2, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", display: "block", mb: 1.5 }}>
+            REASIGNAR TICKET
+          </Typography>
+          <TextField 
+            select fullWidth size="small" 
+            value={formData.assignedToId}
+            onChange={(e) => setFormData({...formData, assignedToId: e.target.value})}
+            sx={{ mb: 2 }}
+          >
             <MenuItem value=""><em>Sin asignar</em></MenuItem>
             <MenuItem value={4}>Admin2 (Tú)</MenuItem>
             <MenuItem value={1}>Carlos Martínez</MenuItem>
             <MenuItem value={2}>Ana García</MenuItem>
           </TextField>
-
-          <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>PRIORIDAD</Typography>
-          <RadioGroup value={formData.priority} onChange={(e) => setFormData({...formData, priority: e.target.value})} sx={{ mb: 2 }}>
-            {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map(p => (
-              <FormControlLabel key={p} value={p} control={<Radio size="small"/>} label={<PriorityChip priority={p} />} />
-            ))}
-          </RadioGroup>
-
-          <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>ETIQUETAS ACTUALES (Click para borrar)</Typography>
-          <Box sx={{ mb: 2, mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5, p: 1, border: '1px dashed var(--border)', borderRadius: 1 }}>
-            {formData.labels.length > 0 ? formData.labels.map((label) => (
-              <Chip 
-                key={label} 
-                label={label} 
-                size="small" 
-                onDelete={() => handleRemoveLabelLocal(label)}
-              />
-            )) : <Typography variant="caption">No hay etiquetas</Typography>}
-          </Box>
-
-          <TextField 
-            select 
-            fullWidth 
-            size="small" 
-            label="Añadir nueva..." 
-            value="" 
-            onChange={(e) => handleAddLabelLocal(e.target.value)} 
-            sx={{ mb: 2, bgcolor: 'background.paper' }}
+          <Button 
+            fullWidth variant="contained" size="small"
+            onClick={confirmUpdate}
+            disabled={isUpdating || formData.assignedToId === (ticket.assignedTo?.id || "")}
+            sx={{ bgcolor: "#202B45", textTransform: "none", fontWeight: 700 }}
           >
-            {availableLabels.map(l => (
-              <MenuItem key={l.id} value={l.name}>{l.name}</MenuItem>
-            ))}
-          </TextField>
-
-          <Stack direction="row" spacing={1}>
-            <Button fullWidth variant="contained" color="success" onClick={() => setOpenConfirm(true)}>Guardar</Button>
-            <Button fullWidth variant="outlined" onClick={() => setIsEditing(false)}>Cancelar</Button>
-          </Stack>
+            Actualizar Asignación
+          </Button>
         </Paper>
       )}
 
+      {/* 2. ATRIBUTOS DEL TICKET (Solo el asignado puede editar) */}
+      <Paper sx={{ p: 2, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
+        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mb: 2, display: "block" }}>
+          PRIORIDAD Y ETIQUETAS
+        </Typography>
+
+        <FormControl component="fieldset" disabled={!isEditing} sx={{ width: '100%' }}>
+          <RadioGroup value={formData.priority} onChange={(e) => setFormData({...formData, priority: e.target.value})}>
+            {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map((p) => (
+              <FormControlLabel 
+                key={p} value={p} control={<Radio size="small" />} 
+                label={<PriorityChip priority={p} sxOverrides={{ fontSize: 12 }} />} 
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+
+        <Box sx={{ mt: 2, mb: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+          {formData.labels.map((label, index) => (
+            <Chip
+              key={index} label={label} size="small"
+              onDelete={isEditing ? () => handleRemoveLabelLocal(label) : undefined}
+              sx={{ bgcolor: getLabelColor(label), color: "#fff", fontWeight: 600 }}
+            />
+          ))}
+        </Box>
+
+        {isEditing && (
+          <TextField
+            select fullWidth size="small" label="+ Añadir etiqueta" value=""
+            onChange={(e) => handleAddLabelLocal(e.target.value)}
+            sx={{ mt: 1 }}
+          >
+            {availableLabels.map((l) => <MenuItem key={l.id} value={l.name}>{l.name}</MenuItem>)}
+          </TextField>
+        )}
+
+        {isAdmin && (
+          <Box sx={{ mt: 2 }}>
+            {!isEditing ? (
+              <Button fullWidth variant="outlined" size="small" onClick={handleEditClick}>
+                Editar Atributos
+              </Button>
+            ) : (
+              <Stack direction="row" spacing={1}>
+                <Button fullWidth variant="contained" color="success" size="small" onClick={() => setOpenConfirm(true)}>
+                  Guardar
+                </Button>
+                <Button fullWidth variant="outlined" size="small" onClick={() => setIsEditing(false)}>
+                  Cancelar
+                </Button>
+              </Stack>
+            )}
+          </Box>
+        )}
+      </Paper>
+
+      {/* 3. INFORMACIÓN ESTÁTICA */}
+      <Paper sx={{ p: 2, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
+        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mb: 1, display: "block" }}>
+          DETALLES DE CREACIÓN
+        </Typography>
+        <InfoRow label="Estado" value={<StatusChip status={ticket.status} />} />
+        <InfoRow label="Creado" value={new Date(ticket.createdAt).toLocaleDateString()} />
+      </Paper>
+
+      {/* 4. BOTÓN CERRAR (Siempre al final) */}
       {isAdmin && ticket.status !== 'CLOSED' && (
-        <Button variant="contained" fullWidth onClick={() => ticketService.closeTicket(ticket.id).then(() => onRefresh())}
-          sx={{ bgcolor: "#F44336", fontWeight: 700 }}>
+        <Button 
+          variant="contained" fullWidth 
+          onClick={() => ticketService.closeTicket(ticket.id).then(() => onRefresh())}
+          sx={{ bgcolor: "#F44336", fontWeight: 700, "&:hover": { bgcolor: "#D32F2F" } }}
+        >
           Cerrar Ticket
         </Button>
       )}
 
+      {/* MODAL DE ERROR DE PERMISOS */}
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle>Acceso Denegado</DialogTitle>
+        <DialogContent>
+          <Typography>Solo el administrador asignado a este ticket puede modificar la prioridad y las etiquetas.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)}>Entendido</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* MODAL CONFIRMACIÓN GUARDAR */}
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>¿Confirmar cambios?</DialogTitle>
+        <DialogTitle>¿Guardar cambios?</DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)}>No</Button>
-          <Button onClick={confirmUpdate} variant="contained">Sí, guardar</Button>
+          <Button onClick={confirmUpdate} variant="contained" color="success">Sí, guardar</Button>
         </DialogActions>
       </Dialog>
     </Stack>
