@@ -5,15 +5,17 @@ import PageHeader from "../components/common/PageHeader";
 import LabelTable from "../components/labels/LabelTable";
 import LabelForm from "../components/labels/LabelForm";
 import { labelService } from "../services/labelService";
+import LabelInUseModal from "../components/modals/LabelInUseModal";
 
 const LabelsPage = () => {
-    const [labels, setLabels]   = useState([]);
+    const [labels, setLabels] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [labelInUseModal, setLabelInUseModal] = useState(false);
+    const [selectedLabel, setSelectedLabel] = useState(null);
 
     const fetchLabels = async () => {
         try {
             const data = await labelService.getAllLabels();
-            console.log("Labels:", data);
             setLabels(data);
         } catch (error) {
             console.error("Error al cargar etiquetas:", error);
@@ -24,7 +26,7 @@ const LabelsPage = () => {
 
     useEffect(() => { fetchLabels(); }, []);
 
-    const activeLabels   = labels.filter(l => l.active === true);
+    const activeLabels = labels.filter(l => l.active === true);
     const inactiveLabels = labels.filter(l => l.active === false);
 
     const handleCreateLabel = async (newLabelData) => {
@@ -40,22 +42,24 @@ const LabelsPage = () => {
     const handleToggleActive = async (label) => {
         try {
             if (label.active) {
-               
                 await labelService.deactivateLabel(label.id);
             } else {
-              
                 await labelService.activateLabel(label.id);
             }
             await fetchLabels();
         } catch (error) {
-            console.error("Error al cambiar estado:", error);
-            alert("Error al cambiar el estado de la etiqueta");
+            if (error.response?.status === 409) {
+                setSelectedLabel(label);
+                setLabelInUseModal(true);
+            } else {
+                console.error("Error al cambiar estado:", error);
+                alert("Error al cambiar el estado de la etiqueta");
+            }
         }
     };
 
     const handleEditName = async (label, newName) => {
         try {
-          
             await labelService.updateLabel(label.id, { name: newName, color: label.color });
             await fetchLabels();
         } catch (error) {
@@ -82,13 +86,13 @@ const LabelsPage = () => {
                         labels={activeLabels}
                         showFilter={true}
                         onToggle={handleToggleActive}
-                        onEdit={handleEditName} 
+                        onEdit={handleEditName}
                     />
 
                     <Alert
                         severity="warning"
                         icon={<LockIcon fontSize="inherit" />}
-                        sx={{ mb: 4, borderRadius: 2, bgcolor: "#fff4e5", color: "#663c00" }}
+                        sx={{ mb: 4, borderRadius: 2, bgcolor: "warning.light", color: "text.primary" }}
                     >
                         Las etiquetas con tickets activos no pueden ser desactivadas.
                         Primero resuelve o reasigna los tickets asociados.
@@ -98,11 +102,19 @@ const LabelsPage = () => {
                         title="Etiquetas inactivas"
                         labels={inactiveLabels}
                         showFilter={true}
-                        isInactiveVariant           
+                        isInactiveVariant
                         onToggle={handleToggleActive}
-                        
                     />
+
                     <LabelForm onAdd={handleCreateLabel} existingLabels={labels} />
+
+                    <LabelInUseModal
+                        open={labelInUseModal}
+                        onClose={() => setLabelInUseModal(false)}
+                        label={selectedLabel}
+                        activeTickets={selectedLabel?.activeTickets ?? 0}
+                        onEdit={() => setLabelInUseModal(false)}
+                    />
                 </>
             )}
         </Box>

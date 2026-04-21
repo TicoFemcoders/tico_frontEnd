@@ -11,7 +11,12 @@ export const getAllUsers = async () => {
     ];
 };
 
-export const deleteUser = async (id) => {
-    // const response = await api.delete(`/api/users/${id}`);
-    // return response.data;
-};
+export const getUserById = (userId) =>
+    api.get(`/api/users/${userId}`).then(res => res.data);
+
+export const deleteUser = (userId, reassignEmail) =>
+    api.delete(`/api/users/${userId}?reassignEmail=${reassignEmail}`);
+
+export const getUserActiveTickets = (userId) =>
+    api.get(`/api/tickets/my-tickets?userId=${userId}`)
+        .then(res => res.data.filter(t => t.status !== "CLOSED"));
