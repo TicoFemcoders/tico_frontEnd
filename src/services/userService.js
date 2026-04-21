@@ -19,7 +19,7 @@ export const deleteUser = (userId, reassignEmail) => {
 };
 
 export const createUser = (formData) =>
-  api.post(`api/users`, formData);
+  api.post(`/api/users`, formData);
 
 export const getAllAdmins = () =>
   api.get("/api/users/admins").then(res => res.data);
@@ -28,7 +28,7 @@ export const updateUser = (userId, formData) =>
   api.put(`/api/users/${userId}`, formData);
 
 export const toggleUserActive = () =>
-  api.patch(`api/users/${userId}/active`);
+  api.patch(`/api/users/${userId}/active`);
 
 export const userService = {
   getAllUsers,
