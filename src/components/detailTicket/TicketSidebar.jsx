@@ -17,9 +17,12 @@ import {
   RadioGroup,
   FormControl,
 } from "@mui/material";
-import { StatusChip, PriorityChip } from "../common/TicketChips";
 import { labelService } from "../../services/labelService";
 import { ticketService } from "../../services/ticketService";
+import { userService } from "../../services/userService"
+import PriorityChip from "../common/PriorityChip"
+import StatusChip from "../common/StatusChip"
+import LabelChip from "../common/LabelChip"
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -45,6 +48,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
+  const [admins, setAdmins] = useState([]);
 
   const isAssignedToMe = ticket?.assignedTo?.id === currentUserId;
   const canEditAttributes = isAdmin && isAssignedToMe;
@@ -70,6 +74,14 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
       .getAllLabels()
       .then((data) => setAvailableLabels(data.filter((l) => l.active)))
       .catch((err) => console.error("Error labels:", err));
+      userService
+      .getAllAdmins()
+      .then((data) => {
+        setAdmins(data);
+      })
+      .catch((err) => {
+        console.error("Error al pedir la lista administrados:", err);
+      });
   }, []);
 
   const handleEditClick = () => {
@@ -273,13 +285,12 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
           }
           sx={{ mb: 2 }}
         >
-          {/* AQUI IRA LA LISTA DE ADMINS */}
-          <MenuItem value="">
-            <em>Sin asignar</em>
-          </MenuItem>
-          <MenuItem value={4}>Admin2 (Tú)</MenuItem>
-          <MenuItem value={1}>Carlos Martínez</MenuItem>
-          <MenuItem value={2}>Ana García</MenuItem>
+          {admins.map((admin) => (
+            <MenuItem key={admin.id} value={admin.id}>
+              {admin.name || admin.username}
+            </MenuItem>
+          ))}
+    
         </TextField>
         <Button
           fullWidth

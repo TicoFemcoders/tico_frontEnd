@@ -10,7 +10,9 @@ import TicketHistory from "../components/detailTicket/TicketHistory";
 import TicketResponseBox from "../components/detailTicket/TicketResponseBox";
 import TicketSidebar from "../components/detailTicket/TicketSidebar";
 import PageHeader from "../components/common/PageHeader";
-import { StatusChip, PriorityChip } from "../components/common/TicketChips";
+import PriorityChip from "../components/common/PriorityChip"
+import StatusChip from "../components/common/StatusChip"
+import LabelChip from "../components/common/LabelChip"
 
 
 const DetailTicketPage = () => {
