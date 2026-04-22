@@ -1,4 +1,5 @@
 import { Chip } from "@mui/material";
+import { getContrastText } from "../../utils/getContrastText";
 
 export const LabelChip = ({ label, sxOverrides }) => {
     if (!label) return null;
@@ -9,7 +10,7 @@ export const LabelChip = ({ label, sxOverrides }) => {
             size="small"
             sx={{
                 bgcolor: label.color ?? "grey.300",
-                color: "#fff", //está hardcodeado porque el dato viene del backend, no se puede garantizar que tenga un color de texto adecuado
+                color: getContrastText(label.color),
                 fontWeight: 600,
                 ...sxOverrides
             }}
