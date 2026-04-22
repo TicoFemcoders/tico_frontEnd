@@ -42,7 +42,7 @@ const InfoRow = ({ label, value }) => (
   </Box>
 );
 
-const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
+const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -60,10 +60,8 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
     labels: [],
   });
 
-  const myAdminProfile = admins.find(
-    (a) => Number(a.id) === Number(currentUserId)
-  );
-  const isAssignedToMe = ticket?.assignedToName === myAdminProfile?.name;
+  const isAssignedToMe = ticket?.assignedToName === currentUser?.name;
+  const isCreatorEmployee = ticket?.createdByName === currentUser?.name && !isAdmin;
   const isClosed = ticket?.status === "CLOSED";
   const canEditAttributes = isAdmin && isAssignedToMe && !isClosed;
 
@@ -406,6 +404,18 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
             </Button>
           )}
         </Box>
+      )}
+
+      {!isAdmin && isCreatorEmployee && ticket?.status === "CLOSED" && (
+        <Button
+          variant="outlined"
+          fullWidth
+          color="success"
+          onClick={() => setOpenReopenConfirm(true)}
+          sx={{ fontWeight: 700, borderRadius: 2 }}
+        >
+          Reabrir mi ticket
+        </Button>
       )}
 
       {/* ── Modales con AppModal ── */}

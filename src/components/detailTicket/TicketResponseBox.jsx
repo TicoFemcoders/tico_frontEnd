@@ -13,8 +13,9 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
   const isClosed = ticket?.status === "CLOSED";
   const ticketId = ticket?.id;
 
-  const isAssignedAdmin = ticket?.assignedToName === user?.name;
-  const isCreator = ticket?.createdByName === user?.name;
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAssignedAdmin = isAdmin && ticket?.assignedToName === user?.name;
+  const isCreator = !isAdmin && ticket?.createdByName === user?.name;
   const canRespond = isCreator || isAssignedAdmin;
 
   if (!canRespond) return null;

@@ -114,7 +114,7 @@ const DetailTicketPage = () => {
             <TicketSidebar 
               ticket={ticket} 
               isAdmin={isAdmin} 
-              currentUserId={user?.id}
+              currentUser={user}
               onRefresh={fetchTicket} 
             />
           </Box>
