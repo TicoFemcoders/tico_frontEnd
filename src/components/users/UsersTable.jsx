@@ -6,6 +6,11 @@ import UserAvatar from "../common/UserAvatar";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 
+const getRole = (user) => {
+    const role = Array.isArray(user.roles) ? user.roles[0] : user.role;
+    return role?.replace("ROLE_", "") || "EMPLOYEE";
+};
+
 const UsersTable = ({ users, onDelete, onEdit }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState("");
@@ -17,10 +22,12 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
     ];
 
     const filteredUsers = users.filter((user) => {
-        const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesSort = sortOption === "" || 
-            (sortOption === "ACTIVE" && user.isActive) || 
+        const matchesSort =
+            sortOption === "" ||
+            (sortOption === "ACTIVE" && user.isActive) ||
             (sortOption === "INACTIVE" && !user.isActive);
         return matchesSearch && matchesSort;
     });
@@ -30,7 +37,7 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
             header: "Nombre",
             renderCell: (user) => (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <UserAvatar name={user.name} role={user.role} />
+                    <UserAvatar name={user.name} role={getRole(user)} />
                     {user.name}
                 </Box>
             ),
@@ -41,16 +48,19 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
         },
         {
             header: "Rol",
-            renderCell: (user) => (
-                <Chip
-                    label={user.role === "EMPLOYEE" ? "Empleado" : "Admin"}
-                    size="small"
-                    sx={{
-                        bgcolor: user.role === "ADMIN" ? "status.open.bg" : "background.default",
-                        color: user.role === "ADMIN" ? "blueAccent.main" : "text.mid",
-                    }}
-                />
-            ),
+            renderCell: (user) => {
+                const role = getRole(user);
+                return (
+                    <Chip
+                        label={role === "ADMIN" ? "Admin" : "Empleado"}
+                        size="small"
+                        sx={{
+                            bgcolor: role === "ADMIN" ? "status.open.bg" : "background.default",
+                            color: role === "ADMIN" ? "blueAccent.main" : "text.mid",
+                        }}
+                    />
+                );
+            },
         },
         {
             header: "Tickets abiertos",
@@ -76,7 +86,7 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
                     <Button size="small" sx={{ color: "primary.main", mr: 1 }} onClick={() => onEdit(user)}>
                         Editar
                     </Button>
-                    <Button size="small" sx={{ color: "error.main" }} onClick={() => onDelete(user.id)}>
+                    <Button size="small" sx={{ color: "error.main" }} onClick={() => onDelete(user)}>
                         Eliminar
                     </Button>
                 </>
@@ -87,7 +97,7 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
     return (
         <Box>
             <TableToolbar
-                title="Tickets activos"
+                title="Usuarios"
                 showFilter={true}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}

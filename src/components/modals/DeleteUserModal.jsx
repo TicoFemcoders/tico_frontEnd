@@ -1,17 +1,7 @@
 import { useState, useEffect } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Typography, TextField, Button, Alert, CircularProgress } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import AppModal from "../common/AppModal";
 import { deleteUser } from "../../services/userService";
 
 export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
@@ -34,95 +24,73 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
             setError("Introduce el email del empleado que recibirá los tickets.");
             return;
         }
-        setError("");
         setLoading(true);
         try {
             await deleteUser(user.id, reassignEmail.trim() || null);
             onSuccess?.();
             onClose();
         } catch (err) {
-            setError(err.response?.data?.mensaje || "Error al eliminar el usuario. Inténtalo de nuevo.");
+            setError(err.friendlyMessage || "Error al eliminar el usuario.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+        <AppModal
+            open={open}
+            onClose={onClose}
+            title="Eliminar usuario"
+            maxWidth="xs"
+            actions={
+                <>
+                    <Button variant="outlined" onClick={onClose} disabled={loading}>
+                        Cancelar
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleConfirm}
+                        disabled={loading}
+                    >
+                        {loading
+                            ? <CircularProgress size={18} color="inherit" />
+                            : hasActiveTickets ? "Reasignar y eliminar" : "Eliminar usuario"
+                        }
+                    </Button>
+                </>
+            }
+        >
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {user.name} · {user.email}
+            </Typography>
 
-            <DialogTitle sx={{ pb: 0.5 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <Box>
-                        <Typography sx={{ fontSize: 16, fontWeight: 700, color: "text.primary" }}>
-                            Eliminar usuario
-                        </Typography>
-                        <Typography sx={{ fontSize: 12, color: "text.secondary", mt: 0.3 }}>
-                            {user.name} · {user.email}
-                        </Typography>
-                    </Box>
-                    <IconButton size="small" onClick={onClose} sx={{ mt: -0.5 }}>
-                        <CloseIcon fontSize="small" />
-                    </IconButton>
-                </Box>
-            </DialogTitle>
-
-            <DialogContent sx={{ pt: 2 }}>
-                {hasActiveTickets ? (
-                    <>
-                        <Alert
-                            severity="warning"
-                            icon={<WarningAmberIcon fontSize="small" />}
-                            sx={{ mb: 2, fontSize: 13 }}
-                        >
-                            Este empleado tiene{" "}
-                            <strong>{user.openTickets} tickets abiertos</strong>. Debes
-                            reasignarlos a otro empleado antes de continuar.
-                        </Alert>
-
-                        <Box component="label" sx={{ display: "block", fontSize: 13, fontWeight: 600, color: "text.primary", mb: "6px" }}>
-                            Email del empleado que recibirá los tickets
-                        </Box>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            placeholder="empleado@cohispania.com"
-                            value={reassignEmail}
-                            onChange={(e) => setReassignEmail(e.target.value)}
-                            type="email"
-                            error={!!error}
-                        />
-                    </>
-                ) : (
-                    <Typography sx={{ fontSize: 13, color: "text.secondary" }}>
-                        Este usuario no tiene tickets activos. Puedes eliminarlo directamente.
-                    </Typography>
-                )}
-
-                {error && (
-                    <Alert severity="error" sx={{ mt: 2, fontSize: 13 }}>
-                        {error}
+            {hasActiveTickets ? (
+                <>
+                    <Alert severity="warning" icon={<WarningAmberIcon fontSize="small" />} sx={{ mb: 2 }}>
+                        Este empleado tiene <strong>{user.openTickets} tickets abiertos</strong>. Debes
+                        reasignarlos a otro empleado antes de continuar.
                     </Alert>
-                )}
-            </DialogContent>
+                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                        Email del empleado que recibirá los tickets
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="empleado@cohispania.com"
+                        value={reassignEmail}
+                        onChange={(e) => setReassignEmail(e.target.value)}
+                        type="email"
+                        error={!!error}
+                    />
+                </>
+            ) : (
+                <Typography variant="body1" color="text.secondary">
+                    Este usuario no tiene tickets activos. Puedes eliminarlo directamente.
+                </Typography>
+            )}
 
-            <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-                <Button variant="outlined" onClick={onClose} disabled={loading}>
-                    Cancelar
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    onClick={handleConfirm}
-                    disabled={loading}
-                    sx={{ fontWeight: 600 }}
-                >
-                    {loading
-                        ? <CircularProgress size={18} color="inherit" />
-                        : hasActiveTickets ? "Reasignar y eliminar" : "Eliminar usuario"
-                    }
-                </Button>
-            </DialogActions>
-
-        </Dialog>
+            {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        </AppModal>
     );
 }
