@@ -32,11 +32,11 @@ const TopBar = ({ breadcrumbs = [] }) => {
     navigate(`/detail-ticket/${notificacion.ticketId}`);
   };
 
-  const fetchNotificationsPagination = async (currentPage) => {
+  const fetchNotificationsPagination = async (currentPage, signal) => {
     if (loading || !hasMore) return; 
     setLoading(true);
     try {
-      const data = await notificationService.getPaginatedNotifications(currentPage, 10);
+      const data = await notificationService.getPaginatedNotifications(currentPage, 10, signal);
       setUnreadCount(data?.totalUnread ?? 0);
       const items = data?.content ?? [];
       setNotifications((prev) => {
@@ -46,7 +46,8 @@ const TopBar = ({ breadcrumbs = [] }) => {
       });
       setHasMore(items.length === 10);
     } catch (error) {
-     setError("Error al cargar notificaciones");
+      if (error.name === 'CanceledError') return;
+      setError("Error al cargar notificaciones");
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,11 @@ const TopBar = ({ breadcrumbs = [] }) => {
   };
 
   useEffect(() => {
-    fetchNotificationsPagination(page);
+    const controller = new AbortController();
+    fetchNotificationsPagination(page, controller.signal);
+    return () => {
+    controller.abort();
+  };
   }, [page]);
 
   return (
