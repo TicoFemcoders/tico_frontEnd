@@ -1,16 +1,16 @@
 import { api } from "./api";
 
-export const createTicket = (ticketData, userId) =>
-  api.post(`/api/tickets?userId=${userId}`, ticketData);
+export const createTicket = (ticketData) =>
+  api.post(`/api/tickets`, ticketData);
 
 export const getMyTickets = (page = 0, size = 50) =>
-  api.get(`/api/tickets/my-tickets?page=${page}&size=${size}`).then(res => res.data.content);
+  api.get(`/api/tickets/my-tickets `,{ params: { page, size } }).then(res => res.data.content);
 
 export const getAssignedTickets = (page = 0, size = 50) =>
-  api.get(`/api/tickets/assigned?page=${page}&size=${size}`).then(res => res.data.content);
+  api.get(`/api/tickets/assigned`,  { params: { page, size }}).then(res => res.data.content);
 
 export const getAllTickets = (page = 0, size = 50) =>
-  api.get(`/api/tickets?page=${page}&size=${size}`).then(res => res.data.content);
+  api.get(`/api/tickets`, { params: { page, size } }).then(res => res.data.content);
 
 export const closeTicket = (ticketId, closingMessage = "") =>
   api.patch(`/api/tickets/${ticketId}/close`, { closingMessage });
@@ -33,8 +33,8 @@ export const assignLabel = (ticketId, labelId) =>
 export const removeLabel = (ticketId, labelId) =>
   api.delete(`/api/tickets/${ticketId}/labels/${labelId}`);
 
-export const getAllLabels = (page = 0, size = 100) =>
-  api.get(`/api/labels?page=${page}&size=${size}`).then(res => res.data.content);
+// export const getAllLabels = (page = 0, size = 100) =>
+//   api.get(`/api/labels?page=${page}&size=${size}`).then(res => res.data.content);
 
 export const getTicketById = async (ticketId) => {
   const response = await api.get(`/api/tickets/${ticketId}/detail`);
@@ -53,7 +53,7 @@ export const ticketService = {
   assignAdmin,
   assignLabel,
   removeLabel,
-  getAllLabels,
+  // getAllLabels,
   getTicketById,
   reopenTicket,
   changeStatus

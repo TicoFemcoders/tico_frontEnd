@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
+import { labelService } from "../../services/labelService";
 
 const PRIORITIES = [
   { value: "LOW",      label: "🟢 Baja" },
@@ -28,7 +29,7 @@ export default function CreateTicketForm() {
   const [errors, setErrors]   = useState({});
 
   useEffect(() => {
-    ticketService.getAllLabels()
+    labelService.getAllLabels()
       .then(setLabels)
       .catch(() => setLabels([]));
   }, []);
