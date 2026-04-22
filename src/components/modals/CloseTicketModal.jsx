@@ -65,7 +65,7 @@ export default function CloseTicketModal({ open, onClose, ticket, onSuccess }) {
           <Box component="strong" sx={{ color: "text.primary" }}>
             {ticket.createdByName || "el usuario"}
           </Box>{" "}
-          confirmando la resolución. Esta acción no se puede deshacer.
+          confirmando la resolución.
         </Typography>
 
         {/* Mensaje de cierre */}

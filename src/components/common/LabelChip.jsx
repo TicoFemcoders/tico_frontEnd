@@ -1,11 +1,12 @@
 import { Chip } from "@mui/material";
 
-export const LabelChip = ({ label, sxOverrides }) => {
+export const LabelChip = ({ label, sxOverrides, onDelete }) => {
     if (!label) return null;
 
     return (
         <Chip
             label={label.name ?? label}
+            onDelete={onDelete}
             size="small"
             sx={{
                 bgcolor: label.color ?? "grey.300",
