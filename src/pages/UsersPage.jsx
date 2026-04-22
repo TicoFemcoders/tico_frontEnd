@@ -1,33 +1,21 @@
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
 import CircularProgress from "@mui/material/CircularProgress";
 import DeleteUserModal from "../components/modals/DeleteUserModal";
 import CreateUserModal from "../components/users/CreateUserModal";
-import { getAllUsers, deleteUser } from "../services/userService";
+import EditUserModal from "../components/users/EditUserModal";
+import { getAllUsers } from "../services/userService";
+import { userService } from "../services/userService";
 import PageHeader from "../components/common/PageHeader";
 import UsersTable from "../components/users/UsersTable";
-import {userService} from "../services/userService";
-
-const getInitials = (name) =>
-    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     const fetchUsers = async () => {
         try {
@@ -42,16 +30,7 @@ const UsersPage = () => {
 
     useEffect(() => { fetchUsers(); }, []);
 
-    const isAdmin = (roles) => roles?.includes("ROLE_ADMIN");
-
-
-
-
-
-
-
-
-     const handleDeleteClick = (id) => {
+    const handleDeleteClick = (id) => {
         const user = users.find((u) => u.id === id);
         setSelectedUser(user);
         setDeleteModal(true);
@@ -66,24 +45,22 @@ const UsersPage = () => {
     };
 
     const handleEdit = (user) => {
-        // TODO: abrir modal de edición
-        console.log("Editar usuario:", user);
+        setSelectedUser(user);
+        setEditModalOpen(true);
+    };
+
+    const handleEditConfirm = async (formData) => {
+        // await userService.updateUser(selectedUser.id, formData);
+        console.log("Editar usuario:", formData);
+        setEditModalOpen(false);
+        setSelectedUser(null);
     };
 
     const handleCreateConfirm = async (formData) => {
-         await userService.createUser(formData);
+        // await userService.createUser(formData);
         console.log("Crear usuario:", formData);
         setCreateModalOpen(false);
     };
-
-
-
-
-
-
-
-
-
 
     if (loading) return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
@@ -97,12 +74,12 @@ const UsersPage = () => {
                 title="Gestión de Usuarios"
                 subtitle="Administra los empleados y sus permisos"
                 actionText="Crear Usuario"
-                 onActionClick={() => setCreateModalOpen(true)}
+                onActionClick={() => setCreateModalOpen(true)}
                 breadcrumbs={["Usuarios"]}
             />
             <UsersTable
                 users={users}
-                       onDelete={handleDeleteClick}
+                onDelete={handleDeleteClick}
                 onEdit={handleEdit}
             />
             <DeleteUserModal
@@ -116,13 +93,17 @@ const UsersPage = () => {
                 onClose={() => setCreateModalOpen(false)}
                 onConfirm={handleCreateConfirm}
             />
+            <EditUserModal
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                onConfirm={handleEditConfirm}
+                user={selectedUser}
+            />
         </Box>
     );
 };
 
-
-
-
+export default UsersPage;
 
 
 
@@ -229,4 +210,3 @@ const UsersPage = () => {
 //     );
 // };
 
-export default UsersPage;
