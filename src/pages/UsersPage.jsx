@@ -8,20 +8,28 @@ import DeleteUserModal from "../components/users/DeleteUserModal";
 import { useUsers } from "../hooks/useUsers";
 
 const UsersPage = () => {
-    const { users, loading, createUser, updateUser, deleteUser, handleError } = useUsers();
+    const { activeUsers, inactiveUsers, loading, createUser, updateUser, deleteUser, toggleUser, handleError } = useUsers();
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen]     = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser]       = useState(null);
 
-    const handleEditClick = (user) => { setSelectedUser(user); setEditModalOpen(true); };
+    const handleEditClick   = (user) => { setSelectedUser(user); setEditModalOpen(true); };
     const handleDeleteClick = (user) => { setSelectedUser(user); setDeleteModalOpen(true); };
+    const handleToggleClick = async (user) => {
+        try {
+            await toggleUser(user.id);
+        } catch (err) {
+            handleError(err);
+        }
+    };
 
-    if (loading) return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-            <CircularProgress />
-        </Box>
-    );
+    if (loading)
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+                <CircularProgress />
+            </Box>
+        );
 
     return (
         <Box sx={{ p: 3 }}>
@@ -34,9 +42,18 @@ const UsersPage = () => {
             />
 
             <UsersTable
-                users={users}
+                title="Usuarios activos"
+                users={activeUsers}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
+                onToggle={handleToggleClick}
+            />
+
+            <UsersTable
+                title="Usuarios inactivos"
+                users={inactiveUsers}
+                isInactiveVariant
+                onToggle={handleToggleClick}
             />
 
             <CreateUserModal
