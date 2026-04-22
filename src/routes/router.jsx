@@ -11,6 +11,7 @@ import MyTickets from "../pages/MyTickets";
 import DetailTicketPage from "../pages/DetailTicketPage";
 import UsersPage from "../pages/UsersPage";
 import LabelsPage from "../pages/LabelsPage";
+import UsersPage from "../pages/UsersPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },

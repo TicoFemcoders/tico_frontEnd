@@ -7,14 +7,24 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const CreateUserModal = ({ open, onClose, onConfirm }) => {
+const EditUserModal = ({ open, onClose, onConfirm, user }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        role: ["EMPLOYEE"],
+        role: "EMPLOYEE",
     });
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                name: user.name || "",
+                email: user.email || "",
+                role: user.role || "EMPLOYEE",
+            });
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,16 +33,15 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
     const handleSubmit = () => {
         // TODO: validaciones
         onConfirm(formData);
-        setFormData({ name: "", email: "", role: ["EMPLOYEE"] });
     };
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <DialogTitle>
                 <Box>
-                    <Typography variant="h6" fontWeight={700}>Crear Usuario</Typography>
+                    <Typography variant="h6" fontWeight={700}>Editar Usuario</Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Rellena los datos del nuevo usuario
+                        Modifica los datos del usuario
                     </Typography>
                 </Box>
             </DialogTitle>
@@ -45,7 +54,6 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
                     onChange={handleChange}
                     fullWidth
                     size="small"
-                    placeholder="Ana García"
                 />
                 <TextField
                     label="Email"
@@ -54,7 +62,6 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
                     onChange={handleChange}
                     fullWidth
                     size="small"
-                    placeholder="ana@cohispania.com"
                 />
                 <TextField
                     label="Rol"
@@ -75,11 +82,11 @@ const CreateUserModal = ({ open, onClose, onConfirm }) => {
                     Cancelar
                 </Button>
                 <Button variant="contained" color="primary" onClick={handleSubmit}>
-                    Crear Usuario
+                    Guardar cambios
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default CreateUserModal;
+export default EditUserModal;
