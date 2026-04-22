@@ -4,7 +4,7 @@ import { userService } from "../services/userService";
 
 export const useUsers = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [users, setUsers]   = useState([]);
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const notify = useCallback((msg, variant = "success") => {
@@ -46,12 +46,24 @@ export const useUsers = () => {
         notify("Usuario eliminado correctamente");
     };
 
+    const toggleUser = async (userId) => {
+        await userService.toggleUserActive(userId);
+        await fetchUsers();
+        notify("Estado del usuario actualizado");
+    };
+
+    const activeUsers = users.filter(u => u.isActive);
+    const inactiveUsers = users.filter(u => !u.isActive);
+
     return {
         users,
+        activeUsers,
+        inactiveUsers,
         loading,
         createUser,
         updateUser,
         deleteUser,
+        toggleUser,
         handleError,
     };
 };
