@@ -32,6 +32,13 @@ export const updateUser = (userId, formData) =>
 export const toggleUserActive = (userId) =>
   api.patch(`/api/users/${userId}/active`);
 
+export const deactivateUser = (userId, reassignEmail) => {
+  const url = reassignEmail
+    ? `/api/users/${userId}/active?reassignEmail=${reassignEmail}`
+    : `/api/users/${userId}/active`;
+  return api.patch(url);
+};
+
 export const userService = {
   getAllUsers,
   getUserById,
@@ -40,5 +47,6 @@ export const userService = {
   createUser,
   getAllAdmins,
   updateUser,
-  toggleUserActive
+  toggleUserActive,
+  deactivateUser,
 }
