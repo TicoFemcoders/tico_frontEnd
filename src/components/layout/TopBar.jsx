@@ -24,12 +24,12 @@ const TopBar = ({ breadcrumbs = [] }) => {
   const handleReadAndGo = async (notificacion) => {
     handleClose();
     setUnreadCount(prev => prev > 0 ? prev - 1 : 0); 
-    setNotifications(prev => prev.filter(n => n.id !== notificacion.id));
+    setNotifications(prev => prev.map(n => n.id === notificacion.id ? { ...n, read: true } : n));
     notificationService.markAsRead(notificacion.id).catch(() => {
       setError("No se pudo marcar la notificación como leída.");
       setUnreadCount(prev => prev + 1);
       });
-    navigate(`/tickets/${notificacion.ticketId}`);
+    navigate(`/detail-ticket/${notificacion.ticketId}`);
   };
 
   const fetchNotificationsPagination = async (currentPage) => {
@@ -66,7 +66,7 @@ const TopBar = ({ breadcrumbs = [] }) => {
     const prevCount = unreadCount; 
     const prevNotifications = notifications;
     setUnreadCount(0); 
-    setNotifications([]);
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
     try {
       await notificationService.markAllAsRead();
@@ -141,7 +141,7 @@ const TopBar = ({ breadcrumbs = [] }) => {
             notifications.map((notif) => (
               <MenuItem key={notif.id}  onClick={() => handleReadAndGo(notif)} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'border.soft'}}>
                 <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                  <Typography variant="body2" sx={{ fontWeight: notif.read ? 400 : 700, color: notif.read ? 'text.secondary' : 'text.primary' }}>
                     {notif.content}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.subtle' }}>
