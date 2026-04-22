@@ -1,7 +1,9 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
+import { Paper, Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import IconButton from "@mui/material/IconButton";
+import { DeleteOutlined as DeleteOutlinedIcon } from "@mui/icons-material";
 import UserAvatar from "../common/UserAvatar";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
@@ -11,25 +13,32 @@ const getRole = (user) => {
     return role?.replace("ROLE_", "") || "EMPLOYEE";
 };
 
-const UsersTable = ({ users, onDelete, onEdit }) => {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [sortOption, setSortOption] = useState("");
+const roleOptions = [
+    { value: "", label: "Todos" },
+    { value: "EMPLOYEE", label: "Empleado" },
+    { value: "ADMIN", label: "Admin" },
+];
 
-    const sortOptions = [
-        { value: "", label: "Todos" },
-        { value: "ACTIVE", label: "Activo" },
-        { value: "INACTIVE", label: "Inactivo" },
-    ];
+const actionLinkSx = (color) => ({
+    textDecoration: "none",
+    fontWeight: 700,
+    color,
+    fontSize: "12px",
+    border: "none",
+    bgcolor: "transparent",
+    cursor: "pointer",
+});
+
+const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [roleFilter, setRoleFilter]   = useState("");
 
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesSort =
-            sortOption === "" ||
-            (sortOption === "ACTIVE" && user.isActive) ||
-            (sortOption === "INACTIVE" && !user.isActive);
-        return matchesSearch && matchesSort;
+        const matchesRole = roleFilter === "" || getRole(user) === roleFilter;
+        return matchesSearch && matchesRole;
     });
 
     const columns = [
@@ -73,7 +82,7 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
                     label={user.isActive ? "Activo" : "Inactivo"}
                     size="small"
                     sx={{
-                        bgcolor: user.isActive ? "status.closed.bg" : "status.open.bg",
+                        bgcolor: user.isActive ? "status.closed.bg" : "priority.urgent.bg",
                         color: user.isActive ? "status.closed.text" : "error.main",
                     }}
                 />
@@ -82,32 +91,36 @@ const UsersTable = ({ users, onDelete, onEdit }) => {
         {
             header: "Acciones",
             renderCell: (user) => (
-                <>
-                    <Button size="small" sx={{ color: "primary.main", mr: 1 }} onClick={() => onEdit(user)}>
-                        Editar
-                    </Button>
-                    <Button size="small" sx={{ color: "error.main" }} onClick={() => onDelete(user)}>
-                        Eliminar
-                    </Button>
-                </>
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    <Link component="button" onClick={() => onEdit(user)} sx={actionLinkSx("primary.main")}>
+                        EDITAR
+                    </Link>
+                    <IconButton
+                        size="small"
+                        onClick={() => onDelete(user)}
+                        sx={{ color: "error.main", p: 0.5 }}
+                    >
+                        <DeleteOutlinedIcon fontSize="small" />
+                    </IconButton>
+                </Box>
             ),
         },
     ];
 
     return (
-        <Box>
+        <Paper sx={{ borderRadius: 2, boxShadow: 1, mb: 4, overflow: "hidden", bgcolor: "background.paper" }}>
             <TableToolbar
-                title="Usuarios"
+                title={title}
                 showFilter={true}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                searchPlaceholder="Buscar usuario..."
-                sortOption={sortOption}
-                onSortChange={setSortOption}
-                sortOptions={sortOptions}
+                searchPlaceholder="Buscar por nombre o email..."
+                sortOption={roleFilter}
+                onSortChange={setRoleFilter}
+                sortOptions={roleOptions}
             />
-            <DataTable columns={columns} data={filteredUsers} />
-        </Box>
+            <DataTable columns={columns} data={filteredUsers} itemsPerPage={10} />
+        </Paper>
     );
 };
 
