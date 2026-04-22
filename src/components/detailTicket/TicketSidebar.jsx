@@ -173,7 +173,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
 
   return (
     <Stack spacing={2}>
-      {/* ── Asignar administrador ── */}
       {isAdmin && (
         <Paper
           elevation={0}
@@ -220,7 +219,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Paper>
       )}
 
-      {/* ── Prioridad y etiquetas ── */}
       {isAdmin && (
         <Paper
           elevation={0}
@@ -321,7 +319,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Paper>
       )}
 
-      {/* ── Info de estado ── */}
       <Paper
         elevation={0}
         sx={{
@@ -358,7 +355,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Stack>
       </Paper>
 
-      {/* ── Notificaciones (solo usuario) ── */}
       {!isAdmin && (
         <Paper
           elevation={0}
@@ -383,7 +379,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Paper>
       )}
 
-      {/* ── Cerrar / Reabrir ticket ── */}
         {isAdmin && (
             <Box>
               {ticket?.status === "CLOSED" ? (
@@ -421,7 +416,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Button>
       )}
 
-      {/* ── Modales con AppModal ── */}
       <CloseTicketModal
         open={openCloseModal}
         onClose={() => setOpenCloseModal(false)}
