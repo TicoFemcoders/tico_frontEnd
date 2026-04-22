@@ -1,8 +1,9 @@
-import { Paper, Typography, Box, Link, TextField, IconButton, Tooltip } from "@mui/material";
-import { Lock as LockIcon, Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
+import { Paper, Box, Link, Typography, Tooltip } from "@mui/material";
+import { Lock as LockIcon } from "@mui/icons-material";
 import { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
+import EditLabelModal from "./EditLabelModal";
 
 const LabelTable = ({
     title,
@@ -10,22 +11,11 @@ const LabelTable = ({
     showFilter = false,
     isInactiveVariant = false,
     onToggle,
-    onEdit
+    onEdit,
+    onError
 }) => {
     const [searchQuery, setSearchQuery] = useState("");
-    const [editingId, setEditingId]     = useState(null);
-    const [draftName, setDraftName]     = useState("");
-
-    const startEdit  = (label) => { setEditingId(label.id); setDraftName(label.name); };
-    const cancelEdit = ()      => { setEditingId(null); setDraftName(""); };
-
-    const confirmEdit = async (label) => {
-        const trimmed = draftName.trim();
-        if (trimmed && trimmed !== label.name) {
-            await onEdit(label, trimmed);
-        }
-        cancelEdit();
-    };
+    const [editingLabel, setEditingLabel] = useState(null);
 
     const processedData = useMemo(() => {
         if (!searchQuery.trim()) return labels;
@@ -37,49 +27,19 @@ const LabelTable = ({
     const columns = [
         {
             header: "ETIQUETA",
-            renderCell: (l) => {
-                const isEditing = editingId === l.id;
-                return (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Box sx={{
-                            width: 12, height: 12,
-                            borderRadius: "50%",
-                            bgcolor: l.color,
-                            flexShrink: 0
-                        }} />
-                        {isEditing ? (
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <TextField
-                                    value={draftName}
-                                    onChange={(e) => setDraftName(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter")  confirmEdit(l);
-                                        if (e.key === "Escape") cancelEdit();
-                                    }}
-                                    size="small"
-                                    autoFocus
-                                    variant="outlined"
-                                    sx={{ width: 180, "& .MuiInputBase-input": { fontSize: "13px", py: "4px" } }}
-                                />
-                                <Tooltip title="Confirmar">
-                                    <IconButton size="small" color="success" onClick={() => confirmEdit(l)}>
-                                        <CheckIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Cancelar">
-                                    <IconButton size="small" color="error" onClick={cancelEdit}>
-                                        <CloseIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
-                        ) : (
-                            <Typography sx={{ fontWeight: 600, fontSize: "13px" }}>
-                                {l.name}
-                            </Typography>
-                        )}
-                    </Box>
-                );
-            }
+            renderCell: (l) => (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box sx={{
+                        width: 12, height: 12,
+                        borderRadius: "50%",
+                        bgcolor: l.color,
+                        flexShrink: 0
+                    }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: "13px" }}>
+                        {l.name}
+                    </Typography>
+                </Box>
+            )
         },
 
         !isInactiveVariant && {
@@ -102,19 +62,15 @@ const LabelTable = ({
             header: "ACCIONES",
             align: "center",
             renderCell: (l) => {
-                const isEditing    = editingId === l.id;
                 const canToggleOff = l.activeTickets === 0;
-
-                if (isEditing) return null;
 
                 return (
                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-
                         {!isInactiveVariant && onEdit && (
                             <Box sx={{ width: 70, display: "flex", justifyContent: "center" }}>
                                 <Link
                                     component="button"
-                                    onClick={() => startEdit(l)}
+                                    onClick={() => setEditingLabel(l)}
                                     sx={actionLinkSx("primary.main")}
                                 >
                                     EDITAR
@@ -159,7 +115,6 @@ const LabelTable = ({
                                 </Tooltip>
                             )}
                         </Box>
-
                     </Box>
                 );
             }
@@ -167,17 +122,27 @@ const LabelTable = ({
     ].filter(Boolean);
 
     return (
-        <Paper sx={{ borderRadius: 2, mb: 4, overflow: "hidden" }}>
-            <TableToolbar
-                title={title}
-                showFilter={showFilter}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                searchPlaceholder="Buscar etiqueta..."
-                totalItems={labels.length}
+        <>
+            <Paper sx={{ borderRadius: 2, mb: 4, overflow: "hidden" }}>
+                <TableToolbar
+                    title={title}
+                    showFilter={showFilter}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    searchPlaceholder="Buscar etiqueta..."
+                    totalItems={labels.length}
+                />
+                <DataTable columns={columns} data={processedData} />
+            </Paper>
+
+            <EditLabelModal
+                open={!!editingLabel}
+                onClose={() => setEditingLabel(null)}
+                label={editingLabel}
+                onEdit={onEdit}
+                onError={onError}
             />
-            <DataTable columns={columns} data={processedData} />
-        </Paper>
+        </>
     );
 };
 
