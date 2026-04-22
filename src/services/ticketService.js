@@ -17,6 +17,9 @@ export const closeTicket = (ticketId, closingMessage = null) => {
   return api.put(`/api/tickets/${ticketId}/close${params}`);
 };
 
+export const reopenTicket = (ticketId) => 
+  api.put(`/api/tickets/${ticketId}/reopen`);
+
 export const changePriority = (ticketId, priority) =>
   api.put(`/api/tickets/${ticketId}/priority?priority=${priority}`);
 
@@ -53,4 +56,5 @@ export const ticketService = {
   removeLabel,
   getAllLabels,
   getTicketById,
+  reopenTicket,
 };

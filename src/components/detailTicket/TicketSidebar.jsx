@@ -8,7 +8,6 @@ import {
   Button,
   FormControlLabel,
   Radio,
-  Chip,
   MenuItem,
   Dialog,
   DialogTitle,
@@ -19,10 +18,11 @@ import {
 } from "@mui/material";
 import { labelService } from "../../services/labelService";
 import { ticketService } from "../../services/ticketService";
-import { userService } from "../../services/userService"
-import PriorityChip from "../common/PriorityChip"
-import StatusChip from "../common/StatusChip"
-import LabelChip from "../common/LabelChip"
+import { userService } from "../../services/userService";
+import PriorityChip from "../common/PriorityChip";
+import StatusChip from "../common/StatusChip";
+import LabelChip from "../common/LabelChip";
+import CloseTicketModal from "../modals/CloseTicketModal";
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -36,9 +36,9 @@ const InfoRow = ({ label, value }) => (
     <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
       {label}
     </Typography>
-    <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>
+    <Box sx={{ fontWeight: 600, fontSize: 13, textAlign: "right" }}>
       {value}
-    </Typography>
+    </Box>
   </Box>
 );
 
@@ -46,65 +46,61 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [openReopenConfirm, setOpenReopenConfirm] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [openCloseModal, setOpenCloseModal] = useState(false);
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
   const [admins, setAdmins] = useState([]);
 
-  const isAssignedToMe = ticket?.assignedTo?.id === currentUserId;
-  const canEditAttributes = isAdmin && isAssignedToMe;
-
   const [formData, setFormData] = useState({
-    priority: ticket?.priority || "MEDIUM",
-    assignedToId: ticket?.assignedTo?.id || "",
-    labels: ticket?.labels || [],
+    priority: "",
+    assignedToId: "",
+    labels: [],
   });
+
+  const myAdminProfile = admins.find(
+    (a) => Number(a.id) === Number(currentUserId),
+  );
+  const isAssignedToMe = ticket?.assignedToName === myAdminProfile?.name;
+  const isClosed = ticket?.status === "CLOSED";
+  const canEditAttributes = isAdmin && isAssignedToMe && !isClosed;
 
   useEffect(() => {
     if (ticket) {
       setFormData({
         priority: ticket.priority || "MEDIUM",
-        assignedToId: ticket.assignedTo?.id || "",
+        assignedToId:
+          admins.find((a) => a.name === ticket.assignedToName)?.id || "",
         labels: ticket.labels || [],
       });
     }
-  }, [ticket]);
+  }, [ticket, admins]);
 
   useEffect(() => {
     labelService
       .getAllLabels()
       .then((data) => setAvailableLabels(data.filter((l) => l.active)))
-      .catch((err) => console.error("Error labels:", err));
-      userService
+      .catch((err) => console.error("Error etiquetas:", err));
+
+    userService
       .getAllAdmins()
-      .then((data) => {
-        setAdmins(data);
-      })
-      .catch((err) => {
-        console.error("Error al pedir la lista administrados:", err);
-      });
+      .then((data) => setAdmins(data))
+      .catch((err) => console.error("Error admins:", err));
   }, []);
 
-  const handleEditClick = () => {
-    if (canEditAttributes) setIsEditing(true);
-    else setOpenErrorModal(true);
-  };
-
-  const handleAddLabelLocal = (labelName) => {
-    if (!formData.labels.includes(labelName)) {
-      setFormData((prev) => ({ ...prev, labels: [...prev.labels, labelName] }));
+  const handleReassign = async () => {
+    setIsUpdating(true);
+    try {
+      await ticketService.assignAdmin(ticket.id, Number(formData.assignedToId));
+      if (onRefresh) await onRefresh();
+      setOpenSuccessModal(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
     }
-  };
-
-  const handleRemoveLabelLocal = (labelName) => {
-    setFormData((prev) => ({
-      ...prev,
-      labels: prev.labels.filter((l) => l !== labelName),
-    }));
-  };
-
-  const getLabelColor = (name) => {
-    const found = availableLabels.find((l) => l.name === name);
-    return found?.color || "#ccc";
   };
 
   const confirmUpdate = async () => {
@@ -117,47 +113,63 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
           ticketService.changePriority(ticket.id, formData.priority),
         );
       }
-      if (formData.assignedToId != (ticket.assignedTo?.id || "")) {
-        promises.push(
-          ticketService.assignAdmin(ticket.id, Number(formData.assignedToId)),
-        );
-      }
 
-      const toAdd = formData.labels.filter((l) => !ticket.labels.includes(l));
-      const toRemove = ticket.labels.filter(
-        (l) => !formData.labels.includes(l),
+      const currentNames = ticket.labels.map((l) =>
+        typeof l === "object" ? l.name : l,
+      );
+      const formNames = formData.labels.map((l) =>
+        typeof l === "object" ? l.name : l,
       );
 
-      toAdd.forEach((name) => {
-        const id = availableLabels.find((al) => al.name === name)?.id;
-        if (id) promises.push(ticketService.assignLabel(ticket.id, id));
-      });
+      formNames
+        .filter((n) => !currentNames.includes(n))
+        .forEach((n) => {
+          const obj = availableLabels.find((al) => al.name === n);
+          if (obj) promises.push(ticketService.assignLabel(ticket.id, obj.id));
+        });
 
-      toRemove.forEach((name) => {
-        const id = availableLabels.find((al) => al.name === name)?.id;
-        if (id) promises.push(ticketService.removeLabel(ticket.id, id));
-      });
+      currentNames
+        .filter((n) => !formNames.includes(n))
+        .forEach((n) => {
+          const obj = availableLabels.find((al) => al.name === n);
+          if (obj) promises.push(ticketService.removeLabel(ticket.id, obj.id));
+        });
 
       await Promise.all(promises);
       setIsEditing(false);
-      if (onRefresh) onRefresh();
+      if (onRefresh) await onRefresh();
     } catch (error) {
-      console.error("Error detallado:", error.response?.data || error.message);
+      console.error(error);
     } finally {
       setIsUpdating(false);
     }
   };
 
-  if (!isAdmin) {
-    return (
-      <Stack spacing={3}>
+  const handleAddLabelLocal = (name) => {
+    if (!formData.labels.includes(name)) {
+      setFormData((prev) => ({ ...prev, labels: [...prev.labels, name] }));
+    }
+  };
+
+  const handleRemoveLabelLocal = (name) => {
+    setFormData((prev) => ({
+      ...prev,
+      labels: prev.labels.filter((l) => l !== name),
+    }));
+  };
+
+  return (
+    <Stack spacing={2}>
+
+      {isAdmin && (
         <Paper
           elevation={0}
           sx={{
-            p: 2.5,
+            p: 2,
             borderRadius: 3,
             bgcolor: "background.paper",
-            boxShadow: "var(--shadow)",
+            border: "1px solid",
+            borderColor: "var(--border)",
           }}
         >
           <Typography
@@ -165,103 +177,175 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
             sx={{
               fontWeight: 700,
               color: "text.secondary",
-              mb: 2,
               display: "block",
-              textTransform: "uppercase",
+              mb: 1.5,
             }}
           >
-            Información
+            ASIGNAR ADMINISTRADOR
           </Typography>
-          <Stack spacing={1.5}>
-            <InfoRow
-              label="Estado"
-              value={<StatusChip status={ticket?.status} />}
-            />
-            <InfoRow
-              label="Prioridad"
-              value={<PriorityChip priority={ticket?.priority} />}
-            />
-            <InfoRow
-              label="Categoría"
-              value={
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  sx={{
-                    justifyContent: "flex-end",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {ticket?.labels?.map((l, i) => (
-                    <Chip
-                      key={i}
-                      label={l}
-                      size="small"
-                      sx={{ height: 24, fontSize: 11, fontWeight: 600 }}
-                    />
-                  ))}
-                </Stack>
-              }
-            />
-            <InfoRow
-              label="Asignado a"
-              value={ticket?.assignedTo?.name || "Sin asignar"}
-            />
-            <InfoRow
-              label="Fecha creación"
-              value={
-                ticket?.createdAt
-                  ? new Date(ticket.createdAt).toLocaleDateString()
-                  : "-"
-              }
-            />
-          </Stack>
+          <TextField
+            select
+            fullWidth
+            size="small"
+            value={formData.assignedToId}
+            onChange={(e) =>
+              setFormData({ ...formData, assignedToId: e.target.value })
+            }
+            sx={{ mb: 1.5 }}
+          >
+            {admins.map((admin) => (
+              <MenuItem key={admin.id} value={admin.id}>
+                {admin.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Button
+            fullWidth
+            variant="contained"
+            size="small"
+            onClick={handleReassign}
+            disabled={isUpdating || !formData.assignedToId}
+            sx={{
+              bgcolor: "#223344",
+              textTransform: "none",
+              borderRadius: 1.5,
+              "&:hover": { bgcolor: "#112233" },
+            }}
+          >
+            Guardar
+          </Button>
         </Paper>
+      )}
 
+      {isAdmin && (
         <Paper
           elevation={0}
           sx={{
-            p: 2.5,
+            p: 2,
             borderRadius: 3,
-            bgcolor: "#fff7ed",
-            border: "1px solid #fdba74",
-            textAlign: "center",
+            bgcolor: "background.paper",
+            border: "1px solid",
+            borderColor: "var(--border)",
           }}
         >
           <Typography
             variant="caption"
             sx={{
-              fontWeight: 800,
-              color: "#ea580c",
+              fontWeight: 700,
+              color: "text.secondary",
               display: "block",
-              mb: 1,
-              letterSpacing: 1.2,
-              textTransform: "uppercase",
+              mb: 1.5,
             }}
           >
-            Notificaciones Email
+            PRIORIDAD
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "#9a3412", fontSize: 12, lineHeight: 1.5 }}
+          <FormControl
+            component="fieldset"
+            disabled={!isEditing}
+            sx={{ width: "100%", mb: 2 }}
           >
-            Recibirás un email cada vez que el soporte actualice o cierre este
-            ticket.
-          </Typography>
-        </Paper>
-      </Stack>
-    );
-  }
+            <RadioGroup
+              value={formData.priority}
+              onChange={(e) =>
+                setFormData({ ...formData, priority: e.target.value })
+              }
+            >
+              {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map((p) => (
+                <FormControlLabel
+                  key={p}
+                  value={p}
+                  control={<Radio size="small" />}
+                  label={
+                    <PriorityChip priority={p} sxOverrides={{ fontSize: 12 }} />
+                  }
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
 
-  return (
-    <Stack spacing={2}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 700,
+              color: "text.secondary",
+              mb: 1,
+              display: "block",
+            }}
+          >
+            ETIQUETAS
+          </Typography>
+          <Box sx={{ mb: 1.5, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {formData.labels.map((l, i) => (
+              <LabelChip
+                key={i}
+                label={l}
+                size="small"
+                onDelete={
+                  isEditing ? () => handleRemoveLabelLocal(l) : undefined
+                }
+              />
+            ))}
+          </Box>
+          {isEditing && (
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="+ Añadir etiqueta"
+              value=""
+              onChange={(e) => handleAddLabelLocal(e.target.value)}
+            >
+              {availableLabels.map((l) => (
+                <MenuItem key={l.id} value={l.name}>
+                  {l.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+
+          <Button
+            fullWidth
+            variant={isEditing ? "contained" : "outlined"}
+            color={isEditing ? "success" : "primary"}
+            size="small"
+            onClick={
+              isEditing
+                ? () => setOpenConfirm(true)
+                : () => {
+                    if (canEditAttributes) setIsEditing(true);
+                    else setOpenErrorModal(false);
+                  }
+            }
+            sx={{ mt: 2, textTransform: "none", borderRadius: 1.5 }}
+          >
+            {isEditing
+              ? "Guardar Cambios"
+              : isClosed
+                ? "Ticket Cerrado"
+                : "Cambiar"}
+          </Button>
+
+          {isEditing && (
+            <Button
+              fullWidth
+              size="small"
+              sx={{ mt: 1, textTransform: "none" }}
+              onClick={() => setIsEditing(false)}
+            >
+              Cancelar
+            </Button>
+          )}
+        </Paper>
+      )}
+
       <Paper
         elevation={0}
         sx={{
           p: 2,
           borderRadius: 3,
           bgcolor: "background.paper",
-          boxShadow: "var(--shadow)",
+          border: "1px solid",
+          borderColor: "var(--border)",
         }}
       >
         <Typography
@@ -273,218 +357,161 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
             mb: 1.5,
           }}
         >
-          REASIGNAR TICKET
+          ESTADO
         </Typography>
-        <TextField
-          select
-          fullWidth
-          size="small"
-          value={formData.assignedToId}
-          onChange={(e) =>
-            setFormData({ ...formData, assignedToId: e.target.value })
-          }
-          sx={{ mb: 2 }}
-        >
-          {admins.map((admin) => (
-            <MenuItem key={admin.id} value={admin.id}>
-              {admin.name || admin.username}
-            </MenuItem>
-          ))}
-    
-        </TextField>
-        <Button
-          fullWidth
-          variant="contained"
-          size="small"
-          onClick={confirmUpdate}
-          disabled={
-            isUpdating ||
-            formData.assignedToId == (ticket?.assignedTo?.id || "")
-          }
-          sx={{
-            bgcolor: "secondary.main",
-            textTransform: "none",
-            borderRadius: 2,
-          }}
-        >
-          Actualizar Asignación
-        </Button>
-      </Paper>
-
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2,
-          borderRadius: 3,
-          bgcolor: "background.paper",
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            fontWeight: 700,
-            color: "text.secondary",
-            mb: 2,
-            display: "block",
-          }}
-        >
-          PRIORIDAD
-        </Typography>
-
-        <FormControl
-          component="fieldset"
-          disabled={!isEditing}
-          sx={{ width: "100%", mb: 2 }}
-        >
-          <RadioGroup
-            value={formData.priority}
-            onChange={(e) =>
-              setFormData({ ...formData, priority: e.target.value })
+        <Stack spacing={1.5}>
+          <InfoRow
+            label="Actual"
+            value={<StatusChip status={ticket?.status} />}
+          />
+          <InfoRow
+            label="Empleado"
+            value={ticket?.createdByName || "Cargando..."}
+          />
+          <InfoRow
+            label="Fecha creación"
+            value={
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 700, color: "error.main", fontSize: 13 }}
+              >
+                {ticket?.createdAt
+                  ? new Date(ticket.createdAt).toLocaleDateString()
+                  : "-"}
+              </Typography>
             }
-          >
-            {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map((p) => (
-              <FormControlLabel
-                key={p}
-                value={p}
-                control={<Radio size="small" />}
-                label={
-                  <PriorityChip priority={p} sxOverrides={{ fontSize: 12 }} />
-                }
+          />
+          {!isAdmin && (
+            <>
+              <InfoRow
+                label="Prioridad"
+                value={<PriorityChip priority={ticket?.priority} />}
               />
-            ))}
-          </RadioGroup>
-        </FormControl>
-        <Typography
-          variant="caption"
-          sx={{
-            fontWeight: 700,
-            color: "text.secondary",
-            mb: 2,
-            display: "block",
-          }}
-        >
-          ETIQUETAS
-        </Typography>
-        <Box sx={{ mb: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-          {formData.labels.map((label, index) => (
-            <Chip
-              key={index}
-              label={label}
-              size="small"
-              onDelete={
-                isEditing ? () => handleRemoveLabelLocal(label) : undefined
-              }
-              sx={{
-                bgcolor: getLabelColor(label),
-                color: "#fff",
-                fontWeight: 600,
-                borderRadius: 1.5,
-              }}
-            />
-          ))}
-        </Box>
-
-        {isEditing && (
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label="+ Etiqueta"
-            value=""
-            onChange={(e) => handleAddLabelLocal(e.target.value)}
-            sx={{ mt: 1 }}
-          >
-            {availableLabels.map((l) => (
-              <MenuItem key={l.id} value={l.name}>
-                {l.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-
-        <Box sx={{ mt: 2 }}>
-          {!isEditing ? (
-            <Button
-              fullWidth
-              variant="outlined"
-              size="small"
-              onClick={handleEditClick}
-              sx={{ borderRadius: 2, textTransform: "none" }}
-            >
-              Editar
-            </Button>
-          ) : (
-            <Stack direction="row" spacing={1}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="success"
-                size="small"
-                onClick={() => setOpenConfirm(true)}
-              >
-                Guardar
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                size="small"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancelar
-              </Button>
-            </Stack>
+              <InfoRow
+                label="Asignado a"
+                value={ticket?.assignedToName || "Sin asignar"}
+              />
+          
+            </>
           )}
-        </Box>
+        </Stack>
       </Paper>
 
-      {ticket?.status !== "CLOSED" && (
-        <Button
-          variant="contained"
-          fullWidth
-          onClick={() =>
-            ticketService.closeTicket(ticket.id).then(() => onRefresh())
-          }
+      {!isAdmin && (
+        <Paper
+          elevation={0}
           sx={{
-            bgcolor: "error.main",
-            "&:hover": { bgcolor: "#dc2626" },
-            color: "white",
-            fontWeight: 700,
-            borderRadius: 2,
-            textTransform: "none",
+            p: 2.5,
+            borderRadius: 3,
+            bgcolor: "primary.light",
+            border: "1px solid",
+            borderColor: "primary.main",
+            textAlign: "center",
           }}
         >
-          Cerrar Ticket
-        </Button>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 800,
+              color: "primary.dark",
+              display: "block",
+              mb: 1,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            Notificaciones Email
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "primary.dark", fontSize: 12, lineHeight: 1.5 }}
+          >
+            Recibirás un email cada vez que el soporte actualice o cierre este
+            ticket.
+          </Typography>
+        </Paper>
       )}
 
-      <Dialog
-        open={openErrorModal}
-        onClose={() => setOpenErrorModal(false)}
-        disableRestoreFocus
-      >
-        <DialogTitle sx={{ fontWeight: 700 }}>Acceso Denegado</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2">
-            Solo el administrador asignado puede editar este ticket.
-          </Typography>
-        </DialogContent>
+      {isAdmin && (
+        <Box>
+          {ticket?.status === "CLOSED" ? (
+            <Button
+              variant="contained"
+              fullWidth
+              color="success"
+              onClick={() => setOpenReopenConfirm(true)}
+              sx={{ fontWeight: 700, borderRadius: 2 }}
+            >
+              Reabrir Ticket
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => setOpenCloseModal(true)}
+              sx={{
+                bgcolor: "#f44336",
+                fontWeight: 700,
+                borderRadius: 2,
+                "&:hover": { bgcolor: "#d32f2f" },
+              }}
+            >
+              Cerrar ticket
+            </Button>
+          )}
+        </Box>
+      )}
+
+      {/* MODALES (Mantenemos la lógica de CloseTicketModal) */}
+      <CloseTicketModal
+        open={openCloseModal}
+        onClose={() => setOpenCloseModal(false)}
+        ticket={ticket}
+        onSuccess={() => onRefresh()}
+      />
+
+      {/* DIÁLOGOS DE CONFIRMACIÓN */}
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle sx={{ fontWeight: 700 }}>¿Guardar cambios?</DialogTitle>
         <DialogActions>
-          <Button onClick={() => setOpenErrorModal(false)}>Entendido</Button>
+          <Button onClick={() => setOpenConfirm(false)}>Volver</Button>
+          <Button onClick={confirmUpdate} variant="contained" color="success">
+            Confirmar
+          </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog
-        open={openConfirm}
-        onClose={() => setOpenConfirm(false)}
-        disableRestoreFocus
+        open={openSuccessModal}
+        onClose={() => setOpenSuccessModal(false)}
       >
-        <DialogTitle sx={{ fontWeight: 700 }}>¿Confirmar cambios?</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Cancelar</Button>
-          <Button onClick={confirmUpdate} variant="contained" color="success">
-            Guardar cambios
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+            ¡Actualizado!
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            El responsable ha sido actualizado.
+          </Typography>
+          <Button
+            onClick={() => setOpenSuccessModal(false)}
+            variant="contained"
+            fullWidth
+          >
+            Aceptar
           </Button>
+        </Box>
+      </Dialog>
+
+      <Dialog open={openErrorModal} onClose={() => setOpenErrorModal(false)}>
+        <DialogTitle sx={{ fontWeight: 700 }}>Acceso Restringido</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Solo el administrador asignado ({ticket?.assignedToName}) puede
+            editar.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenErrorModal(false)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Stack>

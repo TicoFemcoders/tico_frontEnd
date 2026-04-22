@@ -20,7 +20,7 @@ const getLatestDateInfo = (ticket) => {
     return { ...latest, value: latest.value.toLocaleDateString() };
 };
 
-const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }) => {
+ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }) => {
     const [sortOption, setSortOption] = useState("recent");
     const [searchQuery, setSearchQuery] = useState("");
     const location = useLocation();
@@ -57,16 +57,16 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
             header: "EMPLEADO", 
             renderCell: (t) => <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: "13px" }}>{t.creator?.name || "Desconocido"}</Typography>
         },
-        { 
-            header: "ETIQUETAS", 
-            renderCell: (t) => (
-                <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', maxWidth: 180 }}>
-                    {t.labels?.map((label, i) => (
-                        <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '10px', height: 20 }} />
-                    ))}
-                </Box>
-            )
-        },
+        // { 
+        //     header: "ETIQUETAS", 
+        //     renderCell: (t) => (
+        //         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', maxWidth: 180 }}>
+        //             {t.labels?.map((label, i) => (
+        //                 <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '10px', height: 20 }} />
+        //             ))}
+        //         </Box>
+        //     )
+        // },
         { header: "PRIORIDAD", renderCell: (t) => <PriorityChip priority={t.priority} /> },
         { header: "ESTADO", renderCell: (t) => <StatusChip status={t.status} /> },
         variant === "all" && {
@@ -136,12 +136,12 @@ return (
                                 </Typography>
                             )}
                             
-                            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2, gap: 0.5 }}>
+                            {/* <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2, gap: 0.5 }}>
                                 {ticket.labels?.map((label, i) => (
                                     <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '9px', height: 18 }} />
                                 ))}
                                 <PriorityChip priority={ticket.priority} />
-                            </Stack>
+                            </Stack> */}
                             
                             {variant === "all" && (
                                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, fontSize: '11px' }}>
@@ -162,5 +162,6 @@ return (
             />
         </Paper>
     );
-}
+ }
 export default TicketTable;
+
