@@ -1,25 +1,4 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
-import CircularProgress from "@mui/material/CircularProgress";
-import DeleteUserModal from "../components/modals/DeleteUserModal";
-import { getAllUsers } from "../services/userService";
-
-const getInitials = (name) =>
-    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-=======
-import { useState } from "react";
+import React, { useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import PageHeader from "../components/common/PageHeader";
 import UsersTable from "../components/users/UsersTable";
@@ -27,7 +6,6 @@ import CreateUserModal from "../components/users/CreateUserModal";
 import EditUserModal from "../components/users/EditUserModal";
 import DeleteUserModal from "../components/users/DeleteUserModal";
 import { useUsers } from "../hooks/useUsers";
->>>>>>> c1485843a70afaa9b4c8dc17bb378ec6442b8907
 
 const UsersPage = () => {
     const { users, loading, createUser, updateUser, deleteUser, handleError } = useUsers();

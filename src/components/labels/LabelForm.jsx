@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { Paper, Box, Typography, TextField, Button, Popover, IconButton, Tooltip } from "@mui/material";
-import React, { useState } from "react";
-=======
-import { useState } from "react";
+import React,  { useState } from "react";
 import { Box, Typography, Popover, FormHelperText, TextField } from "@mui/material";
 import { HexColorPicker } from "react-colorful";
->>>>>>> c1485843a70afaa9b4c8dc17bb378ec6442b8907
 
 const LabelForm = ({ name, setName, color, setColor, error }) => {
     const [anchorEl, setAnchorEl] = useState(null);

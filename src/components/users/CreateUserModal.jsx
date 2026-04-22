@@ -1,19 +1,6 @@
-<<<<<<< HEAD
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Box from "@mui/material/Box";
 import React, { useState } from "react";
-=======
-import { useState } from "react";
 import { Box, TextField, MenuItem, Button, Typography } from "@mui/material";
 import AppModal from "../common/AppModal";
->>>>>>> c1485843a70afaa9b4c8dc17bb378ec6442b8907
 
 const CreateUserModal = ({ open, onClose, onCreate, onError }) => {
     const [formData, setFormData] = useState({ name: "", email: "", roles: ["EMPLOYEE"] });

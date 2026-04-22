@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import { Paper, Typography, Box, Link, TextField, IconButton, Tooltip } from "@mui/material";
-import { Lock as LockIcon, Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
-import Recat, { useState, useMemo } from "react";
-=======
 import { Paper, Box, Link, Typography, Tooltip } from "@mui/material";
 import { Lock as LockIcon } from "@mui/icons-material";
 import { useState, useMemo } from "react";
->>>>>>> c1485843a70afaa9b4c8dc17bb378ec6442b8907
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 import EditLabelModal from "./EditLabelModal";
