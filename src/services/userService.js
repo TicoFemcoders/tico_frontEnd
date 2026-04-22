@@ -29,7 +29,7 @@ export const createUser = (formData) =>
 export const updateUser = (userId, formData) =>
   api.put(`/api/users/${userId}`, formData);
 
-export const toggleUserActive = () =>
+export const toggleUserActive = (userId) =>
   api.patch(`/api/users/${userId}/active`);
 
 export const userService = {
