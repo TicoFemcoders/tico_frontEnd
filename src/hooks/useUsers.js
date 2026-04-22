@@ -52,7 +52,13 @@ export const useUsers = () => {
         notify("Estado del usuario actualizado");
     };
 
-    const activeUsers = users.filter(u => u.isActive);
+    const deactivateUser = async (userId, reassignEmail) => {
+        await userService.deactivateUser(userId, reassignEmail);
+        await fetchUsers();
+        notify("Usuario desactivado correctamente");
+    };
+
+    const activeUsers   = users.filter(u => u.isActive);
     const inactiveUsers = users.filter(u => !u.isActive);
 
     return {
@@ -64,6 +70,7 @@ export const useUsers = () => {
         updateUser,
         deleteUser,
         toggleUser,
+        deactivateUser,
         handleError,
     };
 };
