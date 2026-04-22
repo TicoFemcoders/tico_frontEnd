@@ -1,122 +1,76 @@
-import { Box, CircularProgress, Alert } from "@mui/material";
-import { useState, useEffect } from "react";
-import { Lock as LockIcon } from "@mui/icons-material";
+import { useState } from "react";
+import { Box, CircularProgress, Alert, Button } from "@mui/material";
+import { Add as AddIcon, Lock as LockIcon } from "@mui/icons-material";
 import PageHeader from "../components/common/PageHeader";
 import LabelTable from "../components/labels/LabelTable";
-import LabelForm from "../components/labels/LabelForm";
-import { labelService } from "../services/labelService";
-import LabelInUseModal from "../components/modals/LabelInUseModal";
+import CreateLabelModal from "../components/labels/CreateLabelModal";
+import { useLabels } from "../hooks/useLabels";
 
 const LabelsPage = () => {
-    const [labels, setLabels] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [labelInUseModal, setLabelInUseModal] = useState(false);
-    const [selectedLabel, setSelectedLabel] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const {
+        loading,
+        activeLabels,
+        inactiveLabels,
+        createLabel,
+        toggleLabel,
+        editLabel,
+        handleError,
+    } = useLabels();
 
-    const fetchLabels = async () => {
-        try {
-            const data = await labelService.getAllLabels();
-            setLabels(data);
-        } catch (error) {
-            console.error("Error al cargar etiquetas:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => { fetchLabels(); }, []);
-
-    const activeLabels = labels.filter(l => l.active === true);
-    const inactiveLabels = labels.filter(l => l.active === false);
-
-    const handleCreateLabel = async (newLabelData) => {
-        try {
-            await labelService.createLabel(newLabelData);
-            await fetchLabels();
-        } catch (error) {
-            console.error("Error al crear etiqueta:", error);
-            alert("No se pudo crear la etiqueta");
-        }
-    };
-
-    const handleToggleActive = async (label) => {
-        try {
-            if (label.active) {
-                await labelService.deactivateLabel(label.id);
-            } else {
-                await labelService.activateLabel(label.id);
-            }
-            await fetchLabels();
-        } catch (error) {
-            if (error.response?.status === 409) {
-                setSelectedLabel(label);
-                setLabelInUseModal(true);
-            } else {
-                console.error("Error al cambiar estado:", error);
-                alert("Error al cambiar el estado de la etiqueta");
-            }
-        }
-    };
-
-    const handleEditName = async (label, newName) => {
-        try {
-            await labelService.updateLabel(label.id, { name: newName, color: label.color });
-            await fetchLabels();
-        } catch (error) {
-            console.error("Error al actualizar nombre:", error);
-            alert("Error al actualizar el nombre de la etiqueta");
-        }
-    };
+    if (loading) return (
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+            <CircularProgress />
+        </Box>
+    );
 
     return (
         <Box sx={{ p: 1 }}>
-            {loading ? (
-                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-                    <CircularProgress />
-                </Box>
-            ) : (
-                <>
-                    <PageHeader
-                        title="Gestión de Etiquetas"
-                        subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
-                    />
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
+                <PageHeader
+                    title="Gestión de Etiquetas"
+                    subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
+                />
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    Nueva Etiqueta
+                </Button>
+            </Box>
 
-                    <LabelTable
-                        title="Etiquetas activas"
-                        labels={activeLabels}
-                        showFilter={true}
-                        onToggle={handleToggleActive}
-                        onEdit={handleEditName}
-                    />
+            <CreateLabelModal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onCreate={createLabel}
+                onError={handleError}
+            />
 
-                    <Alert
-                        severity="warning"
-                        icon={<LockIcon fontSize="inherit" />}
-                        sx={{ mb: 4, borderRadius: 2, bgcolor: "warning.light", color: "text.primary" }}
-                    >
-                        Las etiquetas con tickets activos no pueden ser desactivadas.
-                        Primero resuelve o reasigna los tickets asociados.
-                    </Alert>
+            <LabelTable
+                title="Etiquetas activas"
+                labels={activeLabels}
+                showFilter
+                onToggle={toggleLabel}
+                onEdit={editLabel}
+            />
 
-                    <LabelTable
-                        title="Etiquetas inactivas"
-                        labels={inactiveLabels}
-                        showFilter={true}
-                        isInactiveVariant
-                        onToggle={handleToggleActive}
-                    />
+            <Alert
+                severity="warning"
+                icon={<LockIcon fontSize="inherit" />}
+                sx={{ mb: 4, borderRadius: 2, bgcolor: "#fff4e5", color: "#663c00" }}
+            >
+                Las etiquetas con tickets activos no pueden ser desactivadas.
+                Primero resuelve o reasigna los tickets asociados.
+            </Alert>
 
-                    <LabelForm onAdd={handleCreateLabel} existingLabels={labels} />
-
-                    <LabelInUseModal
-                        open={labelInUseModal}
-                        onClose={() => setLabelInUseModal(false)}
-                        label={selectedLabel}
-                        activeTickets={selectedLabel?.activeTickets ?? 0}
-                        onEdit={() => setLabelInUseModal(false)}
-                    />
-                </>
-            )}
+            <LabelTable
+                title="Etiquetas inactivas"
+                labels={inactiveLabels}
+                showFilter
+                isInactiveVariantgit 
+                onToggle={toggleLabel}
+            />
         </Box>
     );
 };
