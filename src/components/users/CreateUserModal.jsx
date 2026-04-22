@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const CreateUserModal = ({ open, onClose, onConfirm }) => {
     const [formData, setFormData] = useState({

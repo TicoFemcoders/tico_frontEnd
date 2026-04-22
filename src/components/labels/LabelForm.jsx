@@ -1,5 +1,5 @@
 import { Paper, Box, Typography, TextField, Button, Popover, IconButton, Tooltip } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const FIXED_PALETTE = [
     "#FF5733", "#C70039", "#900C3F", "#581845", "#FF4D4D", "#B22222",
