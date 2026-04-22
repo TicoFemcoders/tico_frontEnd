@@ -462,7 +462,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
         </Box>
       )}
 
-      {/* MODALES (Mantenemos la lógica de CloseTicketModal) */}
       <CloseTicketModal
         open={openCloseModal}
         onClose={() => setOpenCloseModal(false)}
@@ -470,7 +469,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUserId }) => {
         onSuccess={() => onRefresh()}
       />
 
-      {/* DIÁLOGOS DE CONFIRMACIÓN */}
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle sx={{ fontWeight: 700 }}>¿Guardar cambios?</DialogTitle>
         <DialogActions>
