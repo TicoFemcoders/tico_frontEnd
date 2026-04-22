@@ -18,6 +18,7 @@ import { labelService } from "../../services/labelService";
 import { ticketService } from "../../services/ticketService";
 import { userService } from "../../services/userService";
 import { reopenTicket } from "../../services/ticketService";
+import { useBlocker } from "react-router-dom";
 import PriorityChip from "../common/PriorityChip";
 import StatusChip from "../common/StatusChip";
 import LabelChip from "../common/LabelChip";
@@ -54,6 +55,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
   const [admins, setAdmins] = useState([]);
+  const blocker = useBlocker(isEditing);
 
   const [formData, setFormData] = useState({
     priority: "",
@@ -518,6 +520,32 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
           El ticket volverá a estar activo y se podrán enviar mensajes de nuevo.
         </Typography>
       </AppModal>
+      <AppModal
+            open={blocker.state === "blocked"}
+            onClose={() => blocker.reset?.()}
+            title="¿Salir sin guardar?"
+            actions={
+              <>
+                <Button onClick={() => blocker.reset?.()}>
+                  Volver
+                </Button>
+                <Button 
+                  onClick={() => blocker.proceed?.()}
+                  variant="contained" 
+                  color="error"
+                >
+                  Salir sin guardar
+                </Button>
+              </>
+            }
+          >
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+              <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
+              <Typography variant="body2">
+                Tienes cambios sin guardar en prioridad o etiquetas. Si sales ahora se perderán.
+              </Typography>
+            </Box>
+          </AppModal>
           </Stack>
   );
 };
