@@ -1,10 +1,11 @@
 import { Paper, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Select, MenuItem, Link, Stack, TextField, InputAdornment } from "@mui/material";
 import { ArrowForward as ArrowIcon, Update as UpdateIcon, CheckCircle as CheckIcon, AddCircle as AddIcon,  Search as SearchIcon } from "@mui/icons-material";
-// import { StatusChip, PriorityChip } from "../common/TicketChips";
 import { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 import { useLocation, Link as RouterLink } from "react-router-dom";
+import PriorityChip from "../common/PriorityChip"
+import StatusChip from "../common/StatusChip"
 
 const getLatestDateInfo = (ticket) => {
     const dates = [
@@ -18,7 +19,7 @@ const getLatestDateInfo = (ticket) => {
     return { ...latest, value: latest.value.toLocaleDateString() };
 };
 
-const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }) => {
+ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }) => {
     const [sortOption, setSortOption] = useState("recent");
     const [searchQuery, setSearchQuery] = useState("");
     const location = useLocation();
@@ -55,16 +56,16 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
             header: "EMPLEADO", 
             renderCell: (t) => <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: "13px" }}>{t.creator?.name || "Desconocido"}</Typography>
         },
-        { 
-            header: "ETIQUETAS", 
-            renderCell: (t) => (
-                <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', maxWidth: 180 }}>
-                    {t.labels?.map((label, i) => (
-                        <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '10px', height: 20 }} />
-                    ))}
-                </Box>
-            )
-        },
+        // { 
+        //     header: "ETIQUETAS", 
+        //     renderCell: (t) => (
+        //         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', maxWidth: 180 }}>
+        //             {t.labels?.map((label, i) => (
+        //                 <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '10px', height: 20 }} />
+        //             ))}
+        //         </Box>
+        //     )
+        // },
         { header: "PRIORIDAD", renderCell: (t) => <PriorityChip priority={t.priority} /> },
         { header: "ESTADO", renderCell: (t) => <StatusChip status={t.status} /> },
         variant === "all" && {
@@ -89,7 +90,7 @@ const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }
         {
             align: "right",
             renderCell: (t) => (
-                <Link component={RouterLink} to={`/tickets/${t.id}`} state={{ fromPath: location.pathname }} sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", textDecoration: "none", fontWeight: 600, fontSize: "12px", color: "primary.main" }}>
+                <Link component={RouterLink} to={`/detail-ticket/${t.id}`} state={{ fromPath: location.pathname }} sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", textDecoration: "none", fontWeight: 600, fontSize: "12px", color: "primary.main" }}>
                     {["assigned", "all"].includes(variant) ? "Gestionar" : "Ver"} <ArrowIcon sx={{ fontSize: 16, ml: 0.5 }} />
                 </Link>
             )
@@ -134,12 +135,12 @@ return (
                                 </Typography>
                             )}
                             
-                            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2, gap: 0.5 }}>
+                            {/* <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2, gap: 0.5 }}>
                                 {ticket.labels?.map((label, i) => (
                                     <Chip key={i} label={label} size="small" variant="outlined" sx={{ fontSize: '9px', height: 18 }} />
                                 ))}
                                 <PriorityChip priority={ticket.priority} />
-                            </Stack>
+                            </Stack> */}
                             
                             {variant === "all" && (
                                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, fontSize: '11px' }}>
@@ -150,7 +151,7 @@ return (
                                 <Typography variant="caption" sx={{ color: latestDate.color, display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
                                     {latestDate.icon} {latestDate.label}: {latestDate.value}
                                 </Typography>
-                                <Link component={RouterLink} to={`/tickets/${ticket.id}`} state={{ fromPath: location.pathname }} sx={{ fontWeight: 700, fontSize: "11px" }}>
+                                <Link component={RouterLink} to={`/detail-ticket/${ticket.id}`} state={{ fromPath: location.pathname }} sx={{ fontWeight: 700, fontSize: "11px" }}>
                                      {["assigned", "all"].includes(variant) ? "GESTIONAR" : "VER"}
                                 </Link>
                             </Box>
@@ -160,5 +161,6 @@ return (
             />
         </Paper>
     );
-}
+ }
 export default TicketTable;
+
