@@ -1,6 +1,8 @@
 import { Paper, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Select, MenuItem, Link, Stack, TextField, InputAdornment } from "@mui/material";
 import { ArrowForward as ArrowIcon, Update as UpdateIcon, CheckCircle as CheckIcon, AddCircle as AddIcon,  Search as SearchIcon } from "@mui/icons-material";
 // import { StatusChip, PriorityChip } from "../common/TicketChips";
+import StatusChip from "../common/StatusChip";
+import PriorityChip from "../common/PriorityChip";
 import { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
