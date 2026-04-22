@@ -49,6 +49,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
   const [openReopenConfirm, setOpenReopenConfirm] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openCloseModal, setOpenCloseModal] = useState(false);
+  const [openErrorReopenModal, setOpenErrorReopenModal] = useState(false);
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
@@ -381,30 +382,30 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
       )}
 
       {/* ── Cerrar / Reabrir ticket ── */}
-      {isAdmin && (
-        <Box>
-          {ticket?.status === "CLOSED" ? (
-            <Button
-              variant="contained"
-              fullWidth
-              color="success"
-              onClick={() => setOpenReopenConfirm(true)}
-              sx={{ fontWeight: 700, borderRadius: 2 }}
-            >
-              Reabrir Ticket
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => setOpenCloseModal(true)}
-              sx={{ bgcolor: "error.main", "&:hover": { bgcolor: "error.dark" } }}
-            >
-              Cerrar ticket
-            </Button>
+        {isAdmin && (
+            <Box>
+              {ticket?.status === "CLOSED" ? (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="success"
+                  onClick={() => isAssignedToMe ? setOpenReopenConfirm(true) : setOpenErrorReopenModal(true)}
+                  sx={{ fontWeight: 700, borderRadius: 2 }}
+                >
+                  Reabrir Ticket
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={() => setOpenCloseModal(true)}
+                  sx={{ bgcolor: "error.main", "&:hover": { bgcolor: "error.dark" } }}
+                >
+                  Cerrar ticket
+                </Button>
+              )}
+            </Box>
           )}
-        </Box>
-      )}
 
       {!isAdmin && isCreatorEmployee && ticket?.status === "CLOSED" && (
         <Button
@@ -426,7 +427,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         onSuccess={() => onRefresh()}
       />
 
-      {/* Confirmación de guardar cambios */}
       <AppModal
         open={openConfirm}
         onClose={() => setOpenConfirm(false)}
@@ -441,7 +441,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         }
       />
 
-      {/* Éxito al reasignar */}
       <AppModal
         open={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
@@ -463,7 +462,6 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         </Box>
       </AppModal>
 
-      {/* Error de acceso restringido */}
       <AppModal
         open={openErrorModal}
         onClose={() => setOpenErrorModal(false)}
@@ -480,6 +478,25 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
             Solo el administrador asignado{" "}
             <strong>({ticket?.assignedToName})</strong> puede editar la
             prioridad y las etiquetas de este ticket.
+          </Typography>
+        </Box>
+      </AppModal>
+
+      <AppModal
+        open={openErrorReopenModal}
+        onClose={() => setOpenErrorReopenModal(false)}
+        title="Acceso Restringido"
+        actions={
+          <Button onClick={() => setOpenErrorReopenModal(false)} variant="outlined">
+            Cerrar
+          </Button>
+        }
+      >
+        <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+          <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
+          <Typography variant="body2">
+            Solo el administrador asignado{" "}
+            <strong>({ticket?.assignedToName})</strong> puede reabrir este ticket.
           </Typography>
         </Box>
       </AppModal>
