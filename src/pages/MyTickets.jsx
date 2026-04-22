@@ -17,6 +17,7 @@ const MyTickets = ({ viewType = "default" }) => {
 
   useEffect(() => {
     const dataTickets = async () => {
+      setLoading(true); 
       try {
         let data = [];
         if (viewType === "assigned") {

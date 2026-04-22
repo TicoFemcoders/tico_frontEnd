@@ -17,6 +17,9 @@ export const closeTicket = (ticketId, closingMessage = null) => {
   return api.put(`/api/tickets/${ticketId}/close${params}`);
 };
 
+export const reopenTicket = (ticketId) => 
+  api.put(`/api/tickets/${ticketId}/reopen`);
+
 export const changePriority = (ticketId, priority) =>
   api.put(`/api/tickets/${ticketId}/priority?priority=${priority}`);
 
@@ -34,6 +37,12 @@ export const getAllLabels = async () => {
   return response.data;
 };
 
+export const getTicketById = async (ticketId) => {
+  const response = await api.get(`/api/tickets/${ticketId}/detail`);
+  return response.data;
+};
+
+
 /** Objeto agrupado para compatibilidad con imports { ticketService } */
 export const ticketService = {
   createTicket,
@@ -46,4 +55,6 @@ export const ticketService = {
   assignLabel,
   removeLabel,
   getAllLabels,
+  getTicketById,
+  reopenTicket,
 };

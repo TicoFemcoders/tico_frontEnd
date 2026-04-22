@@ -1,0 +1,68 @@
+import { Paper, Typography, Box, Divider } from "@mui/material";
+
+const TicketDescription = ({ description, createdAt }) => {
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "Fecha no disponible";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Fecha inválida";
+
+    const dateFormatted = date.toLocaleDateString();
+    const timeFormatted = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return `${dateFormatted} a las ${timeFormatted}`;
+  };
+
+  return (
+    <Paper
+      sx={{
+        width: "100%",
+        boxSizing: "border-box",
+        borderRadius: 2,
+        boxShadow: "var(--shadow)",
+        border: "1px solid",
+        borderColor: "var(--border)",
+        backgroundColor: "var(--bg)",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          p: 1.5,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "background.paper",
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ fontWeight: 700, color: "text.primary" }}
+        >
+          Descripción del empleado
+        </Typography>
+
+        <Typography
+          variant="caption"
+          sx={{ fontWeight: 400, color: "text.secondary"}}
+        >
+          {formatDateTime(createdAt)}
+        </Typography>
+      </Box>
+      <Divider sx={{ borderColor: "var(--border)" }}/>
+      <Box sx={{ p: 2 }}>
+        <Typography
+          variant="body1"
+          sx={{ whiteSpace: "pre-line", color: "text.mid" }}
+        >
+          {description}
+        </Typography>
+      </Box>
+    </Paper>
+  );
+};
+
+export default TicketDescription;
