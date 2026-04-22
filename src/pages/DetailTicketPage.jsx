@@ -105,7 +105,7 @@ const DetailTicketPage = () => {
               <TicketHistory ticketId={id} refreshTrigger={refreshTrigger} />
               <TicketResponseBox 
                 ticket={ticket} 
-                onMessageSent={fetchTicket}
+                onMessageSent={handleMessageSent}
               />
             </Stack>
           </Box>
@@ -114,7 +114,7 @@ const DetailTicketPage = () => {
             <TicketSidebar 
               ticket={ticket} 
               isAdmin={isAdmin} 
-              currentUserId={user?.id}
+              currentUser={user}
               onRefresh={fetchTicket} 
             />
           </Box>
