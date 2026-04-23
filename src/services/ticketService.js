@@ -4,7 +4,7 @@ export const createTicket = (ticketData) =>
   api.post(`/api/tickets`, ticketData);
 
 export const getMyTickets = (page = 0, size = 50) =>
-  api.get(`/api/tickets/my-tickets `,{ params: { page, size } }).then(res => res.data.content);
+  api.get(`/api/tickets/my-tickets`,{ params: { page, size } }).then(res => res.data.content);
 
 export const getAssignedTickets = (page = 0, size = 50) =>
   api.get(`/api/tickets/assigned`,  { params: { page, size }}).then(res => res.data.content);
