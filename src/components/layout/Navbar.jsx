@@ -12,6 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../context/useAuth";
 import TicoLogo from "../common/TicoLogo";
+import IconButton from "@mui/material/IconButton";
 
 const DRAWER_WIDTH = 240;
 
@@ -125,7 +126,21 @@ function NavContent({ onNavigate }) {
           <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</Typography>
           <Typography sx={{ fontSize: 11, color: "navbar.text" }}>{isAdmin ? "Administrador" : "Empleada"}</Typography>
         </Box>
-        <LogoutIcon onClick={logout} sx={{ fontSize: 16, color: "navbar.text", cursor: "pointer", "&:hover": { color: "primary.contrastText" } }} />
+        <IconButton 
+  onClick={logout} 
+  size="small" 
+  aria-label="Cerrar sesión"
+  sx={{ 
+    color: "navbar.text", 
+    p: 0.5,
+    "&:hover": { 
+      color: "primary.contrastText",
+      bgcolor: "rgba(255, 255, 255, 0.08)" 
+    } 
+  }}
+>
+  <LogoutIcon sx={{ fontSize: 18 }} />
+</IconButton>
       </Box>
     </Box>
   );
