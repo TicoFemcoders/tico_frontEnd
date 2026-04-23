@@ -23,14 +23,17 @@ const TopBar = ({ breadcrumbs = [] }) => {
 
   const handleReadAndGo = async (notificacion) => {
     handleClose();
-    setUnreadCount(prev => prev > 0 ? prev - 1 : 0); 
-    setNotifications(prev => prev.map(n => n.id === notificacion.id ? { ...n, read: true } : n));
-    notificationService.markAsRead(notificacion.id).catch(() => {
-      setError("No se pudo marcar la notificación como leída.");
-      setUnreadCount(prev => prev + 1);
-      });
+    try {
+        await notificationService.markAsRead(notificacion.id);
+        setUnreadCount(prev => prev > 0 ? prev - 1 : 0);
+        setNotifications(prev => prev.map(n =>
+            n.id === notificacion.id ? { ...n, read: true } : n
+        ));
+    } catch {
+        setError("No se pudo marcar la notificación como leída.");
+    }
     navigate(`/detail-ticket/${notificacion.ticketId}`);
-  };
+};
 
   const fetchNotificationsPagination = async (currentPage, signal) => {
     if (loading || !hasMore) return; 
