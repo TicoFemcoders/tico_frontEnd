@@ -1,22 +1,22 @@
-import { Box, Button } from "@mui/material";; 
+import { Box } from "@mui/material";; 
 import { useNavigate } from "react-router-dom";
-import StatCards from "../components/myTickets/StatCards";;
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
-import { AuthContext } from "../context/authContext";
+import { useAuth } from "../context/useAuth";
 import PageHeader from "../components/common/PageHeader";
 import TicketTable from "../components/myTickets/TicketTable";
+import StatCards from "../components/myTickets/StatCards";;
 
 
 const MyTickets = ({ viewType = "default" }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {user, hasRole} = useContext(AuthContext);
+  const {user, hasRole} = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     const dataTickets = async () => {
       setLoading(true); 
       try {
@@ -80,7 +80,7 @@ const MyTickets = ({ viewType = "default" }) => {
             onActionClick={() => navigate("/tickets")}
           />
           
-          <StatCards stats={stats} isAdmin={hasRole("ADMIN")} />
+          <StatCards stats={stats}  />
           
           <TicketTable 
             title="Tickets activos" 
