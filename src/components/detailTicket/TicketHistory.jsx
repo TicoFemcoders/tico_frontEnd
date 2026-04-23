@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import useAuth from "../../context/useAuth";
+import { useAuth } from "../../context/useAuth";
 import {
   Paper,
   Typography,
