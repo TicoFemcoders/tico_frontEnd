@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useEffect, useState, useContext, useCallback } from "react";
-import { AuthContext } from "../context/authContext";
+import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "../context/useAuth";
 import { ticketService } from "../services/ticketService";
 
 import TicketDescription from "../components/detailTicket/TicketDescription";
@@ -15,7 +15,7 @@ import LabelChip from "../components/common/LabelChip";
 
 const DetailTicketPage = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
