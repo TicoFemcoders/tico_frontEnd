@@ -6,7 +6,8 @@ import { CircularProgress } from "@mui/material";
 import { useAuth } from "../context/useAuth";
 import PageHeader from "../components/common/PageHeader";
 import TicketTable from "../components/myTickets/TicketTable";
-import StatCards from "../components/myTickets/StatCards";;
+import StatCards from "../components/myTickets/StatCards";
+import { TICKET_STATUS } from "../utils/enums";
 
 
 const MyTickets = ({ viewType = "default" }) => {
@@ -38,13 +39,15 @@ const MyTickets = ({ viewType = "default" }) => {
     dataTickets();
   }, [viewType, user?.id]);
 
-  const activeTickets = tickets.filter(t => t.status === "OPEN" || t.status === "IN_PROGRESS");
-  const closedTickets = tickets.filter(t => t.status === "CLOSED");
+  const activeTickets = tickets.filter(t =>
+    t.status === TICKET_STATUS.OPEN || t.status === TICKET_STATUS.IN_PROGRESS
+  );
+  const closedTickets = tickets.filter(t => t.status === TICKET_STATUS.CLOSED);
 
   const stats = [
-    { label: "Abiertos", value: tickets.filter(t => t.status === "OPEN").length, color: "primary.main" },
-    { label: "En curso", value: tickets.filter(t => t.status === "IN_PROGRESS").length, color: "secondary.main" },
-    { label: "Cerrados", value: closedTickets.length, color: "text.subtle" }
+      { label: "Abiertos", value: tickets.filter(t => t.status === TICKET_STATUS.OPEN).length, color: "primary.main" },
+      { label: "En curso", value: tickets.filter(t => t.status === TICKET_STATUS.IN_PROGRESS).length, color: "secondary.main" },
+      { label: "Cerrados", value: closedTickets.length, color: "text.subtle" }
   ];
 
   if (["assigned", "all"].includes(viewType)) {
