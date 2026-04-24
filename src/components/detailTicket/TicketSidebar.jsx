@@ -23,7 +23,8 @@ import PriorityChip from "../common/PriorityChip";
 import StatusChip from "../common/StatusChip";
 import LabelChip from "../common/LabelChip";
 import CloseTicketModal from "../modals/CloseTicketModal";
-import AppModal from "../common/AppModal";
+import ConfirmModal from "../modals/ConfirmModal";
+import AlertModal from "../modals/AlertModal";
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -423,123 +424,78 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
         onSuccess={() => onRefresh()}
       />
 
-      <AppModal
+      <ConfirmModal
         open={openConfirm}
         onClose={() => setOpenConfirm(false)}
+        onConfirm={confirmUpdate}
         title="¿Guardar cambios?"
-        actions={
-          <>
-            <Button onClick={() => setOpenConfirm(false)}>Volver</Button>
-            <Button onClick={confirmUpdate} variant="contained" color="success">
-              Confirmar
-            </Button>
-          </>
-        }
+        confirmLabel="Confirmar"
+        confirmColor="success"
       />
 
-      <AppModal
-        open={openSuccessModal}
-        onClose={() => setOpenSuccessModal(false)}
-        title="¡Actualizado!"
-      >
-        <Box sx={{ textAlign: "center", py: 1 }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: 48, color: "success.main", mb: 1.5 }} />
-          <Typography variant="body2" color="text.secondary">
-            El responsable ha sido actualizado correctamente.
-          </Typography>
-          <Button
-            onClick={() => setOpenSuccessModal(false)}
-            variant="contained"
-            fullWidth
-            sx={{ mt: 3 }}
-          >
-            Aceptar
-          </Button>
-        </Box>
-      </AppModal>
+      <AlertModal
+          open={openSuccessModal}
+          onClose={() => setOpenSuccessModal(false)}
+          title="¡Actualizado!"
+          closeLabel="Aceptar"
+          icon={<CheckCircleOutlineIcon sx={{ fontSize: 48, color: "success.main" }} />}
+          message="El responsable ha sido actualizado correctamente."
+      />
 
-      <AppModal
-        open={openErrorModal}
-        onClose={() => setOpenErrorModal(false)}
-        title="Acceso Restringido"
-        actions={
-          <Button onClick={() => setOpenErrorModal(false)} variant="outlined">
-            Cerrar
-          </Button>
-        }
+      <AlertModal
+          open={openErrorModal}
+          onClose={() => setOpenErrorModal(false)}
+          title="Acceso Restringido"
       >
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-          <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
-          <Typography variant="body2">
-            Solo el administrador asignado{" "}
-            <strong>({ticket?.assignedToName})</strong> puede editar la
-            prioridad y las etiquetas de este ticket.
-          </Typography>
-        </Box>
-      </AppModal>
-
-      <AppModal
-        open={openErrorReopenModal}
-        onClose={() => setOpenErrorReopenModal(false)}
-        title="Acceso Restringido"
-        actions={
-          <Button onClick={() => setOpenErrorReopenModal(false)} variant="outlined">
-            Cerrar
-          </Button>
-        }
-      >
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-          <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
-          <Typography variant="body2">
-            Solo el administrador asignado{" "}
-            <strong>({ticket?.assignedToName})</strong> puede reabrir este ticket.
-          </Typography>
-        </Box>
-      </AppModal>
-
-      <AppModal
-        open={openReopenConfirm}
-        onClose={() => setOpenReopenConfirm(false)}
-        title="¿Reabrir ticket?"
-        actions={
-          <>
-            <Button onClick={() => setOpenReopenConfirm(false)}>Cancelar</Button>
-            <Button onClick={handleReopen} variant="contained" color="success">
-              Confirmar
-            </Button>
-          </>
-        }
-      >
-        <Typography variant="body2" color="text.secondary">
-          El ticket volverá a estar activo y se podrán enviar mensajes de nuevo.
-        </Typography>
-      </AppModal>
-      <AppModal
-            open={blocker.state === "blocked"}
-            onClose={() => blocker.reset?.()}
-            title="¿Salir sin guardar?"
-            actions={
-              <>
-                <Button onClick={() => blocker.reset?.()}>
-                  Volver
-                </Button>
-                <Button 
-                  onClick={() => blocker.proceed?.()}
-                  variant="contained" 
-                  color="error"
-                >
-                  Salir sin guardar
-                </Button>
-              </>
-            }
-          >
-            <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+          <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
               <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
               <Typography variant="body2">
-                Tienes cambios sin guardar en prioridad o etiquetas. Si sales ahora se perderán.
+                  Solo el administrador asignado{" "}
+                  <strong>({ticket?.assignedToName})</strong> puede editar la
+                  prioridad y las etiquetas de este ticket.
               </Typography>
-            </Box>
-          </AppModal>
+          </Box>
+      </AlertModal>
+
+      <AlertModal
+          open={openErrorReopenModal}
+          onClose={() => setOpenErrorReopenModal(false)}
+          title="Acceso Restringido"
+      >
+          <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+              <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
+              <Typography variant="body2">
+                  Solo el administrador asignado{" "}
+                  <strong>({ticket?.assignedToName})</strong> puede reabrir este ticket.
+              </Typography>
+          </Box>
+      </AlertModal>
+
+      <ConfirmModal
+          open={openReopenConfirm}
+          onClose={() => setOpenReopenConfirm(false)}
+          onConfirm={handleReopen}
+          title="¿Reabrir ticket?"
+          message="El ticket volverá a estar activo y se podrán enviar mensajes de nuevo."
+          confirmLabel="Confirmar"
+          confirmColor="success"
+      />
+      <ConfirmModal
+          open={blocker.state === "blocked"}
+          onClose={() => blocker.reset?.()}
+          onConfirm={() => blocker.proceed?.()}
+          title="¿Salir sin guardar?"
+          confirmLabel="Salir sin guardar"
+          confirmColor="error"
+          cancelLabel="Volver"
+      >
+          <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+              <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
+              <Typography variant="body2">
+                  Tienes cambios sin guardar en prioridad o etiquetas. Si sales ahora se perderán.
+              </Typography>
+          </Box>
+      </ConfirmModal>
           </Stack>
   );
 };
