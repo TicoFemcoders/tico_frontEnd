@@ -10,7 +10,7 @@ import TicketSidebar from "../components/detailTicket/TicketSidebar";
 import PageHeader from "../components/common/PageHeader";
 import EnumChip from "../components/common/EnumChip";
 import LabelChip from "../components/common/LabelChip";
-import { STATUS_CONFIG, PRIORITY_CONFIG } from "../utils/enums";
+import { STATUS_CONFIG, USER_ROLES, PRIORITY_CONFIG } from "../utils/enums";
 
 const DetailTicketPage = () => {
   const { id } = useParams();
@@ -19,7 +19,7 @@ const DetailTicketPage = () => {
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAdmin = user?.roles?.includes(USER_ROLES.ADMIN);
 
   const fetchTicket = useCallback(async () => {
     try {
