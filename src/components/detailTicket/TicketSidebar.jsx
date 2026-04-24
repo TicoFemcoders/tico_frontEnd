@@ -14,6 +14,7 @@ import ConfirmModal from "../modals/ConfirmModal";
 import AlertModal from "../modals/AlertModal";
 import { TICKET_STATUS, PRIORITY_CONFIG, STATUS_CONFIG } from "../../utils/enums";
 import EnumChip from "../common/EnumChip";
+import { formatDate } from "../../utils/formatDate";
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -332,7 +333,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
             label="Fecha creación"
             value={
               <Typography variant="body2" sx={{ fontWeight: 700, color: "error.main", fontSize: 13 }}>
-                {ticket?.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : "-"}
+                {formatDate(ticket?.createdAt)}
               </Typography>
             }
           />

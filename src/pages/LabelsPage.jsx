@@ -5,6 +5,7 @@ import PageHeader from "../components/common/PageHeader";
 import LabelTable from "../components/labels/LabelTable";
 import CreateLabelModal from "../components/labels/CreateLabelModal";
 import { useLabels } from "../hooks/useLabels";
+import LoadingScreen from "../components/common/LoadingScreen";
 
 const LabelsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,13 +19,9 @@ const LabelsPage = () => {
         handleError,
     } = useLabels();
 
-    if (loading) return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-            <CircularProgress />
-        </Box>
-    );
-
-    return (
+    return loading ? (
+            <LoadingScreen />
+        ) : (
         <Box sx={{ p: 1 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
                 <PageHeader

@@ -6,6 +6,7 @@ import CreateUserModal from "../components/users/CreateUserModal";
 import EditUserModal from "../components/users/EditUserModal";
 import DeleteUserModal from "../components/users/DeleteUserModal";
 import { useUsers } from "../hooks/useUsers";
+import LoadingScreen from "../components/common/LoadingScreen";
 
 const UsersPage = () => {
     const {
@@ -44,14 +45,9 @@ const UsersPage = () => {
         }
     };
 
-    if (loading)
-        return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-                <CircularProgress />
-            </Box>
-        );
-
-    return (
+    return loading ? (
+            <LoadingScreen />
+        ) : (
         <Box sx={{ p: 3 }}>
             <PageHeader
                 title="Gestión de Usuarios"

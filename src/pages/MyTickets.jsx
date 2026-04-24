@@ -8,6 +8,7 @@ import PageHeader from "../components/common/PageHeader";
 import TicketTable from "../components/myTickets/TicketTable";
 import StatCards from "../components/myTickets/StatCards";
 import { TICKET_STATUS } from "../utils/enums";
+import LoadingScreen from "../components/common/LoadingScreen";
 
 
 const MyTickets = ({ viewType = "default" }) => {
@@ -71,9 +72,7 @@ const MyTickets = ({ viewType = "default" }) => {
   return (
     <Box>
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <CircularProgress />
-        </Box>
+         <LoadingScreen />
       ) : (
         <>
           <PageHeader 

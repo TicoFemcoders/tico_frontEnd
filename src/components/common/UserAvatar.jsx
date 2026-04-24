@@ -1,13 +1,5 @@
 import Avatar from "@mui/material/Avatar";
-
-const getInitials = (name) => {
-    return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-};
+import { getInitials } from "../../utils/getInitials";
 
 const getAvatarColor = (role) => {
     return role === "ADMIN" ? "#1e40af" : "#059669";

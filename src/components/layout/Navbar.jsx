@@ -13,6 +13,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../context/useAuth";
 import TicoLogo from "../common/TicoLogo";
 import IconButton from "@mui/material/IconButton";
+import { getInitials } from "../../utils/getInitials";
 
 const DRAWER_WIDTH = 240;
 
@@ -115,12 +116,7 @@ function NavContent({ onNavigate }) {
       <Divider sx={{ borderColor: "navbar.border" }} />
       <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
         <Avatar sx={{ width: 32, height: 32, fontSize: 13, fontWeight: 700, bgcolor: "primary.main" }}>
-          {user?.name
-            ?.split(" ")
-            .map((n) => n[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase()}
+          {getInitials(user?.name)}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography sx={{ fontSize: 13, fontWeight: 600, color: "primary.contrastText", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.name}</Typography>
