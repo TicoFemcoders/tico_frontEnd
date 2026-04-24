@@ -75,7 +75,7 @@ function NavContent({ onNavigate }) {
             <>
               <SectionLabel>TICKETS</SectionLabel>
               <NavItem icon="🎫" label="Todos los tickets" path="/all-tickets" selected={isSelected("/all-tickets")} onClick={() => handleNavigate("/all-tickets")} />
-              <NavItem icon="📌" label="Mis tickets asignados" path="/assigned" selected={isSelected("/assigned")} onClick={() => handleNavigate("/assigned")} badge={9999999.9} />
+              <NavItem icon="📌" label="Mis tickets asignados" path="/assigned" selected={isSelected("/assigned")} onClick={() => handleNavigate("/assigned")} />
               <NavItem icon="🎫" label="Mis tickets creados" path="/my-tickets" selected={isSelected("/my-tickets")} onClick={() => handleNavigate("/my-tickets")} />
 
               <SectionLabel>GESTIÓN</SectionLabel>
