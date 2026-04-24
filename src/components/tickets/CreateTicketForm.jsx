@@ -143,9 +143,6 @@ export default function CreateTicketForm() {
           <Box component="label" sx={{ ...labelText, display: "block", mb: "6px" }}>
             Etiqueta / Categoría <Box component="span" sx={{ color: "primary.main" }}>*</Box>
           </Box>
-
-
-
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
           {form.labelIds.map(id => (
             <LabelChip 
@@ -155,18 +152,6 @@ export default function CreateTicketForm() {
             />
           ))}
         </Box>
-
-
-
-
-
-
-
-
-
-
-
-
 
           <Select
             name="labelIds"
@@ -191,6 +176,7 @@ export default function CreateTicketForm() {
               </MenuItem>
             ))}
           </Select>
+          
           {errors.labelIds && (
             <Box sx={{ fontSize: "11px", color: "error.main", mt: "4px" }}>
               {errors.labelIds}
