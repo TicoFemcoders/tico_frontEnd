@@ -15,12 +15,8 @@ export const getUserActiveTickets = (userId) =>
     .then(res => res.data.filter(t => t.status !== "CLOSED"));
 
 
-export const deleteUser = (userId, reassignEmail) => {
-  const url = reassignEmail
-    ? `/api/users/${userId}?reassignEmail=${reassignEmail}`
-    : `/api/users/${userId}`;
-  return api.delete(url);
-};
+export const deleteUser = (userId, reassignEmail) =>
+   api.delete(`/api/users/${userId}`, { params: { reassignEmail } });
 
 export const createUser = (formData) =>
   api.post(`/api/users`, formData);
@@ -32,12 +28,8 @@ export const updateUser = (userId, formData) =>
 export const toggleUserActive = (userId) =>
   api.patch(`/api/users/${userId}/active`);
 
-export const deactivateUser = (userId, reassignEmail) => {
-  const url = reassignEmail
-    ? `/api/users/${userId}/active?reassignEmail=${reassignEmail}`
-    : `/api/users/${userId}/active`;
-  return api.patch(url);
-};
+export const deactivateUser = (userId, reassignEmail) => 
+  api.patch(`/api/users/${userId}/active`, null, { params: { reassignEmail } });
 
 export const userService = {
   getAllUsers,
