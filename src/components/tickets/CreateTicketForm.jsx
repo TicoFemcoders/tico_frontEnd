@@ -60,9 +60,11 @@ export default function CreateTicketForm() {
     setErrors({});
     setLoading(true);
     try {
-      const ticket = await ticketService.createTicket(form, user.id);
+      const ticket = await ticketService.createTicket(form);
       if (form.labelId) {
-        await ticketService.assignLabel(ticket.data.id, form.labelId);
+        await ticketService.assignLabel(ticket.data.id, form.labelId).catch(() => {
+            setApiError("Ticket creado, pero no se pudo asignar la etiqueta. Puedes asignarla desde el detalle del ticket.");
+        });
       }
       navigate("/my-tickets");
     } catch (err) {
