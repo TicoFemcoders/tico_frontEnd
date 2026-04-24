@@ -1,17 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Stack,
-  TextField,
-  Button,
-  FormControlLabel,
-  Radio,
-  MenuItem,
-  RadioGroup,
-  FormControl,
-} from "@mui/material";
+import { Box, Paper, Typography, Stack, TextField, Button, FormControlLabel, 
+  Radio, MenuItem, RadioGroup, FormControl} from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { labelService } from "../../services/labelService";
@@ -19,12 +8,12 @@ import { ticketService } from "../../services/ticketService";
 import { userService } from "../../services/userService";
 import { reopenTicket } from "../../services/ticketService";
 import { useBlocker } from "react-router-dom";
-import PriorityChip from "../common/PriorityChip";
-import StatusChip from "../common/StatusChip";
 import LabelChip from "../common/LabelChip";
 import CloseTicketModal from "../modals/CloseTicketModal";
 import ConfirmModal from "../modals/ConfirmModal";
 import AlertModal from "../modals/AlertModal";
+import { TICKET_STATUS, PRIORITY_CONFIG, STATUS_CONFIG } from "../../utils/enums";
+import EnumChip from "../common/EnumChip";
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -66,7 +55,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
 
   const isAssignedToMe = ticket?.assignedToName === currentUser?.name;
   const isCreatorEmployee = ticket?.createdByName === currentUser?.name && !isAdmin;
-  const isClosed = ticket?.status === "CLOSED";
+  const isClosed = ticket?.status === TICKET_STATUS.CLOSED;
   const canEditAttributes = isAdmin && isAssignedToMe && !isClosed;
 
   
@@ -244,12 +233,12 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
                 setFormData({ ...formData, priority: e.target.value })
               }
             >
-              {["CRITICAL", "HIGH", "MEDIUM", "LOW"].map((p) => (
+              {Object.keys(PRIORITY_CONFIG).map((p) => (
                 <FormControlLabel
                   key={p}
                   value={p}
                   control={<Radio size="small" />}
-                  label={<PriorityChip priority={p} sxOverrides={{ fontSize: 12 }} />}
+                  label={<EnumChip value={p} config={PRIORITY_CONFIG} type="priority" sxOverrides={{ fontSize: 12 }} />}
                 />
               ))}
             </RadioGroup>
@@ -337,7 +326,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
           ESTADO
         </Typography>
         <Stack spacing={1.5}>
-          <InfoRow label="Actual" value={<StatusChip status={ticket?.status} />} />
+          <InfoRow label="Actual" value={<EnumChip value={ticket?.status} config={STATUS_CONFIG} type="status" />} />
           <InfoRow label="Empleado" value={ticket?.createdByName || "Cargando..."} />
           <InfoRow
             label="Fecha creación"
@@ -349,7 +338,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
           />
           {!isAdmin && (
             <>
-              <InfoRow label="Prioridad" value={<PriorityChip priority={ticket?.priority} />} />
+              <InfoRow label="Prioridad" value={<EnumChip value={ticket?.priority} config={PRIORITY_CONFIG} type="priority" />} />
               <InfoRow label="Asignado a" value={ticket?.assignedToName || "Sin asignar"} />
             </>
           )}
@@ -382,7 +371,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
 
         {isAdmin && (
             <Box>
-              {ticket?.status === "CLOSED" ? (
+              {ticket?.status === TICKET_STATUS.CLOSED ? (
                 <Button
                   variant="contained"
                   fullWidth
@@ -405,7 +394,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
             </Box>
           )}
 
-      {!isAdmin && isCreatorEmployee && ticket?.status === "CLOSED" && (
+      {!isAdmin && isCreatorEmployee && ticket?.status === TICKET_STATUS.CLOSED && (
         <Button
           variant="outlined"
           fullWidth

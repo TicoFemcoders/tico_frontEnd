@@ -3,15 +3,14 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/useAuth";
 import { ticketService } from "../services/ticketService";
-
 import TicketDescription from "../components/detailTicket/TicketDescription";
 import TicketHistory from "../components/detailTicket/TicketHistory";
 import TicketResponseBox from "../components/detailTicket/TicketResponseBox";
 import TicketSidebar from "../components/detailTicket/TicketSidebar";
 import PageHeader from "../components/common/PageHeader";
-import PriorityChip from "../components/common/PriorityChip";
-import StatusChip from "../components/common/StatusChip";
+import EnumChip from "../components/common/EnumChip";
 import LabelChip from "../components/common/LabelChip";
+import { STATUS_CONFIG, PRIORITY_CONFIG } from "../utils/enums";
 
 const DetailTicketPage = () => {
   const { id } = useParams();
@@ -78,8 +77,8 @@ const DetailTicketPage = () => {
             <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", mr: 1 }}>
               {`TIC-${ticket.id}`}
             </Typography>
-            <StatusChip status={ticket.status} />
-            <PriorityChip priority={ticket.priority} />
+            <EnumChip value={ticket.status} config={STATUS_CONFIG} type="status" />
+            <EnumChip value={ticket.priority} config={PRIORITY_CONFIG} type="priority" />
             
             {ticket.labels?.map((l, index) => (
               <LabelChip 
