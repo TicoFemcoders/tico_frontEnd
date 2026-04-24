@@ -27,6 +27,7 @@ export const changePriority = (ticketId, priority) =>
 export const assignAdmin = (ticketId, adminId) =>
   api.patch(`/api/tickets/${ticketId}/assign-admin`, { adminId });
 
+//se tendrá que eliminar por s
 export const assignLabel = (ticketId, labelId) =>
   api.post(`/api/tickets/${ticketId}/labels/${labelId}`);
 
@@ -38,6 +39,13 @@ export const getTicketById = async (ticketId) => {
   return response.data;
 };
 
+export const assignLabels = async (ticketId, labelIds) => {
+  // TEMPORAL: Mientras el backend no tenga el endpoint masivo,
+  // hacemos las llamadas una a una internamente.
+  const promises = labelIds.map(id => api.post(`/api/tickets/${ticketId}/labels/${id}`));
+  return Promise.all(promises);
+};
+
 export const ticketService = {
   createTicket,
   getMyTickets,
@@ -46,7 +54,7 @@ export const ticketService = {
   closeTicket,
   changePriority,
   assignAdmin,
-  assignLabel,
+  assignLabels,
   removeLabel,
   getTicketById,
   reopenTicket,
