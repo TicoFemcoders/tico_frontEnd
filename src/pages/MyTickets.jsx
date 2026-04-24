@@ -6,17 +6,19 @@ import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
 import { AuthContext } from "../context/authContext";
 import PageHeader from "../components/common/PageHeader";
-import TicketTable from "../components/myTickets/ticketTable";
+import TicketTable from "../components/myTickets/TicketTable";
 
 
 const MyTickets = ({ viewType = "default" }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {user} = useContext(AuthContext);
+  const {user, hasRole} = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!user) return;
     const dataTickets = async () => {
+      setLoading(true); 
       try {
         let data = [];
         if (viewType === "assigned") {
@@ -34,7 +36,7 @@ const MyTickets = ({ viewType = "default" }) => {
       }
     };
     dataTickets();
-  }, [viewType, user.id]);
+  }, [viewType, user?.id]);
 
   const activeTickets = tickets.filter(t => t.status === "OPEN" || t.status === "IN_PROGRESS");
   const closedTickets = tickets.filter(t => t.status === "CLOSED");
@@ -78,7 +80,7 @@ const MyTickets = ({ viewType = "default" }) => {
             onActionClick={() => navigate("/tickets")}
           />
           
-          <StatCards stats={stats} role={user.role} />
+          <StatCards stats={stats} isAdmin={hasRole("ADMIN")} />
           
           <TicketTable 
             title="Tickets activos" 

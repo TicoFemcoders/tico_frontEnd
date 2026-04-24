@@ -1,125 +1,113 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
-
-const getInitials = (name) => {
-    return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-};
-
-const getAvatarColor = (role) => {
-    return role === "ADMIN" ? "#1e40af" : "#059669";
-};
-
-
-const mockUsers = [
-    { id: 1, name: "Ana García", email: "ana@cohispania.com", role: "ADMIN", isActive: true, openTickets: 0 },
-    { id: 2, name: "Luis Martínez", email: "luis@cohispania.com", role: "EMPLOYEE", isActive: true, openTickets: 3 },
-    { id: 3, name: "María López", email: "maria@cohispania.com", role: "EMPLOYEE", isActive: false, openTickets: 1 },
-];
+import { useState } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import PageHeader from "../components/common/PageHeader";
+import UsersTable from "../components/users/UsersTable";
+import CreateUserModal from "../components/users/CreateUserModal";
+import EditUserModal from "../components/users/EditUserModal";
+import DeleteUserModal from "../components/users/DeleteUserModal";
+import { useUsers } from "../hooks/useUsers";
 
 const UsersPage = () => {
+    const {
+        activeUsers,
+        inactiveUsers,
+        loading,
+        createUser,
+        updateUser,
+        deleteUser,
+        toggleUser,
+        deactivateUser,
+        handleError,
+    } = useUsers();
+
+    const [createModalOpen, setCreateModalOpen]     = useState(false);
+    const [editModalOpen, setEditModalOpen]         = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen]     = useState(false);
+    const [deactivateModalOpen, setDeactivateModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser]           = useState(null);
+    const [userToDeactivate, setUserToDeactivate]   = useState(null);
+
+    const handleEditClick   = (user) => { setSelectedUser(user); setEditModalOpen(true); };
+    const handleDeleteClick = (user) => { setSelectedUser(user); setDeleteModalOpen(true); };
+
+    const handleNeedsReassign = (user) => {
+        setEditModalOpen(false);
+        setUserToDeactivate(user);
+        setDeactivateModalOpen(true);
+    };
+
+    const handleDeactivate = async (userId, reassignEmail) => {
+        try {
+            await deactivateUser(userId, reassignEmail);
+        } catch (err) {
+            handleError(err);
+        }
+    };
+
+    if (loading)
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+                <CircularProgress />
+            </Box>
+        );
+
     return (
         <Box sx={{ p: 3 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-                <Box>
-                    <Typography variant="h1">
-                        Gestión de Usuarios
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "text.secondary", mt: 0.5 }}>
-                        Administra los empleados y sus permisos
-                    </Typography>
-                </Box>
-                <Button variant="contained" color="primary">
-                    + Crear Usuario
-                </Button>
-            </Box>
+            <PageHeader
+                title="Gestión de Usuarios"
+                subtitle="Administra los empleados y sus permisos"
+                actionText="Crear Usuario"
+                onActionClick={() => setCreateModalOpen(true)}
+                breadcrumbs={["Usuarios"]}
+            />
 
-            <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "none", border: "1px solid #e5e7eb" }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nombre</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Rol</TableCell>
-                            <TableCell>Tickets abiertos</TableCell>
-                            <TableCell>Estado</TableCell>
-                            <TableCell>Acciones</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {mockUsers.map((user) => (
-                            <TableRow key={user.id} hover>
+            <UsersTable
+                title="Usuarios activos"
+                users={activeUsers}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteClick}
+            />
 
-                                <TableCell>
-                                    <Box sx={{ display: "flex", alignItems: "center",gap: 1.5}}>
-                                        <Avatar
-                                        sx={{
-                                            bgcolor: getAvatarColor(user.role),
-                                            width: 36,
-                                            height: 36,
-                                            fontSize: "0.85rem",
-                                            fontWeight: 600,
-                                        }}
-                                        >
-                                            {getInitials(user.name)}
-                                        </Avatar>
-                                        {user.name}
-                                        </Box>
-                                </TableCell>
-                    
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>
+            <UsersTable
+                title="Usuarios inactivos"
+                users={inactiveUsers}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteClick}
+            />
 
-                                    <Chip
-                                        label={user.role === "EMPLOYEE" ? "Empleado" : "Admin"}
-                                        size="small"
-                                        sx={{
-                                            bgcolor: user.role === "ADMIN" ? "#dbeafe" : "#f3f4f6",
-                                            color: user.role === "ADMIN" ? "#1e40af" : "#374151",
-                                        }}
+            <CreateUserModal
+                open={createModalOpen}
+                onClose={() => setCreateModalOpen(false)}
+                onCreate={createUser}
+                onError={handleError}
+            />
 
-                                    />
-                                </TableCell>
+            <EditUserModal
+                open={editModalOpen}
+                onClose={() => { setEditModalOpen(false); setSelectedUser(null); }}
+                onEdit={updateUser}
+                onToggle={toggleUser}
+                onNeedsReassign={handleNeedsReassign}
+                onError={handleError}
+                user={selectedUser}
+            />
 
-                                <TableCell>{user.openTickets} abiertos</TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={user.isActive ? "Activo" : "Inactivo"}
-                                        size="small"
-                                        sx={{
-                                            bgcolor: user.isActive ? "#d1fae5" : "#fee2e2",
-                                            color: user.isActive ? "#065f46" : "#991b1b",
-                                        }}
-                                    />
-                                </TableCell>
+            <DeleteUserModal
+                open={deleteModalOpen}
+                onClose={() => { setDeleteModalOpen(false); setSelectedUser(null); }}
+                onDelete={deleteUser}
+                onError={handleError}
+                user={selectedUser}
+            />
 
-                                <TableCell>
-                                    <Button size="small" sx={{ color: "#f28a2e", mr: 1 }}>
-                                        Editar
-                                    </Button>
-                                    <Button size="small" sx={{ color: "#ef4444" }}>
-                                        Eliminar
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <DeleteUserModal
+                mode="deactivate"
+                open={deactivateModalOpen}
+                onClose={() => { setDeactivateModalOpen(false); setUserToDeactivate(null); }}
+                onDeactivate={handleDeactivate}
+                onError={handleError}
+                user={userToDeactivate}
+            />
         </Box>
     );
 };

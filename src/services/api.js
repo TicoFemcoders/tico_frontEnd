@@ -23,6 +23,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const serverMessage = error.response?.data?.mensaje || "Ocurrió un error inesperado";
+
+    error.friendlyMessage = serverMessage;
+
     const isLoginRequest = error.config?.url?.includes("/login");
     if (error.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem("token");

@@ -8,9 +8,10 @@ import DashboardAdmin from "../pages/DashboardAdmin";
 import TicketPage from "../pages/TicketPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import MyTickets from "../pages/MyTickets";
-// import TicketDetailPage from "../pages/TicketDetailPage";
+import DetailTicketPage from "../pages/DetailTicketPage";
 import UsersPage from "../pages/UsersPage";
-// import LabelsPage from "../pages/LabelsPage";
+import LabelsPage from "../pages/LabelsPage";
+
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/my-tickets", element: <MyTickets viewType="default" /> },
       { path: "/tickets", element: <TicketPage /> },
-      { path: "/tickets/:id", element: <div>Detalle ticket — próxima tarea</div> },
+      { path: "/detail-ticket/:id", element: <DetailTicketPage /> },
       { path: "/assigned", element: <RoleRoute role="ADMIN"><MyTickets viewType="assigned" /></RoleRoute> },
 
       {
@@ -49,7 +50,7 @@ export const router = createBrowserRouter([
         path: "/labels",
         element: (
           <RoleRoute role="ADMIN">
-            <div>Gestión etiquetas — próxima tarea</div>
+            <LabelsPage />
           </RoleRoute>
         ),
       },
