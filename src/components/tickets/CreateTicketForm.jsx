@@ -8,14 +8,6 @@ import * as ticketService from "../../services/ticketService";
 import { labelService } from "../../services/labelService";
 import { PRIORITY_CONFIG } from "../../utils/enums";
 
-// const PRIORITIES = [
-//   { value: "LOW",      label: "🟢 Baja" },
-//   { value: "MEDIUM",   label: "🟡 Media" },
-//   { value: "HIGH",     label: "🟠 Alta" },
-//   { value: "CRITICAL", label: "🔴 Urgente" },
-// ];
-
-
 export default function CreateTicketForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -202,9 +194,6 @@ export default function CreateTicketForm() {
             {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
               <MenuItem key={key} value={key}>{config.icon}{config.label}</MenuItem>
             ))}
-            {/* {PRIORITIES.map((p) => (
-              <MenuItem key={p.value} value={p.value}>{p.label}</MenuItem>
-            ))} */}
           </Select>
           {errors.priority && (
             <Box sx={{ fontSize: "11px", color: "error.main", mt: "4px" }}>

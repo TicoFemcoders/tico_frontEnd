@@ -127,18 +127,17 @@ function NavContent({ onNavigate }) {
           <Typography sx={{ fontSize: 11, color: "navbar.text" }}>{isAdmin ? "Administrador" : "Empleada"}</Typography>
         </Box>
         <IconButton 
-  onClick={logout} 
-  size="small" 
-  aria-label="Cerrar sesión"
-  sx={{ 
-    color: "navbar.text", 
-    p: 0.5,
-    "&:hover": { 
-      color: "primary.contrastText",
-      bgcolor: "rgba(255, 255, 255, 0.08)" 
-    } 
-  }}
->
+          onClick={logout} 
+          size="small" 
+          aria-label="Cerrar sesión"
+          sx={{ 
+            color: "navbar.text", 
+            p: 0.5,
+            "&:hover": { 
+              color: "primary.contrastText"
+            } 
+          }}
+        >
   <LogoutIcon sx={{ fontSize: 18 }} />
 </IconButton>
       </Box>

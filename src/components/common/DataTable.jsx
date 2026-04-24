@@ -33,8 +33,8 @@ const DataTable = ({ columns, data, mobileRenderer, itemsPerPage }) => {
                   </TableRow>
               </TableHead>
               <TableBody>
-                  {visibleData.map((row) => (
-                      <TableRow key={row.id || Math.random()} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  {visibleData.map((row, rowIndex) => (
+                      <TableRow key={row.id ?? rowIndex} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                           {columns.map((col, i) => (
                               col && (
                                 <TableCell key={i} align={col.align || "left"}>
