@@ -42,7 +42,10 @@ export default function LoginForm() {
         navigate("/my-tickets", { replace: true });
       }
     } catch (err) {
-      setError(err.response?.status === 401 ? "Credenciales incorrectas. Comprueba tu email y contraseña." : "Error del servidor. Inténtalo de nuevo.");
+      setError(  err.response?.status === 401 
+          ? "Credenciales incorrectas. Comprueba tu email y contraseña."
+          : (err.friendlyMessage || "Error del servidor. Inténtalo de nuevo.")
+      );
     } finally {
       setLoading(false);
     }
