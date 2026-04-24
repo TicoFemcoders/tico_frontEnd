@@ -28,7 +28,7 @@ export default function ProtectedLayout() {
   const location = useLocation(); 
   let currentBreadcrumbs = BREADCRUMBS_MAP[location.pathname] || [];
 
-  if (location.pathname.startsWith('/tickets/') && location.pathname !== '/tickets') {
+  if (location.pathname.startsWith('/detail-ticket/')) {
     const ticketId = location.pathname.split('/').pop();
     const LastPage = location.state?.fromPath || "/my-tickets";
     currentBreadcrumbs = [

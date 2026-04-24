@@ -8,20 +8,48 @@ import DeleteUserModal from "../components/users/DeleteUserModal";
 import { useUsers } from "../hooks/useUsers";
 
 const UsersPage = () => {
-    const { users, loading, createUser, updateUser, deleteUser, handleError } = useUsers();
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [editModalOpen, setEditModalOpen]     = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser]       = useState(null);
+    const {
+        activeUsers,
+        inactiveUsers,
+        loading,
+        createUser,
+        updateUser,
+        deleteUser,
+        toggleUser,
+        deactivateUser,
+        handleError,
+    } = useUsers();
 
-    const handleEditClick = (user) => { setSelectedUser(user); setEditModalOpen(true); };
+    const [createModalOpen, setCreateModalOpen]     = useState(false);
+    const [editModalOpen, setEditModalOpen]         = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen]     = useState(false);
+    const [deactivateModalOpen, setDeactivateModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser]           = useState(null);
+    const [userToDeactivate, setUserToDeactivate]   = useState(null);
+
+    const handleEditClick   = (user) => { setSelectedUser(user); setEditModalOpen(true); };
     const handleDeleteClick = (user) => { setSelectedUser(user); setDeleteModalOpen(true); };
 
-    if (loading) return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-            <CircularProgress />
-        </Box>
-    );
+    const handleNeedsReassign = (user) => {
+        setEditModalOpen(false);
+        setUserToDeactivate(user);
+        setDeactivateModalOpen(true);
+    };
+
+    const handleDeactivate = async (userId, reassignEmail) => {
+        try {
+            await deactivateUser(userId, reassignEmail);
+        } catch (err) {
+            handleError(err);
+        }
+    };
+
+    if (loading)
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+                <CircularProgress />
+            </Box>
+        );
 
     return (
         <Box sx={{ p: 3 }}>
@@ -34,7 +62,15 @@ const UsersPage = () => {
             />
 
             <UsersTable
-                users={users}
+                title="Usuarios activos"
+                users={activeUsers}
+                onEdit={handleEditClick}
+                onDelete={handleDeleteClick}
+            />
+
+            <UsersTable
+                title="Usuarios inactivos"
+                users={inactiveUsers}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
             />
@@ -50,6 +86,8 @@ const UsersPage = () => {
                 open={editModalOpen}
                 onClose={() => { setEditModalOpen(false); setSelectedUser(null); }}
                 onEdit={updateUser}
+                onToggle={toggleUser}
+                onNeedsReassign={handleNeedsReassign}
                 onError={handleError}
                 user={selectedUser}
             />
@@ -60,6 +98,15 @@ const UsersPage = () => {
                 onDelete={deleteUser}
                 onError={handleError}
                 user={selectedUser}
+            />
+
+            <DeleteUserModal
+                mode="deactivate"
+                open={deactivateModalOpen}
+                onClose={() => { setDeactivateModalOpen(false); setUserToDeactivate(null); }}
+                onDeactivate={handleDeactivate}
+                onError={handleError}
+                user={userToDeactivate}
             />
         </Box>
     );

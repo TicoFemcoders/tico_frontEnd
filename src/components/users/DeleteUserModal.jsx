@@ -3,9 +3,11 @@ import { Typography, TextField, Button, Alert } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AppModal from "../common/AppModal";
 
-const DeleteUserModal = ({ open, onClose, user, onDelete, onError }) => {
+const DeleteUserModal = ({ open, onClose, user, onDelete, onDeactivate, onError, mode = "delete" }) => {
     const [reassignEmail, setReassignEmail] = useState("");
     const [error, setError]                 = useState("");
+
+    const isDeactivate = mode === "deactivate";
 
     useEffect(() => {
         if (!open) { setReassignEmail(""); setError(""); }
@@ -21,24 +23,32 @@ const DeleteUserModal = ({ open, onClose, user, onDelete, onError }) => {
             return;
         }
         try {
-            await onDelete(user.id, reassignEmail.trim() || null);
+            if (isDeactivate) {
+                await onDeactivate(user.id, reassignEmail.trim() || null);
+            } else {
+                await onDelete(user.id, reassignEmail.trim() || null);
+            }
             onClose();
         } catch (err) {
             onError(err);
         }
     };
 
+    const confirmLabel = hasActiveTickets
+        ? (isDeactivate ? "Reasignar y desactivar" : "Reasignar y eliminar")
+        : (isDeactivate ? "Desactivar usuario" : "Eliminar usuario");
+
     return (
         <AppModal
             open={open}
             onClose={onClose}
-            title="Eliminar usuario"
+            title={isDeactivate ? "Desactivar usuario" : "Eliminar usuario"}
             maxWidth="xs"
             actions={
                 <>
-                    <Button variant="outlined" onClick={onClose}>Cancelar</Button>
+                    <Button color="inherit" onClick={onClose}>Cancelar</Button>
                     <Button variant="contained" color="error" onClick={handleConfirm}>
-                        {hasActiveTickets ? "Reasignar y eliminar" : "Eliminar usuario"}
+                        {confirmLabel}
                     </Button>
                 </>
             }
@@ -51,7 +61,7 @@ const DeleteUserModal = ({ open, onClose, user, onDelete, onError }) => {
                 <>
                     <Alert severity="warning" icon={<WarningAmberIcon fontSize="small" />} sx={{ mb: 2 }}>
                         Este empleado tiene <strong>{user.openTickets} tickets abiertos</strong>. Debes
-                        reasignarlos a otro empleado antes de continuar.
+                        reasignarlos a otro empleado{isDeactivate ? " para poder desactivarlo" : " antes de continuar"}.
                     </Alert>
                     <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                         Email del empleado que recibirá los tickets
@@ -67,7 +77,10 @@ const DeleteUserModal = ({ open, onClose, user, onDelete, onError }) => {
                 </>
             ) : (
                 <Typography variant="body1" color="text.secondary">
-                    Este usuario no tiene tickets activos. Puedes eliminarlo directamente.
+                    {isDeactivate
+                        ? "Este usuario no tiene tickets activos. Puedes desactivarlo directamente."
+                        : "Este usuario no tiene tickets activos. Puedes eliminarlo directamente."
+                    }
                 </Typography>
             )}
 

@@ -28,7 +28,7 @@ export default function CloseTicketModal({ open, onClose, ticket, onSuccess }) {
     setError("");
     setLoading(true);
     try {
-      await closeTicket(ticket.id, closingMessage || null);
+      await closeTicket(ticket.id, closingMessage || "");
       onSuccess?.();
       handleClose();
     } catch (err) {
