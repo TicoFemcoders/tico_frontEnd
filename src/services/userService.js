@@ -5,7 +5,7 @@ export const getAllUsers = (page = 0, size = 50) =>
 
 
 export const getAllAdmins = () =>
-  api.get("/api/users/admins").then(res => res.data);
+  api.get("/api/users/admins").then(res => res.data.content);
 
 export const getUserById = (userId) =>
   api.get(`/api/users/${userId}`).then(res => res.data);
