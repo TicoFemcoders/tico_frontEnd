@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet,  useLocation } from "react-router-dom";
+import { Outlet,  useLocation, matchPath } from "react-router-dom";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import Navbar from "../components/layout/Navbar";
 import TopBar from "../components/layout/TopBar";
-
 
 const BREADCRUMBS_MAP = {
   "/my-tickets": [{ label: "Tickets" }, { label: "Mis tickets" }],
@@ -28,13 +27,14 @@ export default function ProtectedLayout() {
   const location = useLocation(); 
   let currentBreadcrumbs = BREADCRUMBS_MAP[location.pathname] || [];
 
-  if (location.pathname.startsWith('/detail-ticket/')) {
-    const ticketId = location.pathname.split('/').pop();
-    const LastPage = location.state?.fromPath || "/my-tickets";
-    currentBreadcrumbs = [
-       { label: "Volver a la lista", href: LastPage }, 
-       { label: `TIC-${ticketId}` }
-    ];
+  const ticketDetailMatch = matchPath("/detail-ticket/:id", location.pathname);
+  if (ticketDetailMatch) {
+      const ticketId = ticketDetailMatch.params.id;
+      const lastPage = location.state?.fromPath || "/my-tickets";
+      currentBreadcrumbs = [
+          { label: "Volver a la lista", href: lastPage },
+          { label: `TIC-${ticketId}` }
+      ];
   }
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
