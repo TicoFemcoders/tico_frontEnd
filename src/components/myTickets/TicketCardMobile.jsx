@@ -30,7 +30,7 @@ export default function TicketCardMobile({ ticket, variant, fromPath }) {
             )}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <LatestDateInfo ticket={ticket} />
-                <Link component={RouterLink} to={`/tickets/${ticket.id}`} state={{ fromPath }} sx={{ fontWeight: 700, fontSize: "11px" }}>
+                <Link component={RouterLink} to={`/detail-ticket/${ticket.id}`} state={{ fromPath }} sx={{ fontWeight: 700, fontSize: "11px" }}>
                     {linkText}
                 </Link>
             </Box>

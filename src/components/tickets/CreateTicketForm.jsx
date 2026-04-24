@@ -10,18 +10,15 @@ import CircularProgress from "@mui/material/CircularProgress";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
+import { labelService } from "../../services/labelService";
 
 const PRIORITIES = [
   { value: "LOW",      label: "🟢 Baja" },
   { value: "MEDIUM",   label: "🟡 Media" },
   { value: "HIGH",     label: "🟠 Alta" },
-  { value: "CRITICAL", label: "🔴 Crítica" },
+  { value: "CRITICAL", label: "🔴 Urgente" },
 ];
 
-const now = new Date().toLocaleString("es-ES", {
-  day: "2-digit", month: "2-digit", year: "numeric",
-  hour: "2-digit", minute: "2-digit",
-});
 
 export default function CreateTicketForm() {
   const navigate = useNavigate();
@@ -32,7 +29,7 @@ export default function CreateTicketForm() {
   const [errors, setErrors]   = useState({});
 
   useEffect(() => {
-    ticketService.getAllLabels()
+    labelService.getAllLabels()
       .then(setLabels)
       .catch(() => setLabels([]));
   }, []);
@@ -88,11 +85,6 @@ export default function CreateTicketForm() {
     color: "text.primary",
   };
 
-  const dateText = {
-    fontSize: "11px",
-    color: "text.secondary",
-  };
-
   return (
     <Box component="form" onSubmit={handleSubmit}>
 
@@ -107,7 +99,6 @@ export default function CreateTicketForm() {
           <Box component="label" sx={labelText}>
             Título del problema <Box component="span" sx={{ color: "primary.main" }}>*</Box>
           </Box>
-          <Box sx={dateText}>{now}</Box>
         </Box>
         <TextField
           name="title"
@@ -127,7 +118,6 @@ export default function CreateTicketForm() {
           <Box component="label" sx={labelText}>
             Descripción detallada <Box component="span" sx={{ color: "primary.main" }}>*</Box>
           </Box>
-          <Box sx={dateText}>{now}</Box>
         </Box>
         <TextField
           name="description"
