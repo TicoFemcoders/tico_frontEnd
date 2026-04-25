@@ -9,6 +9,7 @@ import TicketTable from "../components/myTickets/TicketTable";
 import StatCards from "../components/myTickets/StatCards";
 import { TICKET_STATUS } from "../utils/enums";
 import LoadingScreen from "../components/common/LoadingScreen";
+import { useSnackbar } from "notistack";
 
 
 const MyTickets = ({ viewType = "default" }) => {
@@ -16,6 +17,7 @@ const MyTickets = ({ viewType = "default" }) => {
   const [loading, setLoading] = useState(true);
   const {user, hasRole} = useAuth();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!user?.id) return;
@@ -32,7 +34,7 @@ const MyTickets = ({ viewType = "default" }) => {
         }
         setTickets(data);
       } catch (error) {
-        console.error("Error al cargar tickets:", error);
+          enqueueSnackbar(err.friendlyMessage || "Error al cargar los tickets", { variant: "error" });
       } finally {
         setLoading(false);
       }

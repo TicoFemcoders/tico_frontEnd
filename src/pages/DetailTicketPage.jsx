@@ -11,6 +11,7 @@ import PageHeader from "../components/common/PageHeader";
 import EnumChip from "../components/common/EnumChip";
 import LabelChip from "../components/common/LabelChip";
 import { STATUS_CONFIG, USER_ROLES, PRIORITY_CONFIG } from "../utils/enums";
+import { useSnackbar } from "notistack";
 
 const DetailTicketPage = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ const DetailTicketPage = () => {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   const isAdmin = user?.roles?.includes(USER_ROLES.ADMIN);
 
@@ -27,7 +29,7 @@ const DetailTicketPage = () => {
       const data = await ticketService.getTicketById(id);
       setTicket(data);
     } catch (err) {
-      console.error("Error al cargar el ticket:", err);
+      enqueueSnackbar(err.friendlyMessage || "Error al cargar el ticket", { variant: "error" });
     } finally {
       setLoading(false);
     }

@@ -95,7 +95,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
       if (onRefresh) await onRefresh();
       setOpenSuccessModal(true);
     } catch (error) {
-      const msg = error.response?.data?.message || "No se ha podido reasignar el ticket.";
+      const msg = err.friendlyMessage || "No se ha podido reasignar el ticket.";
       // setReassignError(msg);
       enqueueSnackbar(msg, { variant: "error" });
     }
@@ -138,7 +138,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
       setIsEditing(false);
       if (onRefresh) await onRefresh();
     } catch (error) {
-      console.error(error);
+      enqueueSnackbar(err.friendlyMessage || "Error al actualizar el ticket", { variant: "error" });
     } finally {
       setIsUpdating(false);
     }
@@ -163,7 +163,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
     await reopenTicket(ticket.id);
     if (onRefresh) await onRefresh();
   } catch (error) {
-    console.error("Error al reabrir el ticket:", error);
+    enqueueSnackbar(err.friendlyMessage || "Error al actualizar el ticket", { variant: "error" });
   }
 };
 
