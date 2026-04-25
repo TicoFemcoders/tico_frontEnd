@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Paper, Typography, Stack, TextField, Button, FormControlLabel, 
-  Radio, MenuItem, RadioGroup, FormControl} from "@mui/material";
+  Radio, MenuItem, RadioGroup, FormControl, Alert} from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { labelService } from "../../services/labelService";
@@ -15,6 +15,7 @@ import AlertModal from "../modals/AlertModal";
 import { TICKET_STATUS, PRIORITY_CONFIG, STATUS_CONFIG } from "../../utils/enums";
 import EnumChip from "../common/EnumChip";
 import { formatDate } from "../../utils/formatDate";
+import { useSnackbar } from "notistack";
 
 const InfoRow = ({ label, value }) => (
   <Box
@@ -42,11 +43,12 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openCloseModal, setOpenCloseModal] = useState(false);
   const [openErrorReopenModal, setOpenErrorReopenModal] = useState(false);
-
+  const [reassignError, setReassignError] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [availableLabels, setAvailableLabels] = useState([]);
   const [admins, setAdmins] = useState([]);
   const blocker = useBlocker(isEditing);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [formData, setFormData] = useState({
     priority: "",
@@ -81,7 +83,7 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
     if (isAdmin) {
     userService
       .getAllAdmins()
-      .then((data) => setAdmins(data))
+      .then((data) => setAdmins(data.filter((a) => a.isActive)))
       .catch((err) => console.error("Error admins:", err));
   }
     }, [isAdmin]);
@@ -93,8 +95,11 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
       if (onRefresh) await onRefresh();
       setOpenSuccessModal(true);
     } catch (error) {
-      console.error(error);
-    } finally {
+      const msg = error.response?.data?.message || "No se ha podido reasignar el ticket.";
+      // setReassignError(msg);
+      enqueueSnackbar(msg, { variant: "error" });
+    }
+     finally {
       setIsUpdating(false);
     }
   };
@@ -207,6 +212,11 @@ const TicketSidebar = ({ ticket, isAdmin, onRefresh, currentUser }) => {
           >
             Guardar
           </Button>
+          {reassignError && (
+            <Alert severity="error" sx={{ mt: 1, fontSize: "12px" }}>
+            {reassignError}
+            </Alert>
+          )}
         </Paper>
       )}
 

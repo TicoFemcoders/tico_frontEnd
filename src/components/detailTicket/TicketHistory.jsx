@@ -20,7 +20,8 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
     if (!ticketId) return;
     try {
       const data = await ticketMessageService.getMessagesByTicketId(ticketId);
-      const sorted = data.sort(
+      const safeData = data || [];
+      const sorted = [...safeData].sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
       );
       setMessages(sorted);
