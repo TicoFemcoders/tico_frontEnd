@@ -50,6 +50,7 @@ const LabelsPage = () => {
                 showFilter
                 onToggle={toggleLabel}
                 onEdit={editLabel}
+                onError={handleError}
             />
 
             <Alert

@@ -36,14 +36,19 @@ export const useLabels = () => {
     };
 
     const toggleLabel = async (label) => {
-        if (label.active) {
-            await labelService.deactivateLabel(label.id);
-            notify("Etiqueta desactivada", "info");
-        } else {
-            await labelService.activateLabel(label.id);
-            notify("Etiqueta activada");
+        try{
+            if (label.active) {
+                await labelService.deactivateLabel(label.id);
+                notify("Etiqueta desactivada", "info");
+            } else {
+                await labelService.activateLabel(label.id);
+                notify("Etiqueta activada");
+            }
+        } catch(err){
+            notify(err.friendlyMessage || "No se pudo cambiar el estado de la etiqueta", "error");
+        } finally{
+            await fetchLabels();
         }
-        await fetchLabels();
     };
 
   const editLabel = async (label, newName, newColor) => {
