@@ -119,7 +119,7 @@ const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
                 onSortChange={setRoleFilter}
                 sortOptions={roleOptions}
             />
-            <DataTable columns={columns} data={filteredUsers} itemsPerPage={10} />
+            <DataTable columns={columns} data={filteredUsers} itemsPerPage={5} />
         </Paper>
     );
 };

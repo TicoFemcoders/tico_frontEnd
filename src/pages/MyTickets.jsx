@@ -10,37 +10,21 @@ import StatCards from "../components/myTickets/StatCards";
 import { TICKET_STATUS } from "../utils/enums";
 import LoadingScreen from "../components/common/LoadingScreen";
 import { useSnackbar } from "notistack";
+import { useCallback } from "react";
+import { useProgressiveFetch } from "../hooks/useProgressiveFetch";
 
 
 const MyTickets = ({ viewType = "default" }) => {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const {user, hasRole} = useAuth();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    if (!user?.id) return;
-    const dataTickets = async () => {
-      setLoading(true); 
-      try {
-        let data = [];
-        if (viewType === "assigned") {
-            data = await ticketService.getAssignedTickets();
-        } else if (viewType === "all") {
-            data = await ticketService.getAllTickets(); 
-        } else {
-            data  = await ticketService.getMyTickets();
-        }
-        setTickets(data);
-      } catch (error) {
-          enqueueSnackbar(err.friendlyMessage || "Error al cargar los tickets", { variant: "error" });
-      } finally {
-        setLoading(false);
-      }
-    };
-    dataTickets();
-  }, [viewType, user?.id]);
+  const fetchFn = useCallback((page, size) => {
+      if (viewType === "assigned") return ticketService.getAssignedTickets(page, size);
+      if (viewType === "all") return ticketService.getAllTickets(page, size);
+      return ticketService.getMyTickets(page, size);
+  }, [viewType]); 
+  const { data: tickets, loading, isSyncing } = useProgressiveFetch(fetchFn);
 
   const activeTickets = tickets.filter(t =>
     t.status === TICKET_STATUS.OPEN || t.status === TICKET_STATUS.IN_PROGRESS
@@ -79,7 +63,11 @@ const MyTickets = ({ viewType = "default" }) => {
         <>
           <PageHeader 
             title={currentTitle} 
-            subtitle={(viewType=== "all"?"Panel de administración · gestión global de incidencias":`${activeTickets.length} tickets activos · ${closedTickets.length} cerrados`)}
+            subtitle={
+              isSyncing 
+                ? "Sincronizando base de datos en segundo plano..." 
+                : (viewType === "all" ? "Panel de administración · gestión global de incidencias" : `${activeTickets.length} tickets activos · ${closedTickets.length} cerrados`)
+            }
             actionText={buttonText}
             onActionClick={() => navigate("/tickets")}
           />

@@ -13,6 +13,7 @@ const UsersPage = () => {
         activeUsers,
         inactiveUsers,
         loading,
+        isSyncing,
         createUser,
         updateUser,
         deleteUser,
@@ -51,7 +52,7 @@ const UsersPage = () => {
         <Box sx={{ p: 3 }}>
             <PageHeader
                 title="Gestión de Usuarios"
-                subtitle="Administra los empleados y sus permisos"
+                subtitle={isSyncing ? "Sincronizando usuarios en segundo plano..." : "Administra los empleados y sus permisos"}
                 actionText="Crear Usuario"
                 onActionClick={() => setCreateModalOpen(true)}
                 breadcrumbs={["Usuarios"]}

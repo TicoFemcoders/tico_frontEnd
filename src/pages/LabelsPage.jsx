@@ -11,6 +11,7 @@ const LabelsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const {
         loading,
+        isSyncing,
         activeLabels,
         inactiveLabels,
         createLabel,
@@ -26,7 +27,7 @@ const LabelsPage = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
                 <PageHeader
                     title="Gestión de Etiquetas"
-                    subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
+                    subtitle={isSyncing ? "Sincronizando base de datos en segundo plano..." :"Organiza los tickets con categorías y etiquetas personalizadas"}
                 />
                 <Button
                     variant="contained"

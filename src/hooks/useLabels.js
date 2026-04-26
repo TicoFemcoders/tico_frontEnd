@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSnackbar } from "notistack";
 import { labelService } from "../services/labelService";
+import { useProgressiveFetch } from "./useProgressiveFetch";
 
 export const useLabels = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [labels, setLabels] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     const notify = useCallback((msg, variant = "success") => {
         enqueueSnackbar(msg, { variant });
@@ -16,18 +15,9 @@ export const useLabels = () => {
         enqueueSnackbar(msg, { variant: "error" });
     }, [enqueueSnackbar]);
 
-    const fetchLabels = useCallback(async () => {
-        try {
-            const data = await labelService.getAllLabels();
-            setLabels(data);
-        } catch (err) {
-            handleError(err, "Error al cargar etiquetas");
-        } finally {
-            setLoading(false);
-        }
-    }, [handleError]);
+    const fetchFn = useCallback((page, size) => labelService.getAllLabels(page, size), []);
 
-    useEffect(() => { fetchLabels(); }, [fetchLabels]);
+    const { data: labels, loading, isSyncing, refetch: fetchLabels } = useProgressiveFetch(fetchFn);
 
     const createLabel = async ({ name, color }) => {
         await labelService.createLabel({ name, color, active: true });
@@ -62,6 +52,7 @@ export const useLabels = () => {
 
     return {
         loading,
+        isSyncing,
         activeLabels,
         inactiveLabels,
         createLabel,
