@@ -9,7 +9,6 @@ import TicketTable from "../components/myTickets/TicketTable";
 import StatCards from "../components/myTickets/StatCards";
 import { TICKET_STATUS } from "../utils/enums";
 import LoadingScreen from "../components/common/LoadingScreen";
-import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useProgressiveFetch } from "../hooks/useProgressiveFetch";
 
@@ -17,7 +16,6 @@ import { useProgressiveFetch } from "../hooks/useProgressiveFetch";
 const MyTickets = ({ viewType = "default" }) => {
   const {user, hasRole} = useAuth();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
 
   const fetchFn = useCallback((page, size) => {
       if (viewType === "assigned") return ticketService.getAssignedTickets(page, size);

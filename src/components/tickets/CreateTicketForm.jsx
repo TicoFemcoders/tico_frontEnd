@@ -7,6 +7,7 @@ import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
 import { labelService } from "../../services/labelService";
 import { PRIORITY_CONFIG } from "../../utils/enums";
+import { useSnackbar } from "notistack";
 
 export default function CreateTicketForm() {
   const navigate = useNavigate();
@@ -15,13 +16,13 @@ export default function CreateTicketForm() {
   const [form, setForm] = useState({ title: "", description: "", priority: "", labelIds: [] });
   const [labels, setLabels] = useState([]);
   const [errors, setErrors] = useState({});
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     labelService.getAllLabels()
       .then(setLabels)
       .catch(() => setLabels([]));
   }, []);
-  const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
@@ -49,16 +50,16 @@ export default function CreateTicketForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setApiError("");
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
     setErrors({});
     setLoading(true);
     try {
       await ticketService.createTicket(form);
+      enqueueSnackbar("Ticket creado correctamente.", { variant: "success" });
       navigate("/my-tickets");
     } catch (err) {
-      setApiError(err.response?.data?.mensaje || "Error al enviar el ticket. Inténtalo de nuevo.");
+      enqueueSnackbar(err.friendlyMessage || "Error al enviar el ticket. Inténtalo de nuevo.", { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -79,12 +80,6 @@ export default function CreateTicketForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-
-      {apiError && (
-        <Alert severity="error" sx={{ mb: 3, fontSize: "13px" }}>
-          {apiError}
-        </Alert>
-      )}
 
       <Box sx={{ mb: 3 }}>
         <Box sx={labelStyles}>
