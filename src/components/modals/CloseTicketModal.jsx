@@ -1,16 +1,10 @@
 import { useState } from "react";
-// import Dialog from "@mui/material/Dialog";
-// import DialogTitle from "@mui/material/DialogTitle";
-// import DialogContent from "@mui/material/DialogContent";
-// import DialogActions from "@mui/material/DialogActions";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-// import IconButton from "@mui/material/IconButton";
-// import CloseIcon from "@mui/icons-material/Close";
 import { closeTicket } from "../../services/ticketService";
 import AppModal from "../common/AppModal";
 
@@ -67,7 +61,7 @@ export default function CloseTicketModal({ open, onClose, ticket, onSuccess }) {
         </Typography>
 
         <Box component="label" sx={{ display: "block", fontSize: 13, fontWeight: 600, color: "text.primary", mb: "6px" }}>
-            Mensaje de cierre (opcional)
+            Mensaje de cierre (obligatorio)
         </Box>
         <TextField
             fullWidth

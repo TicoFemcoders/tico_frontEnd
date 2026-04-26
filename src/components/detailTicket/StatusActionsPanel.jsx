@@ -8,6 +8,7 @@ import AlertModal from "../modals/AlertModal";
 import { reopenTicket } from "../../services/ticketService";
 import { TICKET_STATUS, STATUS_CONFIG, PRIORITY_CONFIG } from "../../utils/enums";
 import { formatDate } from "../../utils/formatDate";
+import { useSnackbar } from "notistack";
 
 const InfoRow = ({ label, value }) => (
     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
@@ -19,7 +20,7 @@ const InfoRow = ({ label, value }) => (
 const StatusActionsPanel = ({ ticket, isAdmin, isAssignedToMe, isCreatorEmployee, onRefresh }) => {
     const [openCloseModal, setOpenCloseModal]         = useState(false);
     const [openReopenConfirm, setOpenReopenConfirm]   = useState(false);
-    const [openErrorReopen, setOpenErrorReopen]       = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     const isClosed = ticket?.status === TICKET_STATUS.CLOSED;
 
@@ -28,8 +29,9 @@ const StatusActionsPanel = ({ ticket, isAdmin, isAssignedToMe, isCreatorEmployee
         try {
             await reopenTicket(ticket.id);
             await onRefresh?.();
-        } catch {
-            // Error manejado por el interceptor
+            enqueueSnackbar("Ticket reabierto con éxito", { variant: "success" });
+        } catch (error) {
+        enqueueSnackbar(error.friendlyMessage || "Error al reabrir el ticket", { variant: "error" });
         }
     };
 
@@ -75,7 +77,10 @@ const StatusActionsPanel = ({ ticket, isAdmin, isAssignedToMe, isCreatorEmployee
                     {isClosed ? (
                         <Button
                             variant="contained" fullWidth color="success"
-                            onClick={() => isAssignedToMe ? setOpenReopenConfirm(true) : setOpenErrorReopen(true)}
+                            onClick={() => isAssignedToMe ? setOpenReopenConfirm(true) : 
+                               enqueueSnackbar(`Solo el administrador asignado (${ticket?.assignedToName}) puede reabrir este ticket.`, 
+                                { variant: "warning" })
+                            }
                             sx={{ fontWeight: 700, borderRadius: 2 }}
                         >
                             Reabrir Ticket
@@ -83,7 +88,10 @@ const StatusActionsPanel = ({ ticket, isAdmin, isAssignedToMe, isCreatorEmployee
                     ) : (
                         <Button
                             variant="contained" fullWidth
-                            onClick={() => setOpenCloseModal(true)}
+                            onClick={() => isAssignedToMe 
+                                    ? setOpenCloseModal(true) 
+                                    : enqueueSnackbar(`Solo el administrador asignado (${ticket?.assignedToName}) puede cerrar este ticket.`, { variant: "warning" })
+                            }
                             sx={{ bgcolor: "error.main", "&:hover": { bgcolor: "error.dark" } }}
                         >
                             Cerrar ticket
@@ -109,19 +117,6 @@ const StatusActionsPanel = ({ ticket, isAdmin, isAssignedToMe, isCreatorEmployee
                 confirmLabel="Confirmar"
                 confirmColor="success"
             />
-
-            <AlertModal
-                open={openErrorReopen}
-                onClose={() => setOpenErrorReopen(false)}
-                title="Acceso Restringido"
-            >
-                <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-                    <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
-                    <Typography variant="body2">
-                        Solo el administrador asignado <strong>({ticket?.assignedToName})</strong> puede reabrir este ticket.
-                    </Typography>
-                </Box>
-            </AlertModal>
         </>
     );
 };

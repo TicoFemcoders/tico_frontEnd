@@ -5,14 +5,15 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import EnumChip from "../common/EnumChip";
 import LabelChip from "../common/LabelChip";
 import ConfirmModal from "../modals/ConfirmModal";
-import AlertModal from "../modals/AlertModal";
 import { useTicketAttributes } from "../../hooks/useTicketAttributes";
 import { TICKET_PRIORITY, PRIORITY_CONFIG } from "../../utils/enums";
+import { useSnackbar } from "notistack";
+
 
 const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
-    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     const {
         formData, setFormData,
@@ -85,7 +86,8 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                     size="small"
                     onClick={isEditing
                         ? () => setOpenConfirm(true)
-                        : () => { if (isClosed) return; canEdit ? setIsEditing(true) : setOpenErrorModal(true); }
+                        : () => { if (isClosed) return; canEdit ? setIsEditing(true) : 
+                            enqueueSnackbar(`Solo el administrador asignado (${ticket?.assignedToName}) puede editar la prioridad y etiquetas.`, { variant: "warning" });; }
                     }
                     disabled={isUpdating}
                     sx={{ mt: 2, textTransform: "none", borderRadius: 1.5 }}
@@ -124,19 +126,6 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                     </Typography>
                 </Box>
             </ConfirmModal>
-
-            <AlertModal
-                open={openErrorModal}
-                onClose={() => setOpenErrorModal(false)}
-                title="Acceso Restringido"
-            >
-                <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
-                    <WarningAmberIcon sx={{ color: "warning.main", mt: 0.3 }} />
-                    <Typography variant="body2">
-                        Solo el administrador asignado <strong>({ticket?.assignedToName})</strong> puede editar la prioridad y las etiquetas.
-                    </Typography>
-                </Box>
-            </AlertModal>
         </>
     );
 };

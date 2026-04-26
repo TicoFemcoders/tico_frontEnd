@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { Paper, Typography, TextField, MenuItem, Button } from "@mui/material";
 import { userService } from "../../services/userService";
 import { ticketService } from "../../services/ticketService";
-import AlertModal from "../modals/AlertModal";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
+import { useSnackbar } from "notistack";
 
 const AssignAdminPanel = ({ ticket, onRefresh }) => {
     const [admins, setAdmins] = useState([]);
     const [assignedToId, setAssignedToId] = useState("");
     const [isUpdating, setIsUpdating] = useState(false);
-    const [successOpen, setSuccessOpen] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -31,7 +30,9 @@ const AssignAdminPanel = ({ ticket, onRefresh }) => {
         try {
             await ticketService.assignAdmin(ticket.id, Number(assignedToId));
             await onRefresh?.();
-            setSuccessOpen(true);
+            enqueueSnackbar("Responsable actualizado correctamente.", { variant: "success" });
+        } catch (error) {
+        enqueueSnackbar(error.friendlyMessage || "Error al reasignar administrador.", { variant: "error" });
         } finally {
             setIsUpdating(false);
         }
@@ -62,15 +63,6 @@ const AssignAdminPanel = ({ ticket, onRefresh }) => {
                     Guardar
                 </Button>
             </Paper>
-
-            <AlertModal
-                open={successOpen}
-                onClose={() => setSuccessOpen(false)}
-                title="¡Actualizado!"
-                closeLabel="Aceptar"
-                icon={<CheckCircleOutlineIcon sx={{ fontSize: 48, color: "success.main" }} />}
-                message="El responsable ha sido actualizado correctamente."
-            />
         </>
     );
 };

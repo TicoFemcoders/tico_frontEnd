@@ -1,20 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
-import {
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  Divider,
-  CircularProgress,
-} from "@mui/material";
+import { Paper, Typography, Box, Stack, Divider, CircularProgress} from "@mui/material";
 import { ticketMessageService } from "../../services/ticketMessageService";
 import UserAvatar from "../common/UserAvatar";
+import { useSnackbar } from "notistack";
+import LoadingScreen from "../common/LoadingScreen";
 
 const TicketHistory = ({ ticketId, refreshTrigger }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchMessages = useCallback(async () => {
     if (!ticketId) return;
@@ -26,7 +22,7 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
       );
       setMessages(sorted);
     } catch (err) {
-      console.error("Error al cargar mensajes:", err);
+      enqueueSnackbar(err.friendlyMessage, { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -35,14 +31,6 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
   useEffect(() => {
     fetchMessages();
   }, [fetchMessages, refreshTrigger]);
-
-  if (loading && messages.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={24} />
-      </Box>
-    );
-  }
 
   return (
     <Paper
@@ -62,6 +50,10 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
       <Divider sx={{ mb: 3, borderColor: 'var(--border)' }} />
 
       <Stack spacing={3}>
+        {loading && messages.length === 0 ? (
+          <LoadingScreen minHeight="200px" />
+        ) : (
+          <>
         {messages.map((item) => (
           <Box key={item.id}>
             <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
@@ -109,6 +101,8 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
             No hay mensajes aún.
           </Typography>
         )}
+        </>
+      )}
       </Stack>
     </Paper>
   );

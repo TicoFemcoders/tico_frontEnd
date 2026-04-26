@@ -2,13 +2,13 @@ import { Paper, TextField, Button, Box, Alert, Typography } from "@mui/material"
 import { useState } from "react";
 import { ticketMessageService } from "../../services/ticketMessageService";
 import{ useAuth } from "../../context/useAuth";
+import { useSnackbar } from "notistack";
 
 const TicketResponseBox = ({ ticket, onMessageSent }) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const isClosed = ticket?.status === "CLOSED";
   const ticketId = ticket?.id;
@@ -17,19 +17,16 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
   const isAssignedAdmin = isAdmin && ticket?.assignedToName === user?.name;
   const isCreator = !isAdmin && ticket?.createdByName === user?.name;
   const canRespond = isCreator || isAssignedAdmin;
-
-  if (!canRespond) return null;
+ 
 
   const handleSend = async () => {
     if (!text.trim()) return;
     if (!ticketId) {
-      setError("Error interno: No se pudo identificar el ticket.");
+      enqueueSnackbar("Error interno: No se pudo identificar el ticket.", { variant: "error" });
       return;
     }
 
     setLoading(true);
-    setError(null);
-    setSuccess(false);
 
     const messageRequestDTO = {
       ticketId: Number(ticketId),
@@ -40,18 +37,16 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
     try {
       await ticketMessageService.createMessage(ticketId, messageRequestDTO);
       setText("");
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      enqueueSnackbar("¡Mensaje enviado correctamente!", { variant: "success" });
       if (onMessageSent) onMessageSent();
     } catch (err) {
-      console.error("Error en la petición:", err);
-      setError("No se pudo enviar la respuesta. Revisa la consola.");
+      enqueueSnackbar(err.friendlyMessage, { variant: "error" });
     } finally {
       setLoading(false);
     }
   };
 
-  return (
+  return canRespond ? (
     <Paper sx={{
       p: 3,
       width: "100%",
@@ -61,8 +56,6 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
       borderColor: isClosed ? "error.light" : "var(--border)",
       bgcolor: isClosed ? "var(--code-bg)" : "background.paper",
     }}>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>¡Mensaje enviado correctamente!</Alert>}
 
       {isClosed && (
         <Typography variant="body2" color="error" sx={{ mb: 2, fontWeight: 700 }}>
@@ -92,7 +85,7 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
         </Button>
       </Box>
     </Paper>
-  );
+  ) : null;
 };
 
 export default TicketResponseBox;

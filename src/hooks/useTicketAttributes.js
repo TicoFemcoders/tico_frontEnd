@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { labelService } from "../services/labelService";
 import { ticketService } from "../services/ticketService";
+import { useSnackbar } from "notistack";
 
 export const useTicketAttributes = ({ ticket, onRefresh }) => {
     const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
     });
     const [availableLabels, setAvailableLabels] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -76,6 +78,10 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
 
             await Promise.all(promises);
             await onRefresh?.();
+            enqueueSnackbar("Atributos actualizados con éxito", { variant: "success" });
+        } catch (error) {
+        enqueueSnackbar(error.friendlyMessage || "Error al actualizar el ticket", { variant: "error" });
+        throw error;
         } finally {
             setIsUpdating(false);
         }
