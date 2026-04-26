@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, TextField, MenuItem, Button, Typography } from "@mui/material";
 import AppModal from "../common/AppModal";
+import UserForm from "./UserForm";
 
 const CreateUserModal = ({ open, onClose, onCreate, onError }) => {
     const [formData, setFormData] = useState({ name: "", email: "", roles: ["EMPLOYEE"] });
@@ -35,25 +36,11 @@ const CreateUserModal = ({ open, onClose, onCreate, onError }) => {
                 </>
             }
         >
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Rellena los datos del nuevo usuario
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <TextField label="Nombre" name="name" value={formData.name}
-                    onChange={handleChange} fullWidth size="small" placeholder="Ana García" />
-                <TextField label="Email" name="email" value={formData.email}
-                    onChange={handleChange} fullWidth size="small" placeholder="ana@cohispania.com" />
-                <TextField
-                    label="Rol"
-                    name="roles"      
-                    value={formData.roles?.[0] ?? "EMPLOYEE"}  
-                    onChange={(e) => setFormData({ ...formData, roles: [e.target.value] })} 
-                    fullWidth size="small" select
-                >
-                    <MenuItem value="EMPLOYEE">Empleado</MenuItem>
-                    <MenuItem value="ADMIN">Admin</MenuItem>
-                </TextField>
-            </Box>
+            <UserForm
+            formData={formData}
+            onChange={handleChange}
+            subtitle="Rellena los datos del nuevo usuario"
+        />
         </AppModal>
     );
 };
