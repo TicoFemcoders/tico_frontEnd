@@ -30,12 +30,6 @@ export const useUsers = () => {
         notify("Usuario actualizado correctamente");
     };
 
-    const deleteUser = async (userId, reassignEmail) => {
-        await userService.deleteUser(userId, reassignEmail);
-        await fetchUsers();
-        notify("Usuario eliminado correctamente");
-    };
-
     const toggleUser = async (userId) => {
         await userService.toggleUserActive(userId);
         await fetchUsers();
@@ -59,7 +53,6 @@ export const useUsers = () => {
         isSyncing,
         createUser,
         updateUser,
-        deleteUser,
         toggleUser,
         deactivateUser,
         handleError,

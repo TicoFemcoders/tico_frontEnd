@@ -3,7 +3,6 @@ import { Paper, Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
 import IconButton from "@mui/material/IconButton";
-import { DeleteOutlined as DeleteOutlinedIcon } from "@mui/icons-material";
 import UserAvatar from "../common/UserAvatar";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
@@ -29,7 +28,7 @@ const actionLinkSx = (color) => ({
     cursor: "pointer",
 });
 
-const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
+const UsersTable = ({ users, onEdit, title = "Usuarios" }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter]   = useState("");
 
@@ -95,13 +94,6 @@ const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
                     <Link component="button" onClick={() => onEdit(user)} sx={actionLinkSx("primary.main")}>
                         EDITAR
                     </Link>
-                    <IconButton
-                        size="small"
-                        onClick={() => onDelete(user)}
-                        sx={{ color: "error.main", p: 0.5 }}
-                    >
-                        <DeleteOutlinedIcon fontSize="small" />
-                    </IconButton>
                 </Box>
             ),
         },

@@ -14,10 +14,6 @@ export const getUserActiveTickets = (userId) =>
   api.get(`/api/tickets/my-tickets?userId=${userId}`)
     .then(res => res.data.filter(t => t.status !== "CLOSED"));
 
-
-export const deleteUser = (userId, reassignEmail) =>
-   api.delete(`/api/users/${userId}`, { params: { reassignEmail } });
-
 export const createUser = (formData) =>
   api.post(`/api/users`, formData);
 
@@ -35,7 +31,6 @@ export const userService = {
   getAllUsers,
   getUserById,
   getUserActiveTickets,
-  deleteUser,
   createUser,
   getAllAdmins,
   updateUser,
