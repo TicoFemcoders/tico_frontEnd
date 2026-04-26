@@ -37,7 +37,7 @@ const MyTickets = ({ viewType = "default" }) => {
       { label: "Cerrados", value: closedTickets.length, color: "text.subtle" }
   ];
 
-  if (["assigned", "all"].includes(viewType)) {
+  if ([ "all"].includes(viewType)) {
     stats.push({ 
       label: "Sin asignar", 
       value: tickets.filter(t => !t.assignedToId).length, 
