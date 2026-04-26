@@ -5,15 +5,17 @@ import { useNavigate } from "react-router-dom";
 import { notificationService } from "../../services/notificationService";
 import { formatTime } from "../../utils/formatTime";
 import BreadcrumbItem from "../common/BreadcrumbItem";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import InfiniteScrollFooter from "../common/InfiniteScrollFooter";
 
 const TopBar = ({ breadcrumbs = [] }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [error, setError] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [page, setPage] = useState(0); 
   const [loading, setLoading] = useState(false); 
   const [hasMore, setHasMore] = useState(true);
+  const { page, setPage, handleScroll, scrollRef, canScroll, isAtBottom } = useInfiniteScroll(loading, hasMore, notifications);
 
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
@@ -53,15 +55,6 @@ const TopBar = ({ breadcrumbs = [] }) => {
       setError("Error al cargar notificaciones");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleScroll = (event) => {
-    const listboxNode = event.currentTarget;
-    if (listboxNode.scrollTop + listboxNode.clientHeight >= listboxNode.scrollHeight - 10) {
-      if (!loading && hasMore) {
-        setPage((prevPage) => prevPage + 1); 
-      }
     }
   };
 
@@ -120,6 +113,7 @@ const TopBar = ({ breadcrumbs = [] }) => {
           onClose={handleClose}
           slotProps={{
             paper: {
+            ref: scrollRef,  
             elevation: 3, onScroll: handleScroll,
             sx: { mt: 1.5, minWidth: 300, maxWidth: 450, maxHeight: 400, overflowY: "auto", borderRadius: 2 }
           }}}
@@ -148,11 +142,13 @@ const TopBar = ({ breadcrumbs = [] }) => {
           {notifications.length > 0 ? (
             notifications.map((notif) => (
               <MenuItem key={notif.id}  onClick={() => handleReadAndGo(notif)} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'border.soft'}}>
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: notif.read ? 400 : 700, color: notif.read ? 'text.secondary' : 'text.primary' }}>
+                <Box sx={{ width: '100%', overflow: 'hidden' }}>
+                  <Typography variant="body2" sx={{ fontWeight: notif.read ? 400 : 700, color: notif.read ? 'text.secondary' : 'text.primary' ,
+                    whiteSpace: 'normal',  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis'
+                  }}>
                     {notif.content}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.subtle' }}>
+                  <Typography variant="caption" sx={{ color: 'text.subtle', display: 'block', mt: 0.5 }}>
                     {formatTime(notif.createdAt)}
                   </Typography>
                 </Box>
@@ -165,9 +161,26 @@ const TopBar = ({ breadcrumbs = [] }) => {
                 </Typography>
              </Box>
           )}
-          {loading && (
-             <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-                <CircularProgress size={24} sx={{ color: "text.subtle" }} />
+          <InfiniteScrollFooter 
+              loading={loading} 
+              hasMore={hasMore} 
+              isEmpty={notifications.length === 0} 
+              scrollText="↓ Cargar más notificaciones" 
+              endText="— Estás al día —" 
+          />
+          {canScroll && !isAtBottom && (
+             <Box sx={{ 
+                 position: 'sticky', 
+                 bottom: 0, 
+                 bgcolor: 'background.paper', 
+                 py: 1.5, 
+                 textAlign: 'center', 
+                 borderTop: '1px solid var(--border)', 
+                 boxShadow: '0 -10px 10px -10px rgba(0,0,0,0.1)' // Sombrilla sutil hacia arriba
+             }}>
+                 <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
+                     ↓ Desliza para ver más
+                 </Typography>
              </Box>
           )}
           
