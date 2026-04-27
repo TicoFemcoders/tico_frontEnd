@@ -3,7 +3,6 @@ import { Paper, Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
 import IconButton from "@mui/material/IconButton";
-import { DeleteOutlined as DeleteOutlinedIcon } from "@mui/icons-material";
 import UserAvatar from "../common/UserAvatar";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
@@ -29,7 +28,7 @@ const actionLinkSx = (color) => ({
     cursor: "pointer",
 });
 
-const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
+const UsersTable = ({ users, onEdit, title = "Usuarios" }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter]   = useState("");
 
@@ -40,72 +39,6 @@ const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
         const matchesRole = roleFilter === "" || getRole(user) === roleFilter;
         return matchesSearch && matchesRole;
     });
-
-    const columns = [
-        {
-            header: "Nombre",
-            renderCell: (user) => (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <UserAvatar name={user.name} role={getRole(user)} />
-                    {user.name}
-                </Box>
-            ),
-        },
-        {
-            header: "Email",
-            renderCell: (user) => user.email,
-        },
-        {
-            header: "Rol",
-            renderCell: (user) => {
-                const role = getRole(user);
-                return (
-                    <Chip
-                        label={role === "ADMIN" ? "Admin" : "Empleado"}
-                        size="small"
-                        sx={{
-                            bgcolor: role === "ADMIN" ? "status.open.bg" : "background.default",
-                            color: role === "ADMIN" ? "blueAccent.main" : "text.mid",
-                        }}
-                    />
-                );
-            },
-        },
-        {
-            header: "Tickets abiertos",
-            renderCell: (user) => `${user.openTickets ?? 0} abiertos`,
-        },
-        {
-            header: "Estado",
-            renderCell: (user) => (
-                <Chip
-                    label={user.isActive ? "Activo" : "Inactivo"}
-                    size="small"
-                    sx={{
-                        bgcolor: user.isActive ? "status.closed.bg" : "priority.urgent.bg",
-                        color: user.isActive ? "status.closed.text" : "error.main",
-                    }}
-                />
-            ),
-        },
-        {
-            header: "Acciones",
-            renderCell: (user) => (
-                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                    <Link component="button" onClick={() => onEdit(user)} sx={actionLinkSx("primary.main")}>
-                        EDITAR
-                    </Link>
-                    <IconButton
-                        size="small"
-                        onClick={() => onDelete(user)}
-                        sx={{ color: "error.main", p: 0.5 }}
-                    >
-                        <DeleteOutlinedIcon fontSize="small" />
-                    </IconButton>
-                </Box>
-            ),
-        },
-    ];
 
     return (
         <Paper sx={{ borderRadius: 2, boxShadow: 1, mb: 4, overflow: "hidden", bgcolor: "background.paper" }}>
@@ -119,9 +52,63 @@ const UsersTable = ({ users, onDelete, onEdit, title = "Usuarios" }) => {
                 onSortChange={setRoleFilter}
                 sortOptions={roleOptions}
             />
-            <DataTable columns={columns} data={filteredUsers} itemsPerPage={10} />
+            <DataTable data={filteredUsers} itemsPerPage={5} columns={[
+                    {
+                        header: "Nombre",
+                        renderCell: (user) => (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <UserAvatar name={user.name} role={getRole(user)} />
+                                {user.name}
+                            </Box>
+                        ),
+                    },
+                    {
+                        header: "Email",
+                        renderCell: (user) => user.email,
+                    },
+                    {
+                        header: "Rol",
+                        renderCell: (user) => (
+                            <Chip
+                                label={getRole(user) === "ADMIN" ? "Admin" : "Empleado"}
+                                size="small"
+                                sx={{
+                                    bgcolor: getRole(user) === "ADMIN" ? "status.open.bg" : "background.default",
+                                    color: getRole(user) === "ADMIN" ? "blueAccent.main" : "text.mid",
+                                }}
+                            />
+                        ),
+                    },
+                    {
+                        header: "Tickets abiertos",
+                        renderCell: (user) => `${user.openTickets ?? 0} abiertos`,
+                    },
+                    {
+                        header: "Estado",
+                        renderCell: (user) => (
+                            <Chip
+                                label={user.isActive ? "Activo" : "Inactivo"}
+                                size="small"
+                                sx={{
+                                    bgcolor: user.isActive ? "status.closed.bg" : "priority.urgent.bg",
+                                    color: user.isActive ? "status.closed.text" : "error.main",
+                                }}
+                            />
+                        ),
+                    },
+                    {
+                        header: "Acciones",
+                        renderCell: (user) => (
+                            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                                <Link component="button" onClick={() => onEdit(user)} sx={actionLinkSx("primary.main")}>
+                                    EDITAR
+                                </Link>
+                            </Box>
+                        ),
+                    },
+                ]} 
+            />
         </Paper>
     );
-};
-
+}
 export default UsersTable;

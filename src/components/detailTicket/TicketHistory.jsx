@@ -1,47 +1,55 @@
 import { useEffect, useState, useCallback } from "react";
-import useAuth from "../../context/useAuth";
-import {
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  Divider,
-  CircularProgress,
-} from "@mui/material";
+import { useAuth } from "../../context/useAuth";
+import { Paper, Typography, Box, Stack, Divider, CircularProgress} from "@mui/material";
 import { ticketMessageService } from "../../services/ticketMessageService";
 import UserAvatar from "../common/UserAvatar";
+import { useSnackbar } from "notistack";
+import LoadingScreen from "../common/LoadingScreen";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import InfiniteScrollFooter from "../common/InfiniteScrollFooter";
 
 const TicketHistory = ({ ticketId, refreshTrigger }) => {
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const { page, setPage, handleScroll, scrollRef, canScroll, isAtBottom } = useInfiniteScroll(loading, hasMore, messages);
 
-  const fetchMessages = useCallback(async () => {
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const fetchMessages = useCallback(async (currentPage, isRefresh = false) => {
     if (!ticketId) return;
+    if (loading && !isRefresh) return; 
     try {
-      const data = await ticketMessageService.getMessagesByTicketId(ticketId);
-      const sorted = data.sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-      );
-      setMessages(sorted);
+      const data = await ticketMessageService.getMessagesByTicketId(ticketId, currentPage, 10);
+      const safeData = data || [];
+      setMessages(prev => {
+        const base = isRefresh ? [] : prev;
+        const existingIds = new Set(base.map(m => m.id));
+        const unique = safeData.filter(m => !existingIds.has(m.id));
+        return [...base, ...unique].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+      });
+      setHasMore(safeData.length === 10); 
     } catch (err) {
-      console.error("Error al cargar mensajes:", err);
+      enqueueSnackbar(err.friendlyMessage || "Error al cargar historial", { variant: "error" });
     } finally {
       setLoading(false);
     }
-  }, [ticketId]);
+  }, [ticketId, enqueueSnackbar ]);
 
   useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages, refreshTrigger]);
+    fetchMessages(page, false);
+  }, [page, fetchMessages]);
 
-  if (loading && messages.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress size={24} />
-      </Box>
-    );
-  }
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      setPage(0);
+      setHasMore(true);
+      fetchMessages(0, true);
+    }
+  }, [refreshTrigger, fetchMessages]);
 
   return (
     <Paper
@@ -60,55 +68,83 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
       
       <Divider sx={{ mb: 3, borderColor: 'var(--border)' }} />
 
-      <Stack spacing={3}>
-        {messages.map((item) => (
-          <Box key={item.id}>
-            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
-              <UserAvatar 
-                name={typeof item.authorName === 'object' ? item.authorName.name : item.authorName} 
-                role={item.authorRole} 
-              />
-              <Typography
-                variant="body2"
-                sx={{ 
-                  fontWeight: 800, 
-                  color: "text.primary" 
-                }}
-              >
-                {typeof item.authorName === 'object' 
-                  ? item.authorName.name 
-                  : (item.authorName || `Usuario #${item.authorId}`)}
-              </Typography>
+        <Box 
+          ref={scrollRef}
+          onScroll={handleScroll}
+          sx={{ 
+            maxHeight: 400, 
+            overflowY: 'auto', 
+            pr: 1 
+          }}
+        >
+        {loading && messages.length === 0 ? (
+          <LoadingScreen minHeight="200px" />
+        ) : (
+        <Stack spacing={3}>
+          {messages.map((item) => (
+            <Box key={item.id}>
+              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
+                <UserAvatar 
+                  name={typeof item.authorName === 'object' ? item.authorName.name : item.authorName} 
+                  role={item.authorRole} 
+                />
+                <Typography
+                  variant="body2"
+                  sx={{ 
+                    fontWeight: 800, 
+                    color: "text.primary" 
+                  }}
+                >
+                  {typeof item.authorName === 'object' 
+                    ? item.authorName.name 
+                    : (item.authorName || `Usuario #${item.authorId}`)}
+                </Typography>
 
-              <Typography variant="caption" color="text.secondary">
-                {new Date(item.createdAt).toLocaleString([], {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(item.createdAt).toLocaleString([], {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                </Typography>
+              </Box>
+
+              <Typography variant="body2" sx={{ mt: 1, whiteSpace: "pre-line", pl: 6, py:1 }}>
+                {item.content}
               </Typography>
+              
+              <Divider sx={{ mt: 2, borderColor: 'var(--border)', opacity: 0.5 }} />
             </Box>
+          ))}
 
-            <Typography variant="body2" sx={{ mt: 1, whiteSpace: "pre-line", pl: 6, py:1 }}>
-              {item.content}
+          {messages.length === 0 && !loading && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: "italic", pl: 6, py:2 }}
+            >
+              No hay mensajes aún.
             </Typography>
-            
-            <Divider sx={{ mt: 2, borderColor: 'var(--border)', opacity: 0.5 }} />
-          </Box>
-        ))}
-
-        {messages.length === 0 && !loading && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ fontStyle: "italic", pl: 6, py:2 }}
-          >
-            No hay mensajes aún.
+          )}
+          <InfiniteScrollFooter 
+                loading={loading} 
+                hasMore={hasMore} 
+                isEmpty={messages.length === 0} 
+                scrollText={null} 
+                endText="— Fin del historial —" 
+            />
+        </Stack>
+      )}
+      </Box>
+      {canScroll && !isAtBottom && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, opacity: 0.7 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
+            ↓ Sigue deslizando para leer más
           </Typography>
-        )}
-      </Stack>
+        </Box>
+      )}
     </Paper>
   );
 };

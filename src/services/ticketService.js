@@ -27,22 +27,25 @@ export const changePriority = (ticketId, priority) =>
 export const assignAdmin = (ticketId, adminId) =>
   api.patch(`/api/tickets/${ticketId}/assign-admin`, { adminId });
 
+//se tendrá que eliminar por s
 export const assignLabel = (ticketId, labelId) =>
   api.post(`/api/tickets/${ticketId}/labels/${labelId}`);
 
 export const removeLabel = (ticketId, labelId) =>
   api.delete(`/api/tickets/${ticketId}/labels/${labelId}`);
 
-// export const getAllLabels = (page = 0, size = 100) =>
-//   api.get(`/api/labels?page=${page}&size=${size}`).then(res => res.data.content);
-
 export const getTicketById = async (ticketId) => {
   const response = await api.get(`/api/tickets/${ticketId}/detail`);
   return response.data;
 };
 
+export const assignLabels = async (ticketId, labelIds) => {
+  // TEMPORAL: Mientras el backend no tenga el endpoint masivo,
+  // hacemos las llamadas una a una internamente.
+  const promises = labelIds.map(id => api.post(`/api/tickets/${ticketId}/labels/${id}`));
+  return Promise.all(promises);
+};
 
-/** Objeto agrupado para compatibilidad con imports { ticketService } */
 export const ticketService = {
   createTicket,
   getMyTickets,
@@ -51,9 +54,8 @@ export const ticketService = {
   closeTicket,
   changePriority,
   assignAdmin,
-  assignLabel,
+  assignLabels,
   removeLabel,
-  // getAllLabels,
   getTicketById,
   reopenTicket,
   changeStatus
