@@ -14,10 +14,10 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
 
     useEffect(() => {
         const controller = new AbortController();
-        labelService.getAllLabels()
+        labelService.getActiveLabels()
             .then(data => {
                 if (!controller.signal.aborted)
-                    setAvailableLabels(data.filter(l => l.active));
+                    setAvailableLabels(data);
             })
             .catch(() => {});
         return () => controller.abort();
