@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import AppModal from "../common/AppModal";
 import LabelForm from "./LabelForm";
-import { useEditLabel } from "../../hooks/useEditLabel";
+import { useLabelForm } from "../../hooks/useLabelForm";
 import { useEffect } from "react";
 
 const EditLabelModal = ({ open, onClose, label, onEdit, onError }) => {
@@ -11,8 +11,7 @@ const EditLabelModal = ({ open, onClose, label, onEdit, onError }) => {
         error, setError,
         load, reset,
         handleSubmit
-    } = useEditLabel({ onEdit, onError });
-
+    } = useLabelForm({ mode: "edit", onSuccess: onEdit, onError });
   
     useEffect(() => {
         if (open && label) load(label);
@@ -32,7 +31,7 @@ const EditLabelModal = ({ open, onClose, label, onEdit, onError }) => {
             actions={
                 <>
                     <Button onClick={handleClose} color="inherit">Cancelar</Button>
-                    <Button onClick={() => handleSubmit(label, handleClose)} variant="contained" color="primary">
+                    <Button onClick={() => handleSubmit(handleClose, label )} variant="contained" color="primary">
                         Guardar Cambios
                     </Button>
                 </>

@@ -132,7 +132,7 @@ const LabelTable = ({
                     searchPlaceholder="Buscar etiqueta..."
                     totalItems={labels.length}
                 />
-                <DataTable columns={columns} data={processedData} />
+                <DataTable columns={columns} data={processedData} itemsPerPage={5} />
             </Paper>
 
             <EditLabelModal

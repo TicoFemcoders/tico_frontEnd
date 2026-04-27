@@ -1,62 +1,62 @@
 import { Paper, TextField, Button, Box, Alert, Typography } from "@mui/material";
 import { useState } from "react";
 import { ticketMessageService } from "../../services/ticketMessageService";
-import useAuth from "../../context/useAuth";
+import{ useAuth } from "../../context/useAuth";
+import { useSnackbar } from "notistack";
 
 const TicketResponseBox = ({ ticket, onMessageSent }) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const isClosed = ticket?.status === "CLOSED";
   const ticketId = ticket?.id;
 
-  const handleSend = async () => {
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAssignedAdmin = isAdmin && ticket?.assignedToName === user?.name;
+  const isCreator = !isAdmin && ticket?.createdByName === user?.name;
+  const canRespond = isCreator || isAssignedAdmin;
+ 
 
-    if (!text.trim()) {
-      console.warn("El texto está vacío");
-      return;
-    }
+  const handleSend = async () => {
+    if (!text.trim()) return;
     if (!ticketId) {
-      setError("Error interno: No se pudo identificar el ticket.");
+      enqueueSnackbar("Error interno: No se pudo identificar el ticket.", { variant: "error" });
       return;
     }
 
     setLoading(true);
-    setError(null);
-    
+
     const messageRequestDTO = {
-      ticketId: Number(ticketId), 
-      content: text,  
-      recipientId: null
+      ticketId: Number(ticketId),
+      content: text,
+      recipientId: null,
     };
 
     try {
       await ticketMessageService.createMessage(ticketId, messageRequestDTO);
-      console.log("¡Mensaje enviado con éxito!");
-      setText(""); 
+      setText("");
+      enqueueSnackbar("¡Mensaje enviado correctamente!", { variant: "success" });
       if (onMessageSent) onMessageSent();
     } catch (err) {
-      console.error("Error en la petición:", err);
-      setError("No se pudo enviar la respuesta. Revisa la consola.");
+      enqueueSnackbar(err.friendlyMessage, { variant: "error" });
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <Paper sx={{ 
-      p: 3, 
-      width: '100%',
-      boxSizing: 'border-box', 
-      boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-      border: '1px solid',
-      borderColor: isClosed ? 'error.light' : '#e0e0e0',
-      bgcolor: isClosed ? '#f9f9f9' : 'background.paper',
+  return canRespond ? (
+    <Paper sx={{
+      p: 3,
+      width: "100%",
+      boxSizing: "border-box",
+      boxShadow: "var(--shadow)",
+      border: "1px solid",
+      borderColor: isClosed ? "error.light" : "var(--border)",
+      bgcolor: isClosed ? "var(--code-bg)" : "background.paper",
     }}>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      
+
       {isClosed && (
         <Typography variant="body2" color="error" sx={{ mb: 2, fontWeight: 700 }}>
           TICKET CERRADO: No se pueden enviar más mensajes.
@@ -73,27 +73,19 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
         disabled={loading || isClosed}
         variant="outlined"
       />
-      
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'flex-end',
-        mt: 2 
-      }}>
-        <Button 
-          variant="contained" 
+
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+        <Button
+          variant="contained"
           onClick={handleSend}
-          disabled={loading || isClosed || !text.trim()} 
-          sx={{ 
-            fontWeight: 'bold', 
-            textTransform: 'none',
-            px: 4
-          }}
+          disabled={loading || isClosed || !text.trim()}
+          sx={{ fontWeight: "bold", textTransform: "none", px: 4 }}
         >
           {loading ? "Enviando..." : isClosed ? "Cerrado" : "Enviar respuesta"}
         </Button>
       </Box>
     </Paper>
-  );
+  ) : null;
 };
 
 export default TicketResponseBox;

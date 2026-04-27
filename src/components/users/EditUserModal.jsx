@@ -1,91 +1,69 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
+import { Box, TextField, MenuItem, Button, Typography } from "@mui/material";
+import AppModal from "../common/AppModal";
+import UserForm from "./UserForm";
 
-const EditUserModal = ({ open, onClose, onConfirm, user }) => {
+const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassign, user }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        role: "EMPLOYEE",
+        roles: ["EMPLOYEE"],
+        isActive: true,
     });
 
     useEffect(() => {
-        if (user) {
-            setFormData({
-                name: user.name || "",
-                email: user.email || "",
-                role: user.role || "EMPLOYEE",
-            });
-        }
+        if (user) setFormData({
+            name: user.name || "",
+            email: user.email || "",
+            roles: [
+                (Array.isArray(user.roles) ? user.roles[0] : user.roles || "EMPLOYEE")
+                    .replace("ROLE_", "")
+            ],
+            isActive: user.isActive ?? true,
+        });
     }, [user]);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleSubmit = async () => {
+        const deactivating = user.isActive && !formData.isActive;
+        const statusChanging = user.isActive !== formData.isActive;
 
-    const handleSubmit = () => {
-        // TODO: validaciones
-        onConfirm(formData);
+        if (deactivating && user.openTickets > 0) {
+            onNeedsReassign(user);
+            return;
+        }
+
+        try {
+            await onEdit(user.id, { name: formData.name, email: formData.email, roles: formData.roles });
+            if (statusChanging) await onToggle(user.id);
+            onClose();
+        } catch (err) {
+            onError(err);
+        }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>
-                <Box>
-                    <Typography variant="h6" fontWeight={700}>Editar Usuario</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Modifica los datos del usuario
-                    </Typography>
-                </Box>
-            </DialogTitle>
-
-            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
-                <TextField
-                    label="Nombre"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    fullWidth
-                    size="small"
-                />
-                <TextField
-                    label="Email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    fullWidth
-                    size="small"
-                />
-                <TextField
-                    label="Rol"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    fullWidth
-                    size="small"
-                    select
-                >
-                    <MenuItem value="EMPLOYEE">Empleado</MenuItem>
-                    <MenuItem value="ADMIN">Admin</MenuItem>
-                </TextField>
-            </DialogContent>
-
-            <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
-                <Button variant="outlined" onClick={onClose}>
-                    Cancelar
-                </Button>
-                <Button variant="contained" color="primary" onClick={handleSubmit}>
-                    Guardar cambios
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <AppModal
+            open={open}
+            onClose={onClose}
+            title="Editar Usuario"
+            maxWidth="sm"
+            actions={
+                <>
+                    <Button color="inherit" onClick={onClose}>Cancelar</Button>
+                    <Button variant="contained" color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
+                </>
+            }
+        >
+            <UserForm
+            formData={formData}
+            onChange={(e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({ ...prev, [name]: value }));
+            }}
+            subtitle="Modifica los datos del usuario"
+            showStatus
+        />
+        </AppModal>
     );
 };
 

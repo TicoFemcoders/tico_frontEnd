@@ -2,7 +2,7 @@ import { Box, Button, Typography, Fade } from "@mui/material";
 import { CheckCircle as CheckCircleIcon } from "@mui/icons-material";
 import AppModal from "../common/AppModal";
 import LabelForm from "./LabelForm";
-import { useCreateLabel } from "../../hooks/useCreateLabel";
+import { useLabelForm } from "../../hooks/useLabelForm";
 
 const CreateLabelModal = ({ open, onClose, onCreate, onError }) => {
     const {
@@ -12,7 +12,7 @@ const CreateLabelModal = ({ open, onClose, onCreate, onError }) => {
         isSuccess,
         reset,
         handleSubmit
-    } = useCreateLabel({onCreate, onError });
+    } = useLabelForm({ mode: "create", onSuccess: onCreate, onError });
 
     const handleClose = () => {
         onClose();

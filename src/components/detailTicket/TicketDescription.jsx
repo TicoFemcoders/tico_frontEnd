@@ -1,20 +1,7 @@
 import { Paper, Typography, Box, Divider } from "@mui/material";
+import { formatDateTime } from "../../utils/formatDate";
 
 const TicketDescription = ({ description, createdAt }) => {
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "Fecha no disponible";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Fecha inválida";
-
-    const dateFormatted = date.toLocaleDateString();
-    const timeFormatted = date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    return `${dateFormatted} a las ${timeFormatted}`;
-  };
 
   return (
     <Paper
