@@ -19,10 +19,16 @@ export default function CreateTicketForm() {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    labelService.getAllLabels()
-      .then(setLabels)
-      .catch(() => setLabels([]));
-  }, []);
+    const controller = new AbortController();
+    labelService.getActiveLabels()
+      .then(data => {
+          if (!controller.signal.aborted) setLabels(data);
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setLabels([]);
+        });
+      return () => controller.abort();
+    }, []);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>

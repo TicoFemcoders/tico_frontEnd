@@ -44,28 +44,6 @@ const DetailTicketPage = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  // if (loading && !ticket) {
-  //   return (
-  //     <Box sx={{ 
-  //       display: "flex", 
-  //       justifyContent: "center", 
-  //       alignItems: "center", 
-  //       minHeight: "100vh", 
-  //       bgcolor: "background.default"
-  //     }}>
-  //       <CircularProgress />
-  //     </Box>
-  //   );
-  // }
-
-  // if (!ticket) {
-  //   return (
-  //     <Box sx={{ p: 5, textAlign: "center" }}>
-  //       <Typography variant="h6">Ticket no encontrado</Typography>
-  //     </Box>
-  //   );
-  // }
-
   return (
     <Box sx={{ display: "flex", bgcolor: "background.default",  minHeight: "100vh", width: "100%" }}>
       {loading && !ticket ? (

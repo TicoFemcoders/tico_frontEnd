@@ -3,6 +3,9 @@ import { api } from "./api";
 export const getAllLabels = (page = 0, size = 100) =>
   api.get(`/api/labels`, { params: { page, size } }).then(res => res.data.content);
 
+export const getActiveLabels =() =>
+  api.get(`/api/labels/active`).then(res =>res.data);
+
 
 export const createLabel = (labelData) =>
   api.post("/api/labels", labelData).then(res => res.data);
@@ -28,5 +31,6 @@ export const labelService = {
   updateLabel,
   deactivateLabel,
   searchLabels,
-  activateLabel
+  activateLabel,
+  getActiveLabels
 };
