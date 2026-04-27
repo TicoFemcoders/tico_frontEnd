@@ -24,6 +24,7 @@ export default function ForgotPasswordModal({ open, onClose, onSuccess }) {
     try {
       await requestPasswordReset(email);
       onSuccess(successMsg);
+      handleClose();
     } catch (err){
       if (err.response?.status === 404) {
         onSuccess(successMsg);
