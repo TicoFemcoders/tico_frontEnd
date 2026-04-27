@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -12,10 +11,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-=======
-import { useState, useEffect } from "react";
 import { Box, Typography, TextField, Button, Alert, CircularProgress } from "@mui/material";
->>>>>>> c1485843a70afaa9b4c8dc17bb378ec6442b8907
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AppModal from "../common/AppModal";
 import { deleteUser } from "../../services/userService";
