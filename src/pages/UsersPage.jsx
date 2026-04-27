@@ -15,8 +15,7 @@ const UsersPage = () => {
         loading,
         isSyncing,
         createUser,
-        updateUser,
-        toggleUser,
+        updateAndToggleUser,
         deactivateUser,
         handleError,
     } = useUsers();
@@ -43,29 +42,33 @@ const UsersPage = () => {
         }
     };
 
-    return loading ? (
+    return (
+        <Box sx={{ p: 3 }}>
+           { loading ? (
             <LoadingScreen />
         ) : (
-        <Box sx={{ p: 3 }}>
-            <PageHeader
-                title="Gestión de Usuarios"
-                subtitle={isSyncing ? "Sincronizando usuarios en segundo plano..." : "Administra los empleados y sus permisos"}
-                actionText="Crear Usuario"
-                onActionClick={() => setCreateModalOpen(true)}
-                breadcrumbs={["Usuarios"]}
-            />
+            <>
+                <PageHeader
+                    title="Gestión de Usuarios"
+                    subtitle={isSyncing ? "Sincronizando usuarios en segundo plano..." : "Administra los empleados y sus permisos"}
+                    actionText="Crear Usuario"
+                    onActionClick={() => setCreateModalOpen(true)}
+                    breadcrumbs={["Usuarios"]}
+                />
 
-            <UsersTable
-                title="Usuarios activos"
-                users={activeUsers}
-                onEdit={handleEditClick}
-            />
+                <UsersTable
+                    title="Usuarios activos"
+                    users={activeUsers}
+                    onEdit={handleEditClick}
+                />
 
-            <UsersTable
-                title="Usuarios inactivos"
-                users={inactiveUsers}
-                onEdit={handleEditClick}
-            />
+                <UsersTable
+                    title="Usuarios inactivos"
+                    users={inactiveUsers}
+                    onEdit={handleEditClick}
+                />
+            </>
+        )}
 
             <CreateUserModal
                 open={createModalOpen}
@@ -77,8 +80,7 @@ const UsersPage = () => {
             <EditUserModal
                 open={editModalOpen}
                 onClose={() => { setEditModalOpen(false); setSelectedUser(null); }}
-                onEdit={updateUser}
-                onToggle={toggleUser}
+                onEdit={updateAndToggleUser}
                 onNeedsReassign={handleNeedsReassign}
                 onError={handleError}
                 user={selectedUser}
@@ -93,7 +95,7 @@ const UsersPage = () => {
                 user={userToDeactivate}
             />
         </Box>
-    );
-};
+    
+);};
 
 export default UsersPage;

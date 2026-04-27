@@ -18,11 +18,14 @@ import { STATUS_CONFIG, PRIORITY_CONFIG } from "../../utils/enums";
     const processedTickets = useMemo(() => {
         let filtered = tickets;
         if (searchQuery.trim() !== "") {
-            const query = searchQuery.toLowerCase();
+            const query = searchQuery.trim().toLowerCase();
             filtered = tickets.filter(t => 
                 t.title.toLowerCase().includes(query) || 
                 t.id.toString().includes(query) 
             );
+        }
+        if (sortOption === "unassigned") {
+            filtered = filtered.filter(t => !t.assignedToId);
         }
         const sorted = [...filtered];
         const getMaxDate = (t) => Math.max(new Date(t.createdAt), new Date(t.updatedAt || t.createdAt));
@@ -34,6 +37,8 @@ import { STATUS_CONFIG, PRIORITY_CONFIG } from "../../utils/enums";
         };
         if (sorters[sortOption]) {
             sorted.sort(sorters[sortOption]);
+        }else if (sortOption === "unassigned"){
+            sorted.sort(sorters.recent); 
         }
         return sorted;
     }, [tickets, sortOption, searchQuery]);
@@ -77,7 +82,8 @@ return (
                     { value: "recent", label: "Más recientes" },
                     { value: "oldest", label: "Más antiguos" },
                     { value: "priority", label: "Mayor prioridad" },
-                    { value: "status", label: "Estado" }
+                    { value: "status", label: "Estado" },
+                    ...(variant === "all" ? [{ value: "unassigned", label: "Sin asignar" }] : [])
                 ]}
                 totalItems={tickets.length}
             />
