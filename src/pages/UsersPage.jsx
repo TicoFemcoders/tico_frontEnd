@@ -4,7 +4,7 @@ import PageHeader from "../components/common/PageHeader";
 import UsersTable from "../components/users/UsersTable";
 import CreateUserModal from "../components/users/CreateUserModal";
 import EditUserModal from "../components/users/EditUserModal";
-import DeleteUserModal from "../components/users/DeleteUserModal";
+import DeactivateUserModal from "../components/users/DeactivateUserModal";
 import { useUsers } from "../hooks/useUsers";
 import LoadingScreen from "../components/common/LoadingScreen";
 
@@ -86,7 +86,7 @@ const UsersPage = () => {
                 user={selectedUser}
             />
 
-            <DeleteUserModal
+            <DeactivateUserModal
                 mode="deactivate"
                 open={deactivateModalOpen}
                 onClose={() => { setDeactivateModalOpen(false); setUserToDeactivate(null); }}
