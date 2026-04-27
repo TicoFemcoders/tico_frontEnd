@@ -24,16 +24,13 @@ export const useUsers = () => {
         notify("Usuario creado correctamente");
     };
 
-    const updateUser = async (userId, formData) => {
+    const updateAndToggleUser = async (userId, formData, shouldToggle) => {
         await userService.updateUser(userId, formData);
+        if (shouldToggle) {
+            await userService.toggleUserActive(userId);
+        }
         await fetchUsers();
         notify("Usuario actualizado correctamente");
-    };
-
-    const toggleUser = async (userId) => {
-        await userService.toggleUserActive(userId);
-        await fetchUsers();
-        notify("Estado del usuario actualizado");
     };
 
     const deactivateUser = async (userId, reassignEmail) => {
@@ -52,9 +49,8 @@ export const useUsers = () => {
         loading,
         isSyncing,
         createUser,
-        updateUser,
-        toggleUser,
         deactivateUser,
         handleError,
+        updateAndToggleUser
     };
 };

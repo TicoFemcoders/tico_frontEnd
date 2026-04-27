@@ -24,12 +24,12 @@ export default function ForgotPasswordModal({ open, onClose }) {
     try {
       await requestPasswordReset(email);
       setSent(true);
-    } catch (err) {
-      const msg = err.response?.data?.message || "";
-      setError(msg || "No se ha podido enviar el código. Inténtalo de nuevo.");
+    } catch (err){
+      setError(err.friendlyMessage || "Error al conectar con el servidor. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
     }
+    setMessage("Si el email está registrado, recibirás las instrucciones en breve.");
   };
 
   const handleClose = () => {
