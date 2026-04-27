@@ -33,8 +33,8 @@ const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassi
         }
 
         try {
-            await onEdit(user.id, { name: formData.name, email: formData.email, roles: formData.roles });
-            if (statusChanging) await onToggle(user.id);
+            await onEdit(user.id, { name: formData.name, email: formData.email, roles: formData.roles }, statusChanging);
+            
             onClose();
         } catch (err) {
             onError(err);
