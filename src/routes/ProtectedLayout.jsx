@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
-import { Outlet,  useLocation } from "react-router-dom";
-=======
-import { useState } from "react";
 import { Outlet,  useLocation, matchPath } from "react-router-dom";
->>>>>>> f694abad914072b87e141b0bc96d7503ae02b5a1
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";

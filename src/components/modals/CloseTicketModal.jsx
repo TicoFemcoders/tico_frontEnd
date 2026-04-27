@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-=======
-import { useState } from "react";
->>>>>>> f694abad914072b87e141b0bc96d7503ae02b5a1
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
