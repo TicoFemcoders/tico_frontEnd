@@ -1,39 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Select, MenuItem, Box, Button, TextField, Alert, CircularProgress, OutlinedInput } from "@mui/material";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import LabelChip from "../common/LabelChip";
 import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
 import { labelService } from "../../services/labelService";
-
-const PRIORITIES = [
-  { value: "LOW",      label: "🟢 Baja" },
-  { value: "MEDIUM",   label: "🟡 Media" },
-  { value: "HIGH",     label: "🟠 Alta" },
-  { value: "CRITICAL", label: "🔴 Urgente" },
-];
-
+import { PRIORITY_CONFIG } from "../../utils/enums";
+import { useSnackbar } from "notistack";
 
 export default function CreateTicketForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [form, setForm]       = useState({ title: "", description: "", priority: "", labelId: "" });
-  const [labels, setLabels]   = useState([]);
-  const [errors, setErrors]   = useState({});
+  const [form, setForm] = useState({ title: "", description: "", priority: "", labelIds: [] });
+  const [labels, setLabels] = useState([]);
+  const [errors, setErrors] = useState({});
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     labelService.getAllLabels()
       .then(setLabels)
       .catch(() => setLabels([]));
   }, []);
-  const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
@@ -47,26 +36,30 @@ export default function CreateTicketForm() {
       e.description = "La descripción debe tener entre 10 y 500 caracteres.";
     if (!form.priority)
       e.priority = "Se requiere seleccionar prioridad.";
-    if (!form.labelId)
-      e.labelId = "Se requiere seleccionar una etiqueta.";
+    if (!form.labelIds || form.labelIds.length === 0)
+      e.labelIds = "Se requiere seleccionar al menos una etiqueta.";
     return e;
+  };
+
+  const handleDeleteLabel = (idToDelete) => {
+    setForm(prev => ({
+      ...prev,
+      labelIds: prev.labelIds.filter(id => id !== idToDelete)
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setApiError("");
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
     setErrors({});
     setLoading(true);
     try {
-      const ticket = await ticketService.createTicket(form, user.id);
-      if (form.labelId) {
-        await ticketService.assignLabel(ticket.data.id, form.labelId);
-      }
+      await ticketService.createTicket(form);
+      enqueueSnackbar("Ticket creado correctamente.", { variant: "success" });
       navigate("/my-tickets");
     } catch (err) {
-      setApiError(err.response?.data?.mensaje || "Error al enviar el ticket. Inténtalo de nuevo.");
+      enqueueSnackbar(err.friendlyMessage || "Error al enviar el ticket. Inténtalo de nuevo.", { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -87,12 +80,6 @@ export default function CreateTicketForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-
-      {apiError && (
-        <Alert severity="error" sx={{ mb: 3, fontSize: "13px" }}>
-          {apiError}
-        </Alert>
-      )}
 
       <Box sx={{ mb: 3 }}>
         <Box sx={labelStyles}>
@@ -139,14 +126,28 @@ export default function CreateTicketForm() {
           <Box component="label" sx={{ ...labelText, display: "block", mb: "6px" }}>
             Etiqueta / Categoría <Box component="span" sx={{ color: "primary.main" }}>*</Box>
           </Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+          {form.labelIds.map(id => (
+            <LabelChip 
+              key={id} 
+              label={labels.find(l => l.id === id)} 
+              onDelete={() => handleDeleteLabel(id)}
+            />
+          ))}
+        </Box>
+
           <Select
-            name="labelId"
-            value={form.labelId}
+            name="labelIds"
+            multiple
+            value={form.labelIds}
             onChange={handleChange}
             fullWidth
             size="small"
             displayEmpty
-            error={!!errors.labelId}
+            renderValue={(selected) => (
+              selected.length === 0 ? "Selecciona etiquetas..." : ""
+            )}
+            error={!!errors.labelIds}
           >
             <MenuItem value="" disabled>Selecciona una etiqueta...</MenuItem>
             {labels.map((label) => (
@@ -158,9 +159,10 @@ export default function CreateTicketForm() {
               </MenuItem>
             ))}
           </Select>
-          {errors.labelId && (
+
+          {errors.labelIds && (
             <Box sx={{ fontSize: "11px", color: "error.main", mt: "4px" }}>
-              {errors.labelId}
+              {errors.labelIds}
             </Box>
           )}
         </Box>
@@ -179,8 +181,8 @@ export default function CreateTicketForm() {
             error={!!errors.priority}
           >
             <MenuItem value="" disabled>Selecciona prioridad...</MenuItem>
-            {PRIORITIES.map((p) => (
-              <MenuItem key={p.value} value={p.value}>{p.label}</MenuItem>
+            {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+              <MenuItem key={key} value={key}>{config.icon}{config.label}</MenuItem>
             ))}
           </Select>
           {errors.priority && (

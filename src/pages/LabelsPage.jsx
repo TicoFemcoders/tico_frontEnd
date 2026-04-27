@@ -5,11 +5,13 @@ import PageHeader from "../components/common/PageHeader";
 import LabelTable from "../components/labels/LabelTable";
 import CreateLabelModal from "../components/labels/CreateLabelModal";
 import { useLabels } from "../hooks/useLabels";
+import LoadingScreen from "../components/common/LoadingScreen";
 
 const LabelsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const {
         loading,
+        isSyncing,
         activeLabels,
         inactiveLabels,
         createLabel,
@@ -18,18 +20,14 @@ const LabelsPage = () => {
         handleError,
     } = useLabels();
 
-    if (loading) return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-            <CircularProgress />
-        </Box>
-    );
-
-    return (
+    return loading ? (
+            <LoadingScreen />
+        ) : (
         <Box sx={{ p: 1 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
                 <PageHeader
                     title="Gestión de Etiquetas"
-                    subtitle="Organiza los tickets con categorías y etiquetas personalizadas"
+                    subtitle={isSyncing ? "Sincronizando base de datos en segundo plano..." :"Organiza los tickets con categorías y etiquetas personalizadas"}
                 />
                 <Button
                     variant="contained"
@@ -53,6 +51,7 @@ const LabelsPage = () => {
                 showFilter
                 onToggle={toggleLabel}
                 onEdit={editLabel}
+                onError={handleError}
             />
 
             <Alert

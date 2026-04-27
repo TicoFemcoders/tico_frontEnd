@@ -7,8 +7,8 @@ const ICONS = {
 };
 function getLatestDate(ticket) {
     const dates = [
-        { label: 'Creado', value: new Date(ticket.createdAt), color: "dateStatus.created" },
-        { label: 'Modificado', value: new Date(ticket.updatedAt), color: "dateStatus.updated" },
+        { label: 'Creado', value: new Date(ticket.createdAt), color: 'text.primary'},
+        { label: 'Modificado', value: new Date(ticket.updatedAt), color: 'text.primary'},
     ];
     if (ticket.closedAt) {
         dates.push({ label: 'Cerrado', value: new Date(ticket.closedAt), color: "dateStatus.closed" });
@@ -27,9 +27,9 @@ export default function LatestDateInfo({ ticket, compact = false }) {
     }
     return (
         <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", color: latest.color }}>
-            {ICONS[latest.label]}
+            {/* {ICONS[latest.label]} */}
             <Box>
-                <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1 }}>{latest.label}</Typography>
+                {/* <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1 }}>{latest.label}</Typography> */}
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>{latest.value}</Typography>
             </Box>
         </Stack>

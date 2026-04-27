@@ -4,11 +4,11 @@ import React, { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 import { useLocation, Link as RouterLink } from "react-router-dom";
-import StatusChip from "../common/StatusChip";
-import PriorityChip from "../common/PriorityChip";
+import EnumChip from "../common/EnumChip";
 import TicketLabels from "./TicketLabels";
 import LatestDateInfo from "./LatestDateInfo";
 import TicketCardMobile from "./TicketCardMobile";
+import { STATUS_CONFIG, PRIORITY_CONFIG } from "../../utils/enums";
 
  const TicketTable = ({ title, tickets, showFilter = false, variant = "default" }) => {
     const [sortOption, setSortOption] = useState("recent");
@@ -18,24 +18,27 @@ import TicketCardMobile from "./TicketCardMobile";
     const processedTickets = useMemo(() => {
         let filtered = tickets;
         if (searchQuery.trim() !== "") {
-            const query = searchQuery.toLowerCase();
+            const query = searchQuery.trim().toLowerCase();
             filtered = tickets.filter(t => 
                 t.title.toLowerCase().includes(query) || 
                 t.id.toString().includes(query) 
             );
         }
+        if (sortOption === "unassigned") {
+            filtered = filtered.filter(t => !t.assignedToId);
+        }
         const sorted = [...filtered];
         const getMaxDate = (t) => Math.max(new Date(t.createdAt), new Date(t.updatedAt || t.createdAt));
-        const priorityWeight = { 'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
-        const statusWeight = {'OPEN':3, 'IN_PROGRESS':2, 'CLOSED': 1}
         const sorters = {
             recent:   (a, b) => getMaxDate(b) - getMaxDate(a),
             oldest:   (a, b) => getMaxDate(a) - getMaxDate(b),
-            priority: (a, b) => (priorityWeight[b.priority] || 0) - (priorityWeight[a.priority] || 0),
-            status: (a,b) => (statusWeight[b.status]|| 0) - (statusWeight[a.status]|| 0)
+            priority: (a, b) => (PRIORITY_CONFIG[b.priority]?.weight || 0) - (PRIORITY_CONFIG[a.priority]?.weight || 0),
+            status: (a,b) => (STATUS_CONFIG[b.status]?.weight|| 0) - (STATUS_CONFIG[a.status]?.weight|| 0)
         };
         if (sorters[sortOption]) {
             sorted.sort(sorters[sortOption]);
+        }else if (sortOption === "unassigned"){
+            sorted.sort(sorters.recent); 
         }
         return sorted;
     }, [tickets, sortOption, searchQuery]);
@@ -48,8 +51,8 @@ import TicketCardMobile from "./TicketCardMobile";
             renderCell: (t) => <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: "13px" }}>{t.createdByName || "Desconocido"}</Typography>
         },
         { header: "ETIQUETAS", renderCell: (t) => <TicketLabels labels={t.labels} /> },
-        { header: "PRIORIDAD", renderCell: (t) => <PriorityChip priority={t.priority} /> },
-        { header: "ESTADO", renderCell: (t) => <StatusChip status={t.status} /> },
+        { header: "PRIORIDAD", renderCell: (t) => <EnumChip value={t.priority} config={PRIORITY_CONFIG} type="priority" />},
+        { header: "ESTADO", renderCell: (t) => <EnumChip value={t.status} config={STATUS_CONFIG} type="status" /> },
         variant === "all" && {
             header: " ASIGNADO A",
             renderCell: (t) => <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: "13px" }}>{t.assignedToName || "Sin asignar"}</Typography>
@@ -79,7 +82,8 @@ return (
                     { value: "recent", label: "Más recientes" },
                     { value: "oldest", label: "Más antiguos" },
                     { value: "priority", label: "Mayor prioridad" },
-                    { value: "status", label: "Estado" }
+                    { value: "status", label: "Estado" },
+                    ...(variant === "all" ? [{ value: "unassigned", label: "Sin asignar" }] : [])
                 ]}
                 totalItems={tickets.length}
             />

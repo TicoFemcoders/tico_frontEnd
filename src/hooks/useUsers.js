@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSnackbar } from "notistack";
 import { userService } from "../services/userService";
+import { useProgressiveFetch } from "./useProgressiveFetch";
 
 export const useUsers = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     const notify = useCallback((msg, variant = "success") => {
         enqueueSnackbar(msg, { variant });
@@ -15,18 +14,9 @@ export const useUsers = () => {
         enqueueSnackbar(err.friendlyMessage || fallback, { variant: "error" });
     }, [enqueueSnackbar]);
 
-    const fetchUsers = useCallback(async () => {
-        try {
-            const data = await userService.getAllUsers();
-            setUsers(data);
-        } catch (err) {
-            handleError(err, "Error al cargar usuarios");
-        } finally {
-            setLoading(false);
-        }
-    }, [handleError]);
+    const fetchFn = useCallback((page, size) => userService.getAllUsers(page, size), []);
 
-    useEffect(() => { fetchUsers(); }, [fetchUsers]);
+    const { data: users, loading, isSyncing, refetch: fetchUsers } = useProgressiveFetch(fetchFn);
 
     const createUser = async (formData) => {
         await userService.createUser(formData);
@@ -34,22 +24,13 @@ export const useUsers = () => {
         notify("Usuario creado correctamente");
     };
 
-    const updateUser = async (userId, formData) => {
+    const updateAndToggleUser = async (userId, formData, shouldToggle) => {
         await userService.updateUser(userId, formData);
+        if (shouldToggle) {
+            await userService.toggleUserActive(userId);
+        }
         await fetchUsers();
         notify("Usuario actualizado correctamente");
-    };
-
-    const deleteUser = async (userId, reassignEmail) => {
-        await userService.deleteUser(userId, reassignEmail);
-        await fetchUsers();
-        notify("Usuario eliminado correctamente");
-    };
-
-    const toggleUser = async (userId) => {
-        await userService.toggleUserActive(userId);
-        await fetchUsers();
-        notify("Estado del usuario actualizado");
     };
 
     const deactivateUser = async (userId, reassignEmail) => {
@@ -66,11 +47,10 @@ export const useUsers = () => {
         activeUsers,
         inactiveUsers,
         loading,
+        isSyncing,
         createUser,
-        updateUser,
-        deleteUser,
-        toggleUser,
         deactivateUser,
         handleError,
+        updateAndToggleUser
     };
 };

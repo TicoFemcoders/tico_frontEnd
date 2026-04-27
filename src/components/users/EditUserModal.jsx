@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, TextField, MenuItem, Button, Typography } from "@mui/material";
 import AppModal from "../common/AppModal";
+import UserForm from "./UserForm";
 
 const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassign, user }) => {
     const [formData, setFormData] = useState({
@@ -32,8 +33,8 @@ const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassi
         }
 
         try {
-            await onEdit(user.id, { name: formData.name, email: formData.email, roles: formData.roles });
-            if (statusChanging) await onToggle(user.id);
+            await onEdit(user.id, { name: formData.name, email: formData.email, roles: formData.roles }, statusChanging);
+            
             onClose();
         } catch (err) {
             onError(err);
@@ -53,49 +54,15 @@ const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassi
                 </>
             }
         >
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Modifica los datos del usuario
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <TextField
-                    label="Nombre"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    fullWidth size="small"
-                    placeholder="Ana García"
-                    InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                    label="Email"
-                    name="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    fullWidth size="small"
-                    placeholder="ana@cohispania.com"
-                    InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                    label="Rol"
-                    value={formData.roles?.[0] ?? "EMPLOYEE"}
-                    onChange={(e) => setFormData({ ...formData, roles: [e.target.value] })}
-                    fullWidth size="small" select
-                    InputLabelProps={{ shrink: true }}
-                >
-                    <MenuItem value="EMPLOYEE">Empleado</MenuItem>
-                    <MenuItem value="ADMIN">Admin</MenuItem>
-                </TextField>
-                <TextField
-                    label="Estado"
-                    value={formData.isActive ? "ACTIVE" : "INACTIVE"}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.value === "ACTIVE" })}
-                    fullWidth size="small" select
-                    InputLabelProps={{ shrink: true }}
-                >
-                    <MenuItem value="ACTIVE">Activo</MenuItem>
-                    <MenuItem value="INACTIVE">Inactivo</MenuItem>
-                </TextField>
-            </Box>
+            <UserForm
+            formData={formData}
+            onChange={(e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({ ...prev, [name]: value }));
+            }}
+            subtitle="Modifica los datos del usuario"
+            showStatus
+        />
         </AppModal>
     );
 };

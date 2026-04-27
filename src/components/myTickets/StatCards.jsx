@@ -1,5 +1,6 @@
 import { Card, Typography, Box } from "@mui/material";
 const StatCards = ({ stats }) => {
+    
     return (
         <Box component="section" aria-label="Estadísticas de tickets"sx={{ display: 'flex', gap: 3, width: '100%', mb: 4, flexDirection: { xs: 'column', sm: 'row' } }}>
             {stats.map((stat, index) => (
