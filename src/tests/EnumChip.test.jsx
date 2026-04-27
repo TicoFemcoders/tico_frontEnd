@@ -12,7 +12,6 @@ const renderWithTheme = (ui) =>
     render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 describe("EnumChip", () => {
-    // ── STATUS ─────────────────────────────────────────────────────────────
 
     it("renderiza el chip de estado OPEN correctamente", () => {
         renderWithTheme(
@@ -35,7 +34,6 @@ describe("EnumChip", () => {
         expect(screen.getByText("Cerrado")).toBeInTheDocument();
     });
 
-    // ── PRIORITY ───────────────────────────────────────────────────────────
 
     it("renderiza el chip de prioridad CRITICAL correctamente", () => {
         renderWithTheme(
@@ -65,7 +63,6 @@ describe("EnumChip", () => {
         expect(screen.getByText("Baja")).toBeInTheDocument();
     });
 
-    // ── EDGE CASES ─────────────────────────────────────────────────────────
 
     it("no renderiza nada si el valor no existe en el config", () => {
         const { container } = renderWithTheme(
