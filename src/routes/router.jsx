@@ -4,7 +4,6 @@ import ProtectedLayout from "./ProtectedLayout";
 import RoleRoute from "./RoleRoute";
 import LoginPage from "../pages/LoginPage";
 import ActivationPage from "../pages/ActivationPage";
-import DashboardAdmin from "../pages/DashboardAdmin";
 import TicketPage from "../pages/TicketPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import MyTickets from "../pages/MyTickets";

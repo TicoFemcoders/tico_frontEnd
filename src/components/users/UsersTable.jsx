@@ -6,11 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import UserAvatar from "../common/UserAvatar";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
-
-const getRole = (user) => {
-    const role = Array.isArray(user.roles) ? user.roles[0] : user.role;
-    return role?.replace("ROLE_", "") || "EMPLOYEE";
-};
+import { getRole } from "../../utils/userHelpers";
 
 const roleOptions = [
     { value: "", label: "Todos" },

@@ -17,6 +17,7 @@ export default function LoginForm() {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -70,6 +71,11 @@ export default function LoginForm() {
         </Alert>
       )}
 
+      {successMessage && (
+        <Alert severity="success" sx={{ mb: 2, fontSize: 13 }}>
+          {successMessage}
+        </Alert>
+      )}
       <Typography component="label" htmlFor="login-email" sx={{ fontSize: 13, fontWeight: 500, color: "text.primary", mb: 0.5 }}>
         Correo electrónico
       </Typography>
@@ -88,7 +94,7 @@ export default function LoginForm() {
         <Typography component="button" type="button" onClick={() => setModalOpen(true)} sx={{ cursor: "pointer", fontSize: 13, color: "blueAccent.main", background: "none", border: "none", p: 0 }}>
           ¿Has olvidado tu contraseña?
         </Typography>
-        <ForgotPasswordModal open={modalOpen} onClose={() => setModalOpen(false)} />
+        <ForgotPasswordModal open={modalOpen} onClose={() => setModalOpen(false)} onSuccess={(msg) => setSuccessMessage(msg)} />
       </Box>
 
       <Box component="footer" sx={{ mt: 2.5, pt: 2, borderTop: "1px solid", borderColor: "divider", textAlign: "center" }}>
