@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -24,6 +24,7 @@ export default function ForgotPasswordModal({ open, onClose, onSuccess }) {
     try {
       await requestPasswordReset(email);
       onSuccess(successMsg);
+      handleClose();
     } catch (err){
       if (err.response?.status === 404) {
         onSuccess(successMsg);

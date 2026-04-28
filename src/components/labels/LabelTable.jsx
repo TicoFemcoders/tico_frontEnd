@@ -1,5 +1,5 @@
 import { Paper, Box, Typography } from "@mui/material";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 import EditLabelModal from "./EditLabelModal";

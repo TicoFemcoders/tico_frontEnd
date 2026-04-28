@@ -1,6 +1,6 @@
 import { Paper, Box, Typography, Link } from "@mui/material";
 import { ArrowForward as ArrowIcon} from "@mui/icons-material";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import DataTable from "../common/DataTable";
 import TableToolbar from "../common/TableToolbar";
 import { useLocation, Link as RouterLink } from "react-router-dom";
@@ -102,4 +102,3 @@ return (
     );
  }
 export default TicketTable;
-
