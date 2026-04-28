@@ -207,6 +207,37 @@ src/
 
 > Los componentes están organizados **por funcionalidad** (tickets, etiquetas, usuarios, layout) para mantener el código relacionado agrupado y fácil de navegar.
 
+---
+
+```
+src/tests/
+│
+├── AlertModal.test.jsx                → Modal de alerta genérico
+├── AppModal.test.jsx                  → Modal genérico reutilizable
+├── AuthCodeForm.test.jsx              → Formulario de código de activación de cuenta
+├── AuthContext.test.jsx               → AuthProvider: login, logout, persistencia en localStorage
+├── ConfirmModal.test.jsx              → Modal de confirmación de acciones
+├── CreateTicketForm.test.jsx          → Formulario de creación de ticket (unit)
+├── EnumChip.test.jsx                  → Chip de enum (estado y prioridad de ticket)
+├── ForgotPasswordModal.test.jsx       → Modal de recuperación de contraseña
+├── LabelChip.test.jsx                 → Chip de etiqueta con color dinámico
+├── LoginForm.test.jsx                 → Formulario de login (unit)
+├── Navbar.test.jsx                    → Barra de navegación lateral (unit)
+├── ProtectedRoute.test.jsx            → Redirección sin token (unit)
+├── RoleRoute.test.jsx                 → Restricción por rol (unit)
+├── StatCards.test.jsx                 → Tarjetas de estadísticas por estado de ticket
+├── UserAvatar.test.jsx                → Avatar con iniciales de usuario
+├── Utils.test.jsx                     → Utilidades: formatDate, formatTime, getInitials, getContrastText
+├── api.test.js                        → Instancia Axios: inyección de Bearer token e interceptor 401
+├── jsdom.test.js                      → Verificación del entorno JSDOM (setup de Vitest)
+│
+└── integration/                       → Tests de integración (componentes reales + MSW + AuthProvider real)
+    ├── AuthProtection.integration.test.jsx    → ProtectedRoute y RoleRoute con AuthProvider real
+    ├── CreateTicketFlow.integration.test.jsx  → Flujo completo de creación de ticket con API simulada
+    ├── LoginFlow.integration.test.jsx         → Flujo de login por rol, errores de API y navegación
+    └── NavbarAuth.integration.test.jsx        → Navbar adaptada al rol (ADMIN vs EMPLOYEE) y logout
+```
+
 </details>
 
 ---
@@ -250,6 +281,34 @@ npm run dev
 ```
 
 La aplicación estará disponible en `http://localhost:5173`.
+
+---
+
+## 🧪 Tests
+
+El proyecto cuenta con **22 archivos de test** organizados en dos niveles:
+
+| Nivel       | Herramientas                                        | Qué prueban                                                     |
+| ----------- | --------------------------------------------------- | --------------------------------------------------------------- |
+| Unitarios   | Vitest + Testing Library                            | Componentes en aislamiento con props y estado controlados       |
+| Integración | Vitest + Testing Library + MSW (`msw/node`) + React Router | Flujos completos de usuario con API simulada y navegación real  |
+
+```bash
+npm run test            # Ejecutar todos los tests
+npm run test:ui         # Interfaz gráfica de Vitest
+npm run test:coverage   # Informe de cobertura
+```
+
+### Tests de integración
+
+Los tests de integración montan componentes reales junto con el `AuthProvider` auténtico (que lee de `localStorage`), `MemoryRouter` de React Router y **MSW** (`msw/node`) para interceptar las peticiones a la API sin necesitar el backend. Verifican flujos completos de usuario, incluyendo navegación entre rutas y efectos secundarios en `localStorage`.
+
+| Archivo                                         | Qué verifica                                                                                                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LoginFlow.integration.test.jsx`                | Login ADMIN navega a `/all-tickets` y persiste token y datos de usuario en `localStorage`; EMPLOYEE navega a `/my-tickets`; credenciales incorrectas muestran error y no navegan; error 500 muestra mensaje genérico |
+| `AuthProtection.integration.test.jsx`           | Sin token en `localStorage`, `ProtectedRoute` redirige a `/login`; con token muestra el contenido protegido; `RoleRoute` con rol ADMIN permite el acceso; con rol EMPLOYEE redirige a `/my-tickets` |
+| `CreateTicketFlow.integration.test.jsx`         | Las etiquetas activas se cargan desde la API y se muestran en el selector; el formulario completo enviado correctamente navega a `/my-tickets`; si la API devuelve 500, el formulario no navega |
+| `NavbarAuth.integration.test.jsx`               | EMPLOYEE ve sus ítems (Mis tickets, Nuevo ticket) y no los exclusivos de admin; ADMIN ve Todos los tickets, Usuarios y Etiquetas y no el botón Nuevo ticket; el logout limpia token y usuario de `localStorage` |
 
 ---
 
