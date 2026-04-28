@@ -1,79 +1,129 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../styles/theme.js";
 import ConfirmModal from "../components/modals/ConfirmModal";
 
-const theme = createTheme();
-const renderWithTheme = (ui) => render(
-  <ThemeProvider theme={theme}>{ui}</ThemeProvider>
-);
+const renderConfirmModal = (props) =>
+    render(
+        <ThemeProvider theme={theme}>
+            <ConfirmModal {...props} />
+        </ThemeProvider>
+    );
 
 describe("ConfirmModal", () => {
 
-  test("click en Confirmar llama a onConfirm", () => {
-    const onConfirmMock = vi.fn();
-    const onCloseMock = vi.fn();
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-    renderWithTheme(
-      <ConfirmModal
-        open={true}
-        onClose={onCloseMock}
-        onConfirm={onConfirmMock}
-        title="Título test"
-        message="¿Estás seguro?"
-      />
-    );
+    it("renderiza el título y el mensaje cuando se pasan", () => {
+        renderConfirmModal({
+            open: true,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+            message: "¿Estás seguro?",
+        });
 
-    fireEvent.click(screen.getByRole("button", { name: /confirmar/i }));
+        expect(screen.getByText("Título test")).toBeInTheDocument();
+        expect(screen.getByText("¿Estás seguro?")).toBeInTheDocument();
+    });
 
-    expect(onConfirmMock).toHaveBeenCalledTimes(1);
-    expect(onCloseMock).not.toHaveBeenCalled();
-  });
+    it("cuando open=false no muestra el contenido", () => {
+        renderConfirmModal({
+            open: false,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+            message: "¿Estás seguro?",
+        });
 
-  test("click en Cancelar llama a onClose", () => {
-    const onConfirmMock = vi.fn();
-    const onCloseMock = vi.fn();
+        expect(screen.queryByText("¿Estás seguro?")).not.toBeInTheDocument();
+    });
 
-    renderWithTheme(
-      <ConfirmModal
-        open={true}
-        onClose={onCloseMock}
-        onConfirm={onConfirmMock}
-        title="Título test"
-        message="¿Estás seguro?"
-      />
-    );
+    it("no renderiza el mensaje cuando no se pasa", () => {
+        renderConfirmModal({
+            open: true,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+        });
 
-    fireEvent.click(screen.getByRole("button", { name: /cancelar/i }));
+        expect(screen.queryByText("¿Estás seguro?")).not.toBeInTheDocument();
+    });
 
-    expect(onCloseMock).toHaveBeenCalledTimes(1);
-    expect(onConfirmMock).not.toHaveBeenCalled();
-  });
+    it("click en Confirmar llama a onConfirm y no a onClose", async () => {
+        const onConfirmMock = vi.fn();
+        const onCloseMock = vi.fn();
 
-  test("renderiza el mensaje cuando se pasa", () => {
-    renderWithTheme(
-      <ConfirmModal
-        open={true}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        title="Título test"
-        message="¿Estás seguro?"
-      />
-    );
+        renderConfirmModal({
+            open: true,
+            onClose: onCloseMock,
+            onConfirm: onConfirmMock,
+            title: "Título test",
+            message: "¿Estás seguro?",
+        });
 
-    expect(screen.getByText("¿Estás seguro?")).toBeInTheDocument();
-  });
+        await userEvent.click(screen.getByRole("button", { name: /confirmar/i }));
 
-  test("no renderiza mensaje cuando no se pasa", () => {
-    renderWithTheme(
-      <ConfirmModal
-        open={true}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        title="Título test"
-      />
-    );
+        expect(onConfirmMock).toHaveBeenCalledTimes(1);
+        expect(onCloseMock).not.toHaveBeenCalled();
+    });
 
-    expect(screen.queryByText("¿Estás seguro?")).not.toBeInTheDocument();
-  });
+    it("click en Cancelar llama a onClose y no a onConfirm", async () => {
+        const onConfirmMock = vi.fn();
+        const onCloseMock = vi.fn();
 
+        renderConfirmModal({
+            open: true,
+            onClose: onCloseMock,
+            onConfirm: onConfirmMock,
+            title: "Título test",
+            message: "¿Estás seguro?",
+        });
+
+        await userEvent.click(screen.getByRole("button", { name: /cancelar/i }));
+
+        expect(onCloseMock).toHaveBeenCalledTimes(1);
+        expect(onConfirmMock).not.toHaveBeenCalled();
+    });
+
+    it("usa confirmLabel personalizado si se pasa", () => {
+        renderConfirmModal({
+            open: true,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+            confirmLabel: "Sí, eliminar",
+        });
+
+        expect(screen.getByRole("button", { name: /sí, eliminar/i })).toBeInTheDocument();
+    });
+
+    it("usa cancelLabel personalizado si se pasa", () => {
+        renderConfirmModal({
+            open: true,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+            cancelLabel: "No, volver",
+        });
+
+        expect(screen.getByRole("button", { name: /no, volver/i })).toBeInTheDocument();
+    });
+
+    it("renderiza children cuando se pasan", () => {
+        renderConfirmModal({
+            open: true,
+            onClose: vi.fn(),
+            onConfirm: vi.fn(),
+            title: "Título test",
+            children: <p>Contenido adicional</p>,
+        });
+
+        expect(screen.getByText("Contenido adicional")).toBeInTheDocument();
+    });
 });

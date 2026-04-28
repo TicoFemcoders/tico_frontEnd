@@ -1,74 +1,80 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../styles/theme.js";
 import AppModal from "../components/common/AppModal";
 
-const theme = createTheme();
-const renderWithTheme = (ui) => render(
-  <ThemeProvider theme={theme}>{ui}</ThemeProvider>
-);
+const renderAppModal = (props, children = <p>Contenido del modal</p>) =>
+    render(
+        <ThemeProvider theme={theme}>
+            <AppModal {...props}>{children}</AppModal>
+        </ThemeProvider>
+    );
 
 describe("AppModal", () => {
 
-  test("cuando open=true renderiza el título y los children", () => {
-    renderWithTheme(
-      <AppModal open={true} onClose={() => {}} title="Título test">
-        <p>Contenido del modal</p>
-      </AppModal>
-    );
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-    expect(screen.getByText("Título test")).toBeInTheDocument();
-    expect(screen.getByText("Contenido del modal")).toBeInTheDocument();
-  });
+    it("cuando open=true renderiza el título y los children", () => {
+        renderAppModal({ open: true, onClose: vi.fn(), title: "Título test" });
 
-  test("cuando open=false no muestra el contenido", () => {
-    renderWithTheme(
-      <AppModal open={false} onClose={() => {}} title="Título test">
-        <p>Contenido del modal</p>
-      </AppModal>
-    );
+        expect(screen.getByText("Título test")).toBeInTheDocument();
+        expect(screen.getByText("Contenido del modal")).toBeInTheDocument();
+    });
 
-    expect(screen.queryByText("Contenido del modal")).not.toBeInTheDocument();
-  });
+    it("cuando open=false no muestra el contenido", () => {
+        renderAppModal({ open: false, onClose: vi.fn(), title: "Título test" });
 
-  test("renderiza las actions cuando se pasan", () => {
-    renderWithTheme(
-      <AppModal
-        open={true}
-        onClose={() => {}}
-        title="Título test"
-        actions={<button>Confirmar</button>}
-      >
-        <p>Contenido</p>
-      </AppModal>
-    );
+        expect(screen.queryByText("Contenido del modal")).not.toBeInTheDocument();
+    });
 
-    expect(screen.getByText("Confirmar")).toBeInTheDocument();
-  });
+    it("renderiza las actions cuando se pasan", () => {
+        renderAppModal({
+            open: true,
+            onClose: vi.fn(),
+            title: "Título test",
+            actions: <button>Confirmar</button>,
+        });
 
-  test("no renderiza actions cuando no se pasan", () => {
-    renderWithTheme(
-      <AppModal open={true} onClose={() => {}} title="Título test">
-        <p>Contenido</p>
-      </AppModal>
-    );
+        expect(screen.getByRole("button", { name: /confirmar/i })).toBeInTheDocument();
+    });
 
-    expect(screen.queryByRole("button", { name: /confirmar/i }))
-      .not.toBeInTheDocument();
-  });
+    it("no renderiza actions cuando no se pasan", () => {
+        renderAppModal({ open: true, onClose: vi.fn(), title: "Título test" });
 
-  test("llama a onClose cuando se pulsa el botón X", () => {
-    const onCloseMock = vi.fn();
+        expect(screen.queryByRole("button", { name: /confirmar/i })).not.toBeInTheDocument();
+    });
 
-    renderWithTheme(
-      <AppModal open={true} onClose={onCloseMock} title="Título test">
-        <p>Contenido</p>
-      </AppModal>
-    );
+    it("llama a onClose cuando se pulsa el botón X", async () => {
+        const onCloseMock = vi.fn();
 
-    const closeButton = screen.getByRole("button");
-    fireEvent.click(closeButton);
+        renderAppModal({ open: true, onClose: onCloseMock, title: "Título test" });
 
-    expect(onCloseMock).toHaveBeenCalledTimes(1);
-  });
+        await userEvent.click(screen.getByRole("button"));
 
+        expect(onCloseMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("renderiza el título correctamente", () => {
+        renderAppModal({ open: true, onClose: vi.fn(), title: "Mi título personalizado" });
+
+        expect(screen.getByText("Mi título personalizado")).toBeInTheDocument();
+    });
+
+    it("renderiza múltiples children cuando se pasan", () => {
+        renderAppModal(
+            { open: true, onClose: vi.fn(), title: "Título test" },
+            <>
+                <p>Primer párrafo</p>
+                <p>Segundo párrafo</p>
+            </>
+        );
+
+        expect(screen.getByText("Primer párrafo")).toBeInTheDocument();
+        expect(screen.getByText("Segundo párrafo")).toBeInTheDocument();
+    });
 });
