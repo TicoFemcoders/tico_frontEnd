@@ -42,9 +42,6 @@ const adminAuth = {
   hasRole: (role) => role === "ADMIN",
 };
 
-// ── Helper ──────────────────────────────────────────────
-// NavContent se renderiza dos veces (desktop + Drawer keepMounted),
-// por eso se usa getAllByText(...)[0] para queries de texto.
 const renderNavbar = (props = {}) =>
   render(
     <ThemeProvider theme={theme}>
