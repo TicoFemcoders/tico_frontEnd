@@ -6,14 +6,11 @@ export const getAllLabels = (page = 0, size = 100) =>
 export const getActiveLabels =() =>
   api.get(`/api/labels/active`).then(res =>res.data);
 
-
 export const createLabel = (labelData) =>
   api.post("/api/labels", labelData).then(res => res.data);
 
-
 export const updateLabel = (id, labelData) =>
   api.put(`/api/labels/${id}`, labelData).then(res => res.data);
-
 
 export const deactivateLabel = (id) =>
   api.patch(`/api/labels/${id}/deactivate`);
@@ -24,7 +21,6 @@ export const activateLabel = (id) =>
 export const searchLabels = (name) =>
   api.get(`/api/labels/filter`,{ params: { name, size: 100 } }).then(res => res.data.content);
  
-
 export const labelService = {
   getAllLabels,
   createLabel,

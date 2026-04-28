@@ -27,9 +27,7 @@ export default function LatestDateInfo({ ticket, compact = false }) {
     }
     return (
         <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", color: latest.color }}>
-            {/* {ICONS[latest.label]} */}
             <Box>
-                {/* <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1 }}>{latest.label}</Typography> */}
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>{latest.value}</Typography>
             </Box>
         </Stack>

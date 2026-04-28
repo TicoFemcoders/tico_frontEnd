@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./styles/theme";
-import "./styles/index.css";
 import App from "./App.jsx";
 import { SnackbarProvider } from "notistack";
 import { AuthProvider } from "./context/AuthContext.jsx";
