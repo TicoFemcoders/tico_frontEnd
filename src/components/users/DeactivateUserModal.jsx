@@ -60,7 +60,7 @@ const DeactivateUserModal = ({ open, onClose, user, onDeactivate, onError}) => {
                 getRole(user) === "ADMIN" ? (
                 <>
                     <Alert severity="warning" icon={<WarningAmberIcon fontSize="small" />} sx={{ mb: 2 }}>
-                        Este administrador tiene <strong>{user.openTickets} tickets abiertos</strong>. Debes
+                        Este administrador tiene <strong>{user.openTickets} tickets pendientes sin cerrar</strong>. Debes
                         reasignarlos a otro empleado para poder desactivarlo.
                     </Alert>
                     <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>

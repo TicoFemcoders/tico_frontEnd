@@ -104,7 +104,7 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                     {isEditing ? "Guardar Cambios" : isClosed ? "Ticket Cerrado" : "Cambiar"}
                 </Button>
                 {isEditing && (
-                    <Button fullWidth size="small" sx={{ mt: 1, textTransform: "none" }} onClick={{handleCancel}}>
+                    <Button fullWidth size="small" sx={{ mt: 1, textTransform: "none" }} onClick={handleCancel}>
                         Cancelar
                     </Button>
                 )}

@@ -76,8 +76,8 @@ const UsersTable = ({ users, onEdit, title = "Usuarios" }) => {
                         ),
                     },
                     {
-                        header: "Tickets abiertos",
-                        renderCell: (user) => `${user.openTickets ?? 0} abiertos`,
+                        header: "Tickets pendientes",
+                        renderCell: (user) => `${user.openTickets ?? 0}`,
                     },
                     {
                         header: "Estado",

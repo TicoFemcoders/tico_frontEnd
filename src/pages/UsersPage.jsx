@@ -39,6 +39,7 @@ const UsersPage = () => {
             await deactivateUser(userId, reassignEmail);
         } catch (err) {
             handleError(err);
+             throw err;
         }
     };
 
