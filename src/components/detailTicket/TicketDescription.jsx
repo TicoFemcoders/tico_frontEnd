@@ -40,7 +40,7 @@ const TicketDescription = ({ description, createdAt }) => {
         </Typography>
       </Box>
       <Divider sx={{ borderColor: "var(--border)" }}/>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2,  backgroundColor: "background.paper" }}>
         <Typography
           variant="body1"
           sx={{ whiteSpace: "pre-line", color: "text.mid" }}

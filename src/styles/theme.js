@@ -44,10 +44,6 @@ const theme = createTheme({
       text: "rgba(255,255,255,0.4)",
     },
 
-
-
-    //actualizar en dev!
-
     status: {
       open: { bg: "#dbeafe", text: "#1e40af" },
       inProg: { bg: "#fef3c7", text: "#92400e" },
