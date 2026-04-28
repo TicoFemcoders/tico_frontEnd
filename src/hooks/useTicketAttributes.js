@@ -39,8 +39,7 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
         setFormData(prev => {
             const hasLabel = prev.labels.some(l => (typeof l === "object" ? l.name : l) === name);
             if (hasLabel) return prev;
-            const fullLabel = availableLabels.find(l => l.name === name) || name;
-            
+            const fullLabel = availableLabels.find(l => l.name === name) || name;  
             return { ...prev, labels: [...prev.labels, fullLabel] };
         });
     };

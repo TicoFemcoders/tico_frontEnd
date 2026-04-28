@@ -21,9 +21,6 @@ const DeactivateUserModal = ({ open, onClose, user, onDeactivate, onError}) => {
         const isAdmin = getRole(user) === "ADMIN";
         const requiresEmail = hasActiveTickets && (isAdmin || wantsToReassign);
 
-
-
-
         if (requiresEmail && !reassignEmail.trim()) {
             setError("Introduce el email del empleado que recibirá los tickets.");
             return;

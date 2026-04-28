@@ -11,7 +11,6 @@ import DetailTicketPage from "../pages/DetailTicketPage";
 import UsersPage from "../pages/UsersPage";
 import LabelsPage from "../pages/LabelsPage";
 
-
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/activation", element: <ActivationPage /> },
