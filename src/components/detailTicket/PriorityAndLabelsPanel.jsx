@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Paper, Typography, FormControl, RadioGroup, FormControlLabel, Radio, Box, TextField, MenuItem, Button } from "@mui/material";
 import { useBlocker } from "react-router-dom";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -7,13 +7,11 @@ import LabelChip from "../common/LabelChip";
 import ConfirmModal from "../modals/ConfirmModal";
 import { useTicketAttributes } from "../../hooks/useTicketAttributes";
 import { TICKET_PRIORITY, PRIORITY_CONFIG } from "../../utils/enums";
-import { useSnackbar } from "notistack";
 
 
 const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
-    const { enqueueSnackbar } = useSnackbar();
 
     const {
         formData, setFormData,
