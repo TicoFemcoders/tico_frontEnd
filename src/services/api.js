@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -24,8 +25,16 @@ api.interceptors.response.use(
   },
   (error) => {
     const serverMessage = error.response?.data?.mensaje || "Ocurrió un error inesperado";
-
     error.friendlyMessage = serverMessage;
+
+    if (error.code === "ECONNABORTED") {
+      error.friendlyMessage = "El servidor está tardando demasiado. Inténtelo de nuevo en unos segundos.";
+      return Promise.reject(error);
+    }
+    if (error.code === "ERR_NETWORK") {
+      error.friendlyMessage = "Problema de conexión. Compruebe su conexión a internet o si el servidor está caído.";
+      return Promise.reject(error);
+    }
 
     const isLoginRequest = error.config?.url?.includes("/login");
     if (error.response?.status === 401 && !isLoginRequest) {

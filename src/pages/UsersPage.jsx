@@ -4,31 +4,29 @@ import PageHeader from "../components/common/PageHeader";
 import UsersTable from "../components/users/UsersTable";
 import CreateUserModal from "../components/users/CreateUserModal";
 import EditUserModal from "../components/users/EditUserModal";
-import DeleteUserModal from "../components/users/DeleteUserModal";
+import DeactivateUserModal from "../components/users/DeactivateUserModal";
 import { useUsers } from "../hooks/useUsers";
+import LoadingScreen from "../components/common/LoadingScreen";
 
 const UsersPage = () => {
     const {
         activeUsers,
         inactiveUsers,
         loading,
+        isSyncing,
         createUser,
-        updateUser,
-        deleteUser,
-        toggleUser,
+        updateAndToggleUser,
         deactivateUser,
         handleError,
     } = useUsers();
 
     const [createModalOpen, setCreateModalOpen]     = useState(false);
     const [editModalOpen, setEditModalOpen]         = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen]     = useState(false);
     const [deactivateModalOpen, setDeactivateModalOpen] = useState(false);
     const [selectedUser, setSelectedUser]           = useState(null);
     const [userToDeactivate, setUserToDeactivate]   = useState(null);
 
     const handleEditClick   = (user) => { setSelectedUser(user); setEditModalOpen(true); };
-    const handleDeleteClick = (user) => { setSelectedUser(user); setDeleteModalOpen(true); };
 
     const handleNeedsReassign = (user) => {
         setEditModalOpen(false);
@@ -44,36 +42,33 @@ const UsersPage = () => {
         }
     };
 
-    if (loading)
-        return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
-                <CircularProgress />
-            </Box>
-        );
-
     return (
         <Box sx={{ p: 3 }}>
-            <PageHeader
-                title="Gestión de Usuarios"
-                subtitle="Administra los empleados y sus permisos"
-                actionText="Crear Usuario"
-                onActionClick={() => setCreateModalOpen(true)}
-                breadcrumbs={["Usuarios"]}
-            />
+           { loading ? (
+            <LoadingScreen />
+        ) : (
+            <>
+                <PageHeader
+                    title="Gestión de Usuarios"
+                    subtitle={isSyncing ? "Sincronizando usuarios en segundo plano..." : "Administra los empleados y sus permisos"}
+                    actionText="Crear Usuario"
+                    onActionClick={() => setCreateModalOpen(true)}
+                    breadcrumbs={["Usuarios"]}
+                />
 
-            <UsersTable
-                title="Usuarios activos"
-                users={activeUsers}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteClick}
-            />
+                <UsersTable
+                    title="Usuarios activos"
+                    users={activeUsers}
+                    onEdit={handleEditClick}
+                />
 
-            <UsersTable
-                title="Usuarios inactivos"
-                users={inactiveUsers}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteClick}
-            />
+                <UsersTable
+                    title="Usuarios inactivos"
+                    users={inactiveUsers}
+                    onEdit={handleEditClick}
+                />
+            </>
+        )}
 
             <CreateUserModal
                 open={createModalOpen}
@@ -85,22 +80,13 @@ const UsersPage = () => {
             <EditUserModal
                 open={editModalOpen}
                 onClose={() => { setEditModalOpen(false); setSelectedUser(null); }}
-                onEdit={updateUser}
-                onToggle={toggleUser}
+                onEdit={updateAndToggleUser}
                 onNeedsReassign={handleNeedsReassign}
                 onError={handleError}
                 user={selectedUser}
             />
 
-            <DeleteUserModal
-                open={deleteModalOpen}
-                onClose={() => { setDeleteModalOpen(false); setSelectedUser(null); }}
-                onDelete={deleteUser}
-                onError={handleError}
-                user={selectedUser}
-            />
-
-            <DeleteUserModal
+            <DeactivateUserModal
                 mode="deactivate"
                 open={deactivateModalOpen}
                 onClose={() => { setDeactivateModalOpen(false); setUserToDeactivate(null); }}
@@ -109,7 +95,7 @@ const UsersPage = () => {
                 user={userToDeactivate}
             />
         </Box>
-    );
-};
+    
+);};
 
 export default UsersPage;

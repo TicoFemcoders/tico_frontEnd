@@ -7,18 +7,6 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
 
-/**
- * AppModal — Modal genérico reutilizable.
- *
- * Props:
- *  - open        {boolean}    Controla la visibilidad.
- *  - onClose     {function}   Callback al cerrar.
- *  - title       {string}     Título del modal.
- *  - children    {node}       Contenido del cuerpo.
- *  - actions     {node}       Botones / acciones del footer (opcional).
- *  - maxWidth    {string}     'xs' | 'sm' | 'md' | 'lg' | 'xl'. Default: 'sm'.
- *  - fullWidth   {boolean}    Default: true.
- */
 const AppModal = ({
     open,
     onClose,
@@ -49,7 +37,7 @@ const AppModal = ({
                 py: 2,
             }}
         >
-            <Typography variant="h2" component="span"> 
+            <Typography variant="h2" component="span"sx={{ color: 'text.primary' }}> 
                 {title}
             </Typography>
             <IconButton onClick={onClose} size="small" sx={{ color: 'text.subtle' }}>
