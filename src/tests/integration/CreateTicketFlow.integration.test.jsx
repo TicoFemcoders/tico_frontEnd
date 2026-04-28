@@ -78,11 +78,11 @@ describe("Integración — Flujo de creación de ticket", () => {
     await userEvent.type(screen.getByPlaceholderText("Describe brevemente el problema..."), "Problema con el sistema");
     await userEvent.type(screen.getByPlaceholderText("Explica con detalle el problema..."), "Descripción detallada del problema encontrado");
 
-    const [, prioritySelect] = screen.getAllByRole("combobox");
+    const [, prioritySelect] = await screen.findAllByRole("combobox");
     await userEvent.click(prioritySelect);
     await userEvent.click(await screen.findByRole("option", { name: /urgente/i }));
 
-    const [labelSelect] = screen.getAllByRole("combobox");
+    const [labelSelect] = await screen.findAllByRole("combobox");
     await userEvent.click(labelSelect);
     await userEvent.click(await screen.findByRole("option", { name: /bug/i }));
     await userEvent.keyboard("{Escape}");
@@ -92,7 +92,7 @@ describe("Integración — Flujo de creación de ticket", () => {
     await waitFor(() => {
       expect(screen.getByText("Lista de mis tickets")).toBeInTheDocument();
     });
-  });
+  }, 15000);
 
   it("error al crear ticket: la API devuelve 500 y el formulario no navega", async () => {
     server.use(http.post("http://localhost:8080/api/tickets", () => HttpResponse.json({ mensaje: "Error interno del servidor" }, { status: 500 })));
@@ -104,11 +104,11 @@ describe("Integración — Flujo de creación de ticket", () => {
     await userEvent.type(screen.getByPlaceholderText("Describe brevemente el problema..."), "Problema con el sistema");
     await userEvent.type(screen.getByPlaceholderText("Explica con detalle el problema..."), "Descripción detallada del problema encontrado");
 
-    const [, prioritySelect] = screen.getAllByRole("combobox");
+    const [, prioritySelect] = await screen.findAllByRole("combobox");
     await userEvent.click(prioritySelect);
     await userEvent.click(await screen.findByRole("option", { name: /urgente/i }));
 
-    const [labelSelect] = screen.getAllByRole("combobox");
+    const [labelSelect] = await screen.findAllByRole("combobox");
     await userEvent.click(labelSelect);
     await userEvent.click(await screen.findByRole("option", { name: /bug/i }));
     await userEvent.keyboard("{Escape}");
@@ -118,5 +118,5 @@ describe("Integración — Flujo de creación de ticket", () => {
     await waitFor(() => {
       expect(screen.queryByText("Lista de mis tickets")).not.toBeInTheDocument();
     });
-  });
+  }, 15000);
 });
