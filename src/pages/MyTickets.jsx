@@ -12,7 +12,6 @@ import LoadingScreen from "../components/common/LoadingScreen";
 import { useCallback } from "react";
 import { useProgressiveFetch } from "../hooks/useProgressiveFetch";
 
-
 const MyTickets = ({ viewType = "default" }) => {
   const {user, hasRole} = useAuth();
   const navigate = useNavigate();
