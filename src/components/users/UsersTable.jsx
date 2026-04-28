@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Paper, Box } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
@@ -76,8 +76,8 @@ const UsersTable = ({ users, onEdit, title = "Usuarios" }) => {
                         ),
                     },
                     {
-                        header: "Tickets abiertos",
-                        renderCell: (user) => `${user.openTickets ?? 0} abiertos`,
+                        header: "Tickets pendientes",
+                        renderCell: (user) => `${user.openTickets ?? 0}`,
                     },
                     {
                         header: "Estado",
