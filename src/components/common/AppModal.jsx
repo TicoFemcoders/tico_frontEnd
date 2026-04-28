@@ -37,7 +37,7 @@ const AppModal = ({
                 py: 2,
             }}
         >
-            <Typography variant="h2" component="span"> 
+            <Typography variant="h2" component="span"sx={{ color: 'text.primary' }}> 
                 {title}
             </Typography>
             <IconButton onClick={onClose} size="small" sx={{ color: 'text.subtle' }}>
