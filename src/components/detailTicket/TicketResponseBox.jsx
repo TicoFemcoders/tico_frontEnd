@@ -1,5 +1,5 @@
 import { Paper, TextField, Button, Box, Alert, Typography } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ticketMessageService } from "../../services/ticketMessageService";
 import{ useAuth } from "../../context/useAuth";
 import { useSnackbar } from "notistack";
@@ -53,8 +53,8 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
       boxSizing: "border-box",
       boxShadow: "var(--shadow)",
       border: "1px solid",
-      borderColor: isClosed ? "error.light" : "var(--border)",
-      bgcolor: isClosed ? "var(--code-bg)" : "background.paper",
+      borderColor: isClosed ? "error.light" : "border.soft",
+      bgcolor: isClosed ? "action.hover" : "background.paper",
     }}>
 
       {isClosed && (

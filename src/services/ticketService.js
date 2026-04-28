@@ -40,8 +40,6 @@ export const getTicketById = async (ticketId) => {
 };
 
 export const assignLabels = async (ticketId, labelIds) => {
-  // TEMPORAL: Mientras el backend no tenga el endpoint masivo,
-  // hacemos las llamadas una a una internamente.
   const promises = labelIds.map(id => api.post(`/api/tickets/${ticketId}/labels/${id}`));
   return Promise.all(promises);
 };

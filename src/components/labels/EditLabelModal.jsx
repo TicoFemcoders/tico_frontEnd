@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import AppModal from "../common/AppModal";
 import LabelForm from "./LabelForm";
 import { useLabelForm } from "../../hooks/useLabelForm";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 const EditLabelModal = ({ open, onClose, label, onEdit, onError }) => {
     const {

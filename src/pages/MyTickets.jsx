@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";; 
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ticketService } from "../services/ticketService";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../context/useAuth";

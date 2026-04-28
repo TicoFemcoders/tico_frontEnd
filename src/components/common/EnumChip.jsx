@@ -1,3 +1,4 @@
+import React from "react";
 import Chip from "@mui/material/Chip";
 
 const EnumChip = ({ value, config, type, sxOverrides }) => {

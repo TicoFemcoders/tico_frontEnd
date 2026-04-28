@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/useAuth";
 import { ticketService } from "../services/ticketService";
 import TicketDescription from "../components/detailTicket/TicketDescription";

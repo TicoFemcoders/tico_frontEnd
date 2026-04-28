@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { labelService } from "../services/labelService";
 import { ticketService } from "../services/ticketService";
 import { useSnackbar } from "notistack";
@@ -23,14 +23,17 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
         return () => controller.abort();
     }, []);
 
-    useEffect(() => {
-        if (ticket) {
-            setFormData({
-                priority: ticket.priority || "MEDIUM",
-                labels: ticket.labels || [],
-            });
-        }
-    }, [ticket]);
+    const resetForm = useCallback(() => {
+            if (!ticket) return;
+                setFormData({
+                    priority: ticket.priority || "MEDIUM",
+                    labels: ticket.labels || [],
+                });
+        }, [ticket]);
+        
+        useEffect(() => {
+            resetForm();
+        }, [resetForm]);
 
     const addLabel = (name) => {
         setFormData(prev => {
@@ -87,5 +90,5 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
         }
     };
 
-    return { formData, setFormData, availableLabels, isUpdating, addLabel, removeLabel, confirmUpdate };
+    return { formData, setFormData, availableLabels, isUpdating, addLabel, removeLabel, confirmUpdate, resetForm };
 };

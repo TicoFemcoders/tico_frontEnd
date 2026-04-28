@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Paper, Typography, FormControl, RadioGroup, FormControlLabel, Radio, Box, TextField, MenuItem, Button } from "@mui/material";
 import { useBlocker } from "react-router-dom";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -20,14 +20,29 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
         availableLabels,
         isUpdating,
         addLabel, removeLabel,
-        confirmUpdate,
+        confirmUpdate, resetForm
     } = useTicketAttributes({ ticket, onRefresh });
 
     const canEdit = isAssignedToMe && !isClosed;
-
     const blocker = useBlocker(isEditing);
+    const handleStartEdit = () => {
+        if (canEdit) setIsEditing(true);
+    };
+    const handleCancel = () => {
+        resetForm(); 
+        setIsEditing(false);
+        setOpenConfirm(false);
+    };
 
-    const handleConfirm = async () => {
+    useEffect(() => {
+        if (isClosed) {
+            setIsEditing(false);
+            setOpenConfirm(false);
+            resetForm();
+        }
+    }, [isClosed, resetForm]);
+
+    const handleConfirmSave = async () => {
         setOpenConfirm(false);
         await confirmUpdate();
         setIsEditing(false);
@@ -39,7 +54,7 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                 <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary", display: "block", mb: 1.5 }}>
                     PRIORIDAD
                 </Typography>
-                <FormControl component="fieldset" disabled={!isEditing} sx={{ width: "100%", mb: 2 }}>
+                <FormControl component="fieldset" disabled={!isEditing || isClosed} sx={{ width: "100%", mb: 2 }}>
                     <RadioGroup
                         value={formData.priority}
                         onChange={e => setFormData(prev => ({ ...prev, priority: e.target.value }))}
@@ -61,11 +76,11 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                     {formData.labels.map((l, i) => (
                         <LabelChip
                             key={i} label={l} size="small"
-                            onDelete={isEditing ? () => removeLabel(typeof l === "object" ? l.name : l) : undefined}
+                            onDelete={isEditing && !isClosed ? () => removeLabel(typeof l === "object" ? l.name : l) : undefined}
                         />
                     ))}
                 </Box>
-                {isEditing && (
+                {isEditing && !isClosed &&(
                     <TextField
                         select fullWidth size="small" label="+ Añadir etiqueta" value=""
                         onChange={e => addLabel(e.target.value)}
@@ -84,18 +99,14 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
                     variant={isEditing ? "contained" : "outlined"}
                     color={isEditing ? "success" : "primary"}
                     size="small"
-                    onClick={isEditing
-                        ? () => setOpenConfirm(true)
-                        : () => { if (isClosed) return; canEdit ? setIsEditing(true) : 
-                            enqueueSnackbar(`Solo el administrador asignado (${ticket?.assignedToName}) puede editar la prioridad y etiquetas.`, { variant: "warning" });; }
-                    }
+                    onClick={isEditing ? () => setOpenConfirm(true) : handleStartEdit} disabled={isUpdating || (isClosed && !isEditing)}
                     disabled={isUpdating}
                     sx={{ mt: 2, textTransform: "none", borderRadius: 1.5 }}
                 >
                     {isEditing ? "Guardar Cambios" : isClosed ? "Ticket Cerrado" : "Cambiar"}
                 </Button>
                 {isEditing && (
-                    <Button fullWidth size="small" sx={{ mt: 1, textTransform: "none" }} onClick={() => setIsEditing(false)}>
+                    <Button fullWidth size="small" sx={{ mt: 1, textTransform: "none" }} onClick={{handleCancel}}>
                         Cancelar
                     </Button>
                 )}
@@ -103,8 +114,8 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
 
             <ConfirmModal
                 open={openConfirm}
-                onClose={() => setOpenConfirm(false)}
-                onConfirm={handleConfirm}
+                onClose={handleCancel}
+                onConfirm={handleConfirmSave}
                 title="¿Guardar cambios?"
                 confirmLabel="Confirmar"
                 confirmColor="success"
