@@ -98,15 +98,15 @@ describe("getContrastText", () => {
         expect(getContrastText("#000000")).toBe("#fff");
     });
 
-    it("devuelve '#fff' si no hay color", () => {
-        expect(getContrastText(null)).toBe("#fff");
+    it("devuelve '#000' si no hay color", () => {
+        expect(getContrastText(null)).toBe("#000");
     });
 
-    it("devuelve '#fff' si el color no empieza por #", () => {
-        expect(getContrastText("rgb(255,255,255)")).toBe("#fff");
+    it("devuelve '#000' si el color no empieza por #", () => {
+        expect(getContrastText("rgb(255,255,255)")).toBe("#000");
     });
 
-    it("devuelve '#fff' si el color es undefined", () => {
-        expect(getContrastText(undefined)).toBe("#fff");
+    it("devuelve '#000' si el color es undefined", () => {
+        expect(getContrastText(undefined)).toBe("#000");
     });
 });
