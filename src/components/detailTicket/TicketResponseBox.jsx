@@ -53,8 +53,8 @@ const TicketResponseBox = ({ ticket, onMessageSent }) => {
       boxSizing: "border-box",
       boxShadow: "var(--shadow)",
       border: "1px solid",
-      borderColor: isClosed ? "error.light" : "var(--border)",
-      bgcolor: isClosed ? "var(--code-bg)" : "background.paper",
+      borderColor: isClosed ? "error.light" : "border.soft",
+      bgcolor: isClosed ? "action.hover" : "background.paper",
     }}>
 
       {isClosed && (
