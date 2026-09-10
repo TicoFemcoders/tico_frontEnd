@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Typography, IconButton, Badge, Menu, MenuItem, Breadcrumbs, CircularProgress, Alert } from "@mui/material";
 import { Notifications as NotificationsIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom"; 
@@ -15,7 +15,7 @@ const TopBar = ({ breadcrumbs = [] }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false); 
   const [hasMore, setHasMore] = useState(true);
-  const { page, setPage, handleScroll, scrollRef, canScroll, isAtBottom } = useInfiniteScroll(loading, hasMore, notifications);
+  const { page, handleScroll, scrollRef, canScroll, isAtBottom } = useInfiniteScroll(loading, hasMore, notifications);
 
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
@@ -37,8 +37,19 @@ const TopBar = ({ breadcrumbs = [] }) => {
     navigate(`/detail-ticket/${notificacion.ticketId}`);
 };
 
-  const fetchNotificationsPagination = async (currentPage, signal) => {
-    if (loading || !hasMore) return; 
+  // Refs para poder consultar loading/hasMore "en fresco" dentro del
+  // callback sin tener que listarlos como dependencias (eso recrearía la
+  // función en cada fetch y retrigger el efecto que la llama). Se
+  // sincronizan en un efecto: los refs no deben mutarse durante el render.
+  const loadingRef = useRef(loading);
+  const hasMoreRef = useRef(hasMore);
+  useEffect(() => {
+    loadingRef.current = loading;
+    hasMoreRef.current = hasMore;
+  }, [loading, hasMore]);
+
+  const fetchNotificationsPagination = useCallback(async (currentPage, signal) => {
+    if (loadingRef.current || !hasMoreRef.current) return;
     setLoading(true);
     try {
       const data = await notificationService.getPaginatedNotifications(currentPage, 10, signal);
@@ -56,7 +67,7 @@ const TopBar = ({ breadcrumbs = [] }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleMarkAllAsRead = async () => {
     setError(""); 
@@ -67,20 +78,23 @@ const TopBar = ({ breadcrumbs = [] }) => {
 
     try {
       await notificationService.markAllAsRead();
-    } catch(error) {
+    } catch {
       setUnreadCount(prevCount);
       setNotifications(prevNotifications);
       setError("Error del servidor. No se han podido marcar.");
       }
   };
 
+  // Cargar notificaciones al montar / cambiar de página es un efecto de
+  // sincronización con el backend legítimo (fetch-on-change).
   useEffect(() => {
     const controller = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotificationsPagination(page, controller.signal);
     return () => {
     controller.abort();
   };
-  }, [page]);
+  }, [page, fetchNotificationsPagination]);
 
   return (
     <Box 

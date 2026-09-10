@@ -42,7 +42,13 @@ api.interceptors.response.use(
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
-    if (error.response?.status === 403 && !isLoginRequest) {
+    // Un 403 no siempre significa que la sesión o el rol hayan caducado: el
+    // backend también lo usa para reglas de negocio puntuales (p. ej. "no
+    // eres el creador de este ticket"), en cuyo caso la sesión sigue siendo
+    // válida y solo hay que mostrar el mensaje, no expulsar al usuario.
+    // Solo forzamos logout cuando el backend marca explícitamente el 403
+    // como de sesión/rol (code: "SESSION_FORBIDDEN").
+    if (error.response?.status === 403 && !isLoginRequest && error.response?.data?.code === "SESSION_FORBIDDEN") {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login?roleChanged=1";

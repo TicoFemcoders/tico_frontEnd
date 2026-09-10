@@ -73,12 +73,12 @@ describe("Interceptores Axios - api.js", () => {
     expect(window.location.href).toBe("");
   });
 
-  it("error 403 limpia localStorage y redirige a /login?roleChanged=1", async () => {
+  it("error 403 con code SESSION_FORBIDDEN limpia localStorage y redirige a /login?roleChanged=1", async () => {
     localStorage.setItem("token", "test");
     localStorage.setItem("user", JSON.stringify({ id: 1 }));
 
     const error = {
-      response: { status: 403, data: {} },
+      response: { status: 403, data: { code: "SESSION_FORBIDDEN" } },
       config: { url: "/admin" },
     };
 
@@ -87,6 +87,22 @@ describe("Interceptores Axios - api.js", () => {
     expect(localStorage.getItem("token")).toBeNull();
     expect(localStorage.getItem("user")).toBeNull();
     expect(window.location.href).toBe("/login?roleChanged=1");
+  });
+
+  it("error 403 de una regla de negocio (sin code SESSION_FORBIDDEN) NO cierra la sesión", async () => {
+    localStorage.setItem("token", "test");
+    localStorage.setItem("user", JSON.stringify({ id: 1 }));
+
+    const error = {
+      response: { status: 403, data: { code: "ACTION_FORBIDDEN", mensaje: "Solo el creador del ticket puede responder en él" } },
+      config: { url: "/tickets/5/messages" },
+    };
+
+    await expect(resRejected(error)).rejects.toBeDefined();
+
+    expect(localStorage.getItem("token")).toBe("test");
+    expect(localStorage.getItem("user")).not.toBeNull();
+    expect(window.location.href).toBe("");
   });
 
   it("ECONNABORTED asigna friendlyMessage de timeout", async () => {

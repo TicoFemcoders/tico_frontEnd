@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export const useLabelForm = ({ mode = "create", onSuccess, onError }) => {
     const [name, setName] = useState("");
@@ -6,20 +6,20 @@ export const useLabelForm = ({ mode = "create", onSuccess, onError }) => {
     const [error, setError] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const reset = () => {
+    const reset = useCallback(() => {
         setName("");
         setColor("#f28a2e");
         setError("");
         setIsSuccess(false);
-    };
+    }, []);
 
-    const load = (label) => {
+    const load = useCallback((label) => {
         setName(label.name);
         setColor(label.color);
         setError("");
-    };
+    }, []);
 
-    const handleSubmit = async (onClose, labelRef) => {
+    const handleSubmit = useCallback(async (onClose, labelRef) => {
         try {
             if (mode === "create") {
                 await onSuccess({ name: name.trim(), color });
@@ -36,7 +36,7 @@ export const useLabelForm = ({ mode = "create", onSuccess, onError }) => {
             setError(msg);
             onError?.(err);
         }
-    };
+    }, [mode, name, color, onSuccess, onError]);
 
     return { name, setName, color, setColor, error, setError, isSuccess, load, reset, handleSubmit };
 };

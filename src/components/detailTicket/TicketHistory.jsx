@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useAuth } from "../../context/useAuth";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Paper, Typography, Box, Stack, Divider, CircularProgress} from "@mui/material";
 import { ticketMessageService } from "../../services/ticketMessageService";
 import UserAvatar from "../common/UserAvatar";
@@ -14,12 +13,16 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
   const [hasMore, setHasMore] = useState(true);
   const { page, setPage, handleScroll, scrollRef, canScroll, isAtBottom } = useInfiniteScroll(loading, hasMore, messages);
 
-  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  // Evita solapar peticiones sin depender de `loading` en fetchMessages
+  // (que recrearía la función y retrigger los efectos que la llaman).
+  const loadingRef = useRef(false);
 
   const fetchMessages = useCallback(async (currentPage, isRefresh = false) => {
     if (!ticketId) return;
-    if (loading && !isRefresh) return; 
+    if (loadingRef.current && !isRefresh) return;
+    loadingRef.current = true;
+    setLoading(true);
     try {
       const data = await ticketMessageService.getMessagesByTicketId(ticketId, currentPage, 10);
       const safeData = data || [];
@@ -31,25 +34,32 @@ const TicketHistory = ({ ticketId, refreshTrigger }) => {
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
       });
-      setHasMore(safeData.length === 10); 
+      setHasMore(safeData.length === 10);
     } catch (err) {
       enqueueSnackbar(err.friendlyMessage || "Error al cargar historial", { variant: "error" });
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   }, [ticketId, enqueueSnackbar ]);
 
+  // Cargar mensajes al montar / cambiar de página es un efecto de
+  // sincronización con el backend legítimo (fetch-on-change); la regla
+  // set-state-in-effect no distingue esto de un antipatrón de estado
+  // derivado.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMessages(page, false);
   }, [page, fetchMessages]);
 
   useEffect(() => {
     if (refreshTrigger > 0) {
       setPage(0);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasMore(true);
       fetchMessages(0, true);
     }
-  }, [refreshTrigger, fetchMessages]);
+  }, [refreshTrigger, fetchMessages, setPage]);
 
   return (
     <Paper

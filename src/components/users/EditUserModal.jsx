@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, TextField, MenuItem, Button, Typography } from "@mui/material";
 import AppModal from "../common/AppModal";
 import UserForm from "./UserForm";
 
-const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassign, user }) => {
+const EditUserModal = ({ open, onClose, onEdit, onError, onNeedsReassign, user }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -11,7 +11,11 @@ const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassi
         isActive: true,
     });
 
-    useEffect(() => {
+    // Recarga el formulario cuando cambia el usuario editado, ajustado
+    // durante el render en vez de en un efecto.
+    const [prevUser, setPrevUser] = useState(user);
+    if (user !== prevUser) {
+        setPrevUser(user);
         if (user) setFormData({
             name: user.name || "",
             email: user.email || "",
@@ -21,7 +25,7 @@ const EditUserModal = ({ open, onClose, onEdit, onError, onToggle, onNeedsReassi
             ],
             isActive: user.isActive ?? true,
         });
-    }, [user]);
+    }
 
     const handleSubmit = async () => {
         const deactivating = user.isActive && !formData.isActive;

@@ -1,11 +1,16 @@
 import { Paper, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Pagination } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const DataTable = ({ columns, data, mobileRenderer, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => {
-      setCurrentPage(1);
-  }, [data]);
+  // Vuelve a la página 1 cuando cambia el dataset (nuevo filtro/búsqueda),
+  // ajustado durante el render en vez de en un efecto para evitar el
+  // parpadeo de una página obsoleta antes del repintado.
+  const [prevData, setPrevData] = useState(data);
+  if (data !== prevData) {
+    setPrevData(data);
+    setCurrentPage(1);
+  }
 
   const isPaginated = Boolean(itemsPerPage);
   const totalPages = isPaginated ? Math.ceil(data.length / itemsPerPage) : 1;

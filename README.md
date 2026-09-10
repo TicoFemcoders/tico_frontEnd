@@ -326,6 +326,27 @@ Los tests de integración montan componentes reales junto con el `AuthProvider` 
 
 ---
 
+## 🚀 Despliegue en Render
+
+Este frontend se despliega como **Static Site**. El [backend](https://github.com/TicoFemcoders/tico_backEnd)
+incluye un `render.yaml` (Blueprint) que crea la base de datos, el backend y este frontend
+(referenciando este repo) en un solo paso — es la vía recomendada, ver su README, sección
+"Despliegue en Render".
+
+Para desplegarlo manualmente en su lugar:
+
+1. **New → Static Site** en el dashboard de Render → conecta este repositorio.
+2. **Build Command**: `npm ci && npm run build`
+3. **Publish Directory**: `dist`
+4. Variable de entorno **`VITE_API_URL`**: URL pública del backend en Render (p.ej.
+   `https://tico-backend.onrender.com`). Vite la incrusta en el build, así que hay que
+   volver a desplegar si cambia.
+5. Añade una regla de *rewrite* para que las rutas de React Router funcionen al refrescar o
+   entrar directamente en una URL como `/tickets`: **Redirects/Rewrites** → origen `/*`,
+   destino `/index.html`, tipo `Rewrite`.
+
+---
+
 ## 🗺️ Rutas de la aplicación
 
 | Ruta                 | Página                | Acceso         |

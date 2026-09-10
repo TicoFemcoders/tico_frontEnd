@@ -40,7 +40,10 @@ export const useProgressiveFetch = (fetchFn, pageSize = 20) => {
         }
     }, [fetchFn, enqueueSnackbar, pageSize]);
     
+    // Carga progresiva al montar / cuando cambia fetchFn: efecto legítimo de
+    // sincronización con el backend, no estado derivado.
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchAllData();
     }, [fetchAllData]);
     return { data, loading, isSyncing, refetch: fetchAllData };

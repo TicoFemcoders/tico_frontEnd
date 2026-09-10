@@ -1,19 +1,15 @@
-import { Box } from "@mui/material";; 
+import { Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useCallback } from "react";
 import { ticketService } from "../services/ticketService";
-import { CircularProgress } from "@mui/material";
-import { useAuth } from "../context/useAuth";
 import PageHeader from "../components/common/PageHeader";
 import TicketTable from "../components/myTickets/TicketTable";
 import StatCards from "../components/myTickets/StatCards";
 import { TICKET_STATUS } from "../utils/enums";
 import LoadingScreen from "../components/common/LoadingScreen";
-import { useCallback } from "react";
 import { useProgressiveFetch } from "../hooks/useProgressiveFetch";
 
 const MyTickets = ({ viewType = "default" }) => {
-  const {user, hasRole} = useAuth();
   const navigate = useNavigate();
 
   const fetchFn = useCallback((page, size) => {

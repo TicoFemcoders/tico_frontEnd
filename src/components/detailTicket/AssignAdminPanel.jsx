@@ -18,12 +18,19 @@ const AssignAdminPanel = ({ ticket, onRefresh }) => {
         return () => controller.abort();
     }, []);
 
-    useEffect(() => {
+    // Sincroniza el admin seleccionado con el ticket/lista de admins actual,
+    // ajustado durante el render (no en un efecto) siguiendo el patrón de
+    // React para "adaptar el estado cuando cambia una prop".
+    const [prevTicket, setPrevTicket] = useState(ticket);
+    const [prevAdmins, setPrevAdmins] = useState(admins);
+    if (ticket !== prevTicket || admins !== prevAdmins) {
+        setPrevTicket(ticket);
+        setPrevAdmins(admins);
         if (ticket && admins.length > 0) {
             const matched = admins.find(a => a.name === ticket.assignedToName);
             setAssignedToId(matched?.id ?? "");
         }
-    }, [ticket, admins]);
+    }
 
     const handleReassign = async () => {
         setIsUpdating(true);
