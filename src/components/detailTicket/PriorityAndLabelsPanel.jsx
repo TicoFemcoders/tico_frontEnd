@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Paper, Typography, FormControl, RadioGroup, FormControlLabel, Radio, Box, TextField, MenuItem, Button } from "@mui/material";
 import { useBlocker } from "react-router-dom";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -32,13 +32,17 @@ const PriorityAndLabelsPanel = ({ ticket, isAssignedToMe, isClosed, onRefresh })
         setOpenConfirm(false);
     };
 
-    useEffect(() => {
+    // Sale del modo edición si el ticket se cierra mientras se editaba,
+    // ajustado durante el render en vez de en un efecto.
+    const [prevIsClosed, setPrevIsClosed] = useState(isClosed);
+    if (isClosed !== prevIsClosed) {
+        setPrevIsClosed(isClosed);
         if (isClosed) {
             setIsEditing(false);
             setOpenConfirm(false);
             resetForm();
         }
-    }, [isClosed, resetForm]);
+    }
 
     const handleConfirmSave = async () => {
         setOpenConfirm(false);

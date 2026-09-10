@@ -34,9 +34,12 @@ const DetailTicketPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, enqueueSnackbar]);
 
+  // Cargar el ticket al montar / cambiar de id es un efecto de
+  // sincronización con el backend legítimo (fetch-on-change).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (id) fetchTicket();
   }, [id, fetchTicket]);
 

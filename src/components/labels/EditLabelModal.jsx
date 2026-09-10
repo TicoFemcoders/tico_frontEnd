@@ -15,7 +15,7 @@ const EditLabelModal = ({ open, onClose, label, onEdit, onError }) => {
   
     useEffect(() => {
         if (open && label) load(label);
-    }, [open, label]);
+    }, [open, label, load]);
 
     const handleClose = () => {
         onClose();

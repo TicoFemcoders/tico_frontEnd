@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Box from "@mui/material/Box";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Typography, TextField, Button, Alert, CircularProgress } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AppModal from "../common/AppModal";
 import { deleteUser } from "../../services/userService";
@@ -21,11 +13,16 @@ export default function DeleteUserModal({ open, onClose, user, onSuccess }) {
     const [loading, setLoading]             = useState(false);
     const [error, setError]                 = useState("");
 
-    useEffect(() => {
-        if (!open) return;
-        setReassignEmail("");
-        setError("");
-    }, [open]);
+    // Limpia el formulario cada vez que el modal se abre, ajustado durante
+    // el render en vez de en un efecto.
+    const [prevOpen, setPrevOpen] = useState(open);
+    if (open !== prevOpen) {
+        setPrevOpen(open);
+        if (open) {
+            setReassignEmail("");
+            setError("");
+        }
+    }
 
     if (!user) return null;
 

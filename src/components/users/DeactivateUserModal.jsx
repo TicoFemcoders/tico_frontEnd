@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Typography, TextField, Button, Alert, Checkbox, FormControlLabel, Box } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AppModal from "../common/AppModal";
@@ -9,9 +9,12 @@ const DeactivateUserModal = ({ open, onClose, user, onDeactivate, onError}) => {
     const [wantsToReassign, setWantsToReassign] = useState(false);
     const [error, setError] = useState("");
 
-    useEffect(() => {
+    // Limpia el formulario al cerrar el modal, ajustado durante el render.
+    const [prevOpen, setPrevOpen] = useState(open);
+    if (open !== prevOpen) {
+        setPrevOpen(open);
         if (!open) { setReassignEmail(""); setError(""); }
-    }, [open]);
+    }
 
     if (!user) return null;
 

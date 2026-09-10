@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Select, MenuItem, Box, Button, TextField, Alert, CircularProgress, OutlinedInput } from "@mui/material";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import LabelChip from "../common/LabelChip";
-import { useAuth } from "../../context/useAuth";
 import * as ticketService from "../../services/ticketService";
 import { labelService } from "../../services/labelService";
 import { PRIORITY_CONFIG } from "../../utils/enums";
@@ -11,7 +10,6 @@ import { useSnackbar } from "notistack";
 
 export default function CreateTicketForm() {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [form, setForm] = useState({ title: "", description: "", priority: "", labelIds: [] });
   const [labels, setLabels] = useState([]);

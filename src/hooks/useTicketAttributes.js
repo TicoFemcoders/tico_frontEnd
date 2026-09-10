@@ -30,10 +30,16 @@ export const useTicketAttributes = ({ ticket, onRefresh }) => {
                     labels: ticket.labels || [],
                 });
         }, [ticket]);
-        
-        useEffect(() => {
+
+        // Inicializa/reinicia el formulario cuando cambia el ticket, ajustado
+        // durante el render en vez de en un efecto. `resetForm` se mantiene
+        // exportado porque también lo usan los consumidores (p. ej. al
+        // cancelar una edición).
+        const [prevTicket, setPrevTicket] = useState(ticket);
+        if (ticket !== prevTicket) {
+            setPrevTicket(ticket);
             resetForm();
-        }, [resetForm]);
+        }
 
     const addLabel = (name) => {
         setFormData(prev => {

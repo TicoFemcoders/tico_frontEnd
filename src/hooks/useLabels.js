@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { useSnackbar } from "notistack";
 import { labelService } from "../services/labelService";
 import { useProgressiveFetch } from "./useProgressiveFetch";
